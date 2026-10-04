@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>読解プリント</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDMincho&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/sheet.css">
+</head>
+<body>
+<div class="toolbar">
+  <a href="index.html">← 一覧へ</a>
+  <span class="title" id="tb-title">読解プリント</span>
+  <label><input type="checkbox" id="opt-q" checked> 問題</label>
+  <label><input type="checkbox" id="opt-a" checked> 解答（赤字入り）</label>
+  <label><input type="checkbox" id="opt-k" checked> 解説</label>
+  <button type="button" id="btn-print">印刷する</button>
+  <div class="note">印刷設定：用紙 A4・横向き／余白「なし」／倍率 100％／「背景のグラフィック」をオンにすると、きれいに印刷できます（Chrome・Edge 推奨）。</div>
+  <div class="warn" id="tb-warn" hidden></div>
+</div>
+<main class="sheets" id="sheets"></main>
+
+<script src="assets/js/yomi.js"></script>
+<script src="data/stages.js"></script>
+<script src="data/stage0.js"></script>
+<script src="data/stage1.js"></script>
+<script src="data/stage2.js"></script>
+<script src="data/stage3.js"></script>
+<script src="data/stage4.js"></script>
+<script src="data/stage5.js"></script>
+<script src="data/stage6.js"></script>
+<script src="data/stage7.js"></script>
+<script src="assets/js/print.js"></script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+/* =========================================================
+   読解プリント：縦書き A4 横 印刷用スタイル
+   ========================================================= */
+@page { size: A4 landscape; margin: 0; }
+
+:root {
+  --ink: #1a1a1a;
+  --sub: #555;
+  --rule: #444;
+  --soft: #f1f1ef;
+  --ans: #d4002a;
+  --sheet-w: 297mm;
+  --sheet-h: 210mm;
+}
+
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+html, body { margin: 0; padding: 0; }
+body {
+  background: #8a8f96;
+  color: var(--ink);
+  font-family: "BIZ UDMincho", "Hiragino Mincho ProN", "Yu Mincho", "IPAMincho", serif;
+}
+
+/* ---------- 画面用ツールバー ---------- */
+.toolbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+  padding: 10px 16px;
+  background: #1f2328; color: #fff;
+  font-family: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-size: 14px;
+}
+.toolbar a { color: #9cc8ff; text-decoration: none; }
+.toolbar .title { font-weight: bold; margin-right: auto; }
+.toolbar label { display: inline-flex; gap: 4px; align-items: center; cursor: pointer; }
+.toolbar button {
+  font: inherit; font-weight: bold;
+  padding: 6px 18px; border: 0; border-radius: 4px;
+  background: #2f81f7; color: #fff; cursor: pointer;
+}
+.toolbar .warn { color: #ffb4b4; font-weight: bold; width: 100%; }
+.toolbar .note { color: #c9d1d9; font-size: 12px; width: 100%; }
+
+.sheets { padding: 16px 0 40px; }
+
+/* ---------- 用紙 ---------- */
+.sheet {
+  width: var(--sheet-w); height: var(--sheet-h);
+  margin: 0 auto 16px;
+  padding: 11mm 12mm 13mm;
+  background: #fff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+.sheet.overflow { outline: 4px solid #e5484d; }
+.sheet-body {
+  writing-mode: vertical-rl;
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-size: 10.5pt;
+  line-height: 1.85;
+}
+.sheet-foot {
+  position: absolute; left: 0; right: 0; bottom: 4.5mm;
+  text-align: center; font-size: 8pt; color: var(--sub);
+  font-family: "BIZ UDPGothic", sans-serif;
+}
+
+@media print {
+  body { background: none; }
+  .toolbar { display: none; }
+  .sheets { padding: 0; }
+  .sheet { margin: 0; box-shadow: none; break-after: page; page-break-after: always; }
+  .sheet:last-child { break-after: auto; page-break-after: auto; }
+  .sheet.overflow { outline: none; }
+  .no-print { display: none !important; }
+}
+
+/* ---------- ブロック共通 ---------- */
+.sheet-body > * { margin-block-end: 5mm; }
+.sheet-body > *:last-child { margin-block-end: 0; }
+.gothic { font-family: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", sans-serif; }
+
+/* ---------- 見出し（右端の帯） ---------- */
+.head {
+  display: flex; justify-content: space-between;
+  padding-block-end: 3mm;
+  border-block-end: 2px solid var(--ink);
+  font-family: "BIZ UDPGothic", sans-serif;
+}
+.head .t-left { display: flex; gap: 3mm; align-items: flex-start; }
+.head .stage {
+  display: inline-block;
+  padding: 2mm 1mm; border-radius: 1.5mm;
+  background: var(--ink); color: #fff;
+  font-size: 9pt; line-height: 1.3; font-weight: bold;
+}
+.head .ttl { font-size: 17pt; font-weight: bold; line-height: 1.25; letter-spacing: .04em; }
+.head .subttl { font-size: 9.5pt; color: var(--sub); line-height: 1.4; }
+.head .level { font-size: 9pt; line-height: 1.4; }
+.head .fields { display: flex; gap: 0; align-items: stretch; font-size: 8.5pt; line-height: 1.4; }
+.head .field {
+  border: 1px solid var(--rule);
+  padding: 1.5mm .8mm;
+  inline-size: auto;
+}
+.head .field + .field { border-block-start: 0; }
+.head .field.name { min-inline-size: 42mm; }
+.head .field.date { min-inline-size: 28mm; }
+.head .field.self { min-inline-size: 34mm; }
+.head.cont .ttl { font-size: 12pt; }
+
+/* ---------- ねらい ---------- */
+.aim {
+  font-family: "BIZ UDPGothic", sans-serif;
+  font-size: 9pt; line-height: 1.6; color: var(--sub);
+}
+
+/* ---------- ポイント（学習の要点） ---------- */
+.point {
+  border: 1.5px solid var(--ink);
+  background: var(--soft);
+  padding: 3mm 2.5mm;
+  font-size: 10pt; line-height: 1.75;
+}
+.point .pt-ttl {
+  display: inline-block; margin-block-end: 1.5mm;
+  padding: 1.2mm .6mm; background: var(--ink); color: #fff;
+  font-family: "BIZ UDPGothic", sans-serif; font-weight: bold; font-size: 9.5pt; line-height: 1.2;
+}
+.point p { margin: 0; }
+.point b, .rule b { font-family: "BIZ UDPGothic", sans-serif; }
+.point .rule {
+  margin-block: 1.5mm; padding: 1.5mm 1mm;
+  border: 1px dashed var(--ink); background: #fff;
+}
+
+/* ---------- 例題 ---------- */
+.ex {
+  border: 1px solid var(--rule);
+  padding: 3mm 2.5mm;
+  font-size: 10pt;
+}
+.ex .ex-ttl {
+  font-family: "BIZ UDPGothic", sans-serif; font-weight: bold;
+}
+.ex p { margin: 0; }
+.ex .ex-a { color: var(--ink); font-family: "BIZ UDPGothic", sans-serif; }
+
+/* ---------- 問題 ---------- */
+.q { }
+.q .q-ttl {
+  font-family: "BIZ UDPGothic", sans-serif; font-weight: bold;
+  font-size: 10.5pt;
+}
+.q .q-no {
+  display: inline-block;
+  padding: .8mm .4mm; margin-inline-end: 1mm;
+  border: 1.5px solid var(--ink); border-radius: 1mm;
+  font-size: 10pt; line-height: 1.1; font-weight: bold;
+}
+.q p { margin: 0; }
+.q .sub { margin-block-start: 1.2mm; }
+.q .sub-no { font-family: "BIZ UDPGothic", sans-serif; font-weight: bold; }
+.indent { padding-inline-start: 1em; }
+.hang { padding-inline-start: 1.5em; text-indent: -1.5em; }
+.mt { margin-block-start: 1.5mm; }
+.mt2 { margin-block-start: 3mm; }
+.small { font-size: 9pt; }
+.right { text-align: end; }
+
+/* ---------- 本文 ---------- */
+.passage {
+  border-inline-start: 0;
+  padding-block: 0 1mm;
+  font-size: 10.5pt; line-height: 1.95;
+}
+.passage .ps-ttl { font-family: "BIZ UDPGothic", sans-serif; font-weight: bold; font-size: 10pt; }
+.passage p { margin: 0; text-indent: 1em; }
+.passage p.noind { text-indent: 0; }
+.passage .pno {
+  font-family: "BIZ UDPGothic", sans-serif; font-size: 8.5pt;
+  text-indent: 0; margin-inline-end: .2em;
+}
+.passage .src { font-size: 8.5pt; color: var(--sub); text-align: end; text-indent: 0; }
+.frame { border: 1px solid var(--rule); padding: 2.5mm 2mm; }
+
+/* 傍線・波線 */
+.bo {
+  text-decoration: underline; text-decoration-thickness: 1px;
+  text-underline-position: right; text-underline-offset: 1.5px;
+}
+.bo2 {
+  text-decoration: underline double; text-decoration-thickness: 1px;
+  text-underline-position: right; text-underline-offset: 1.5px;
+}
+.nami {
+  text-decoration: underline wavy; text-decoration-thickness: 1px;
+  text-underline-position: right; text-underline-offset: 1.5px;
+}
+.bo-no { font-family: "BIZ UDPGothic", sans-serif; font-size: 8.5pt; }
+.em { font-family: "BIZ UDPGothic", sans-serif; font-weight: bold; }
+.dots { text-emphasis: filled dot; -webkit-text-emphasis: filled dot; }
+
+/* ---------- 解答欄 ---------- */
+.a { visibility: hidden; color: var(--ans); font-family: "BIZ UDPGothic", sans-serif; }
+.show-ans .a { visibility: visible; }
+
+/* （　　）型の書き込み欄 */
+.blank {
+  display: inline-block; position: relative;
+  block-size: 1.9em;
+  border: 1px solid var(--rule);
+  vertical-align: middle;
+  margin-inline: .15em;
+  line-height: 1.8em;
+  text-indent: 0;
+}
+.blank > .a {
+  position: absolute; inset: 0;
+  padding-block-start: .25em;
+  font-size: .82em; line-height: 2.25em;
+  white-space: nowrap; overflow: visible;
+}
+.blank > .lbl {
+  position: absolute; inset-block-start: -.05em; inset-inline-start: -.05em;
+  font-size: 7pt; line-height: 1; color: var(--sub);
+  font-family: "BIZ UDPGothic", sans-serif;
+}
+
+/* 本文中の空所（Ａ）など */
+.slot {
+  display: inline-block; position: relative;
+  inline-size: 2.2em; block-size: 1.7em;
+  border: 1px solid var(--ink);
+  vertical-align: middle; text-align: center;
+  margin-inline: .1em; text-indent: 0;
+  font-family: "BIZ UDPGothic", sans-serif; font-size: .9em; line-height: 1.7em;
+}
+.show-ans .slot .slbl { display: none; }
+.slot .a { position: absolute; inset: 0; line-height: 1.85em; }
+
+/* 記号を書く□ */
+.kbox {
+  display: inline-block; position: relative;
+  inline-size: 2.3em; block-size: 2.3em;
+  border: 1.5px solid var(--ink);
+  vertical-align: middle; text-align: center;
+  margin-inline: .2em; text-indent: 0;
+  line-height: 2.2em;
+}
+.kbox > .a { font-size: 1.1em; }
+.kbox-wide { inline-size: auto; padding-inline: .4em; min-inline-size: 2.3em; }
+.kbox-wide > .a { white-space: nowrap; }
+
+/* 書き込み行（縦の罫線） */
+.lines {
+  position: relative;
+  display: block;
+  border: 1px solid var(--rule);
+  background-image: repeating-linear-gradient(to left, transparent 0 calc(var(--lh) - .25mm), #9a9a9a calc(var(--lh) - .25mm) var(--lh));
+  margin-block-start: 1.5mm;
+  text-indent: 0;
+}
+.lines > .a {
+  display: block;
+  padding-inline: 1.5mm;
+  font-size: 9.5pt;
+  white-space: normal;
+}
+.lines > .a.fit { position: absolute; inset: 0; overflow: hidden; }
+
+/* 原稿用紙 */
+.genko {
+  display: block; position: relative;
+  font-size: 0; line-height: 0;
+  margin-block-start: 1.5mm;
+  border: 1.5px solid var(--ink);
+  inline-size: max-content;
+  text-indent: 0;
+}
+.genko .gc { display: block; block-size: 7mm; white-space: nowrap; }
+.genko .gc + .gc { border-block-start: 1px solid #888; }
+.genko .gc.five { border-block-end: 1.5px solid var(--ink); }
+.genko .cell {
+  display: inline-block;
+  inline-size: 7mm; block-size: 7mm;
+  font-size: 10.5pt; line-height: 7mm; text-align: center;
+  vertical-align: top;
+}
+.genko .cell + .cell { border-block-start: 1px dotted #9a9a9a; }
+.genko .cell .a { font-family: "BIZ UDMincho", serif; }
+.genko-cap { font-family: "BIZ UDPGothic", sans-serif; font-size: 8pt; color: var(--sub); }
+
+/* 選択肢 */
+.choices { margin-block-start: 1mm; }
+.choices > div { padding-inline-start: 1.5em; text-indent: -1.5em; }
+.choices .ck { font-family: "BIZ UDPGothic", sans-serif; font-weight: bold; margin-inline-end: .5em; }
+.show-ans .choices > div.correct .ck {
+  border-radius: 50%; outline: 1.5px solid var(--ans); color: var(--ans);
+}
+
+/* 語群 */
+.gogun {
+  display: inline-block;
+  border: 1px solid var(--rule); padding: 1mm .8mm;
+  font-size: 9.5pt; line-height: 2;
+  text-indent: 0;
+}
+.gogun .gg-ttl { font-family: "BIZ UDPGothic", sans-serif; font-size: 8.5pt; }
+
+/* ヒント */
+.hint {
+  border: 1.5px dotted var(--ink);
+  border-radius: 2mm;
+  padding: 2.5mm 2mm;
+  font-size: 9.5pt; line-height: 1.7;
+}
+.hint .h-ttl { font-family: "BIZ UDPGothic", sans-serif; font-weight: bold; }
+.hint p { margin: 0; }
+
+/* 手順（解き方チェック） */
+.steps { margin-block-start: 1mm; }
+.steps .st {
+  display: block;
+  padding-inline-start: 2.6em; text-indent: -2.6em;
+}
+.steps .st-no {
+  display: inline-block; text-indent: 0;
+  inline-size: auto; padding: .4mm .3mm; margin-inline-end: .4em;
+  background: var(--ink); color: #fff;
+  font-family: "BIZ UDPGothic", sans-serif; font-size: 8.5pt; line-height: 1.2;
+}
+
+/* 図：流れ（ア→イ→ウ／心情の変化など） */
+.flow {
+  display: flex; flex-direction: column;
+  align-items: flex-start; gap: 0;
+  margin-block-start: 1.5mm;
+  text-indent: 0;
+}
+.flow .fbox {
+  border: 1.5px solid var(--ink);
+  padding: 1.5mm 1.2mm;
+  inline-size: var(--fh, 62mm);
+  min-block-size: 16mm;
+  font-size: 10pt; line-height: 1.75;
+  position: relative;
+}
+.flow .fbox .flbl {
+  display: inline-block;
+  padding: .5mm .3mm; margin-inline-end: 1mm;
+  background: var(--ink); color: #fff;
+  font-family: "BIZ UDPGothic", sans-serif; font-size: 8.5pt; line-height: 1.2;
+}
+.flow .fbox.blankbox { min-block-size: 22mm; }
+.flow .fbox .a { font-size: 9.5pt; }
+.flow .fcon {
+  inline-size: var(--fh, 62mm);
+  padding-block: 1mm;
+  display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 1mm;
+  font-family: "BIZ UDPGothic", sans-serif; font-size: 8.5pt; line-height: 1.2;
+}
+.flow .fcon svg { writing-mode: horizontal-tb; display: block; }
+
+/* 小問の二段組 */
+.qgrid { display: flex; flex-direction: row; flex-wrap: wrap; gap: 4mm 4mm; margin-block-start: 1.5mm; }
+.qcell { flex: none; }
+
+/* 表 */
+table.tbl { border-collapse: collapse; font-size: 9.5pt; line-height: 1.6; text-indent: 0; }
+table.tbl th, table.tbl td { border: 1px solid var(--rule); padding: 1.5mm 1mm; vertical-align: top; }
+table.tbl th { background: var(--soft); font-family: "BIZ UDPGothic", sans-serif; font-weight: bold; }
+table.tbl td.tw { block-size: 2.8em; }
+table.tbl td.tw { position: relative; }
+table.tbl td.tw .a { position: absolute; inset: 1mm; font-size: 9pt; line-height: 1.5; }
+
+/* 解説ページ */
+.kai {
+  font-size: 9.8pt; line-height: 1.8;
+}
+.kai .k-ttl {
+  font-family: "BIZ UDPGothic", sans-serif; font-weight: bold;
+}
+.kai .k-ans {
+  font-family: "BIZ UDPGothic", sans-serif; color: var(--ans); font-weight: bold;
+}
+.kai p { margin: 0; }
+.kai .k-rule {
+  display: inline-block; margin-block-start: 1mm;
+  border: 1px solid var(--ink); padding: .8mm .6mm;
+  font-family: "BIZ UDPGothic", sans-serif; font-size: 8.5pt; line-height: 1.5;
+}
+
+.tcy { text-combine-upright: all; -webkit-text-combine: horizontal; }
