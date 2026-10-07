@@ -163,7 +163,7 @@
     const chip = kind === 'q' ? `ステージ${stage ? stage.label : p.stage}` : kind === 'a' ? '解答' : '解説';
     const fields =
       kind === 'q' && !cont
-        ? `<div class="fields"><div class="field date">学習日　　月　　日</div><div class="field name">名前</div><div class="field self">自己評価　◎　○　△</div></div>`
+        ? `<div class="fields"><div class="field date">学習日　　月　　日</div><div class="field name">名前</div>${p.score ? `<div class="field self">得点　　　／${p.score}</div>` : '<div class="field self">自己評価　◎　○　△</div>'}</div>`
         : `<div class="fields"></div>`;
     return `<div class="head${cont ? ' cont' : ''}"><div class="t-left"><span class="stage">${chip}</span><div><div class="ttl">${p.id.replace('-', '－')}　${p.title}</div>${cont ? '' : `<div class="subttl">${p.sub || ''}　<span class="level">${LEVELS[p.level] || ''}</span></div>`}</div></div>${fields}</div>`;
   }
