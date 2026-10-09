@@ -143,7 +143,7 @@
     TBL(rows, cls = '') {
       const cell = (c) => {
         if (c && typeof c === 'object') {
-          return `<td class="tw" style="inline-size:${c.len || 10}em;min-inline-size:${c.len || 10}em"><span class="a">${c.ans || ''}</span></td>`;
+          return `<td class="tw" style="inline-size:${c.len || 10}em;min-inline-size:${c.len || 10}em"><span class="tw-sp">&nbsp;</span><span class="a">${c.ans || ''}</span></td>`;
         }
         return String(c).startsWith('#') ? `<th>${String(c).slice(1)}</th>` : `<td>${c}</td>`;
       };
@@ -160,12 +160,12 @@
   /* ---------------- レイアウト ---------------- */
   function head(p, kind, cont) {
     const stage = Yomi.stages.find((s) => s.no === p.stage);
-    const chip = kind === 'q' ? `ステージ${stage ? stage.label : p.stage}` : kind === 'a' ? '解答' : '解説';
+    const chip = kind === 'q' ? p.chip || `ステージ${stage ? stage.label : p.stage}` : kind === 'a' ? '解答' : '解説';
     const fields =
       kind === 'q' && !cont
         ? `<div class="fields"><div class="field date">学習日　　月　　日</div><div class="field name">名前</div>${p.score ? `<div class="field self">得点　　　／${p.score}</div>` : '<div class="field self">自己評価　◎　○　△</div>'}</div>`
         : `<div class="fields"></div>`;
-    return `<div class="head${cont ? ' cont' : ''}"><div class="t-left"><span class="stage">${chip}</span><div><div class="ttl">${p.id.replace('-', '－')}　${p.title}</div>${cont ? '' : `<div class="subttl">${p.sub || ''}　<span class="level">${LEVELS[p.level] || ''}</span></div>`}</div></div>${fields}</div>`;
+    return `<div class="head${cont ? ' cont' : ''}"><div class="t-left"><span class="stage">${chip}</span><div><div class="ttl">${p.chip ? '' : p.id.replace('-', '－') + '　'}${p.title}</div>${cont ? '' : `<div class="subttl">${p.sub || ''}　<span class="level">${p.levelText || LEVELS[p.level] || ''}</span></div>`}</div></div>${fields}</div>`;
   }
 
   function newSheet(root, p, kind, cont) {
@@ -214,7 +214,6 @@
     const place = (node) => {
       body.appendChild(node);
       if (!overflows(body)) { count++; return; }
-      if (count === 0) { sheet.classList.add('overflow'); count++; return; }
       node.remove();
       // 子要素が多いブロックは、入るところまでをこの用紙に残し、残りを次の用紙へ
       const kids = Array.from(node.children);
@@ -238,6 +237,8 @@
         kids.slice(i).forEach((k) => node.appendChild(k));
         head.remove();
       }
+      // 用紙の先頭でも入りきらないブロックは、そのまま置いて警告する
+      if (count === 0) { body.appendChild(node); sheet.classList.add('overflow'); count++; return; }
       open(true);
       place(node);
     };
@@ -250,14 +251,17 @@
     if (kind === 'a') sheets.forEach(fitAnswers);
     const label = kind === 'q' ? '問題' : kind === 'a' ? '解答' : '解説';
     sheets.forEach((s, i) => {
-      s.querySelector('.sheet-foot').textContent = `${p.id}　${p.title}　〔${label}〕　${i + 1}／${sheets.length}`;
+      s.querySelector('.sheet-foot').textContent = `${p.chip ? '' : p.id + '　'}${p.title}　〔${label}〕　${i + 1}／${sheets.length}`;
     });
     return sheets;
   }
 
   /** プリント一枚分（問題・解答・解説）を描画 */
+  // 「自力で解く」版：ポイント・例題・ヒント（誘導）を省く
+  const GUIDE_BLOCK = /^\s*<div class="(point|ex|hint)"/;
   Yomi.renderPrint = function (root, p, opt) {
     const out = [];
+    if (opt.noGuide) p = Object.assign({}, p, { blocks: p.blocks.filter((b) => !GUIDE_BLOCK.test(b)) });
     if (opt.q) out.push(...paginate(root, p, 'q', p.blocks));
     if (opt.a) {
       const wrap = document.createElement('div');

@@ -92,6 +92,7 @@ body {
 }
 .head .t-left { display: flex; gap: 3mm; align-items: flex-start; }
 .head .stage {
+  white-space: nowrap;
   display: inline-block;
   padding: 2mm 1mm; border-radius: 1.5mm;
   background: var(--ink); color: #fff;
@@ -395,3 +396,7 @@ table.tbl td.tw .a { position: absolute; inset: 1mm; font-size: 9pt; line-height
 }
 
 .tcy { text-combine-upright: all; -webkit-text-combine: horizontal; }
+
+/* 会話文の行は字下げしない */
+.passage p:has(> .noind-line:first-child) { text-indent: 0; }
+.tw-sp { display: inline-block; block-size: 2.4em; }
