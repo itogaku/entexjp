@@ -4,7 +4,7 @@
   const params = new URLSearchParams(location.search);
   const root = document.getElementById('sheets');
   const warn = document.getElementById('tb-warn');
-  const opts = { q: document.getElementById('opt-q'), a: document.getElementById('opt-a'), k: document.getElementById('opt-k') };
+  const opts = { q: document.getElementById('opt-q'), a: document.getElementById('opt-a'), k: document.getElementById('opt-k'), ng: document.getElementById('opt-ng') };
 
   let prints = [];
   let title = '';
@@ -23,7 +23,7 @@
 
   function render() {
     root.innerHTML = '';
-    const opt = { q: opts.q.checked, a: opts.a.checked, k: opts.k.checked };
+    const opt = { q: opts.q.checked, a: opts.a.checked, k: opts.k.checked, noGuide: opts.ng.checked };
     let bad = [];
     prints.forEach((p) => {
       const sheets = Yomi.renderPrint(root, p, opt);
