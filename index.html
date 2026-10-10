@@ -18,11 +18,11 @@
 <body class="ui-page">
 <header class="topbar">
   <a class="logo" href="index.html">読解ステップ</a>
-  <span class="crumb"><span class="k learn">1</span>解き方を学ぶ → <span class="k practice">2</span>練習問題で定着 → ステージ７で入試形式へ</span>
+  <span class="crumb"><span class="k intro">入</span>文章に慣れる → <span class="k learn">本</span>解き方を学ぶ（ステージ０〜７） → <span class="k exam">試</span>入試演習</span>
   <span class="tip">印刷：A4横・余白なし・倍率100％・背景のグラフィックをオン</span>
 </header>
 <div class="app">
-  <nav class="rail" aria-label="ステージ"><ol id="rail"></ol></nav>
+  <nav class="rail" aria-label="段階"><ol id="rail"></ol></nav>
   <main class="pane" id="pane"></main>
 </div>
 
@@ -40,68 +40,93 @@
 <script src="data/bank-plus.js"></script>
 <script src="assets/js/practice.js"></script>
 <script>
-  const stages = Yomi.stages;
+  const stages = Yomi.stages, D = Yomi.bank, P = Yomi.practice;
+  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const dots = (n) => `<span class="lv" title="${Yomi.LEVELS[n] || ''}">${[1, 2, 3].map((i) => `<i class="${i <= Math.min(n, 3) ? 'on' : ''}"></i>`).join('')}</span>`;
-  const store = { get() { try { return localStorage.getItem('yomi-stage'); } catch (e) { return null; } }, set(v) { try { localStorage.setItem('yomi-stage', v); } catch (e) {} } };
+  const store = { get() { try { return localStorage.getItem('yomi-pane'); } catch (e) { return null; } }, set(v) { try { localStorage.setItem('yomi-pane', v); } catch (e) {} } };
+  const enc = encodeURIComponent;
 
-  document.getElementById('rail').innerHTML = stages.map((s) => {
-    const n = Yomi.byStage(s.no).length, m = Yomi.practice.forStage(s.no).length;
-    return `<li><button type="button" data-no="${s.no}" title="${s.name}"><span class="n">${s.no}</span><span class="nm">${s.name}</span><span class="ct">解き方 ${n}枚・練習 ${m}問</span></button></li>`;
-  }).join('');
+  /* 左の一覧：入門 → ステージ０〜７ → 入試演習 */
+  const panes = [
+    { key: 'intro', n: '入', cls: 'intro', name: '文章に慣れる', ct: `入門・${D.problems.length}問` },
+    ...stages.map((s) => ({ key: 'stage' + s.no, n: s.no, name: s.name, ct: `解き方 ${Yomi.byStage(s.no).length}枚`, s })),
+    { key: 'exam', n: '試', cls: 'exam', name: '入試演習', ct: `長文 ${D.bigsets.length}題` },
+  ];
+  document.getElementById('rail').innerHTML = panes.map((p, i) =>
+    `${i === 1 ? '<li class="sep">本編　解き方を学ぶ</li>' : ''}${i === panes.length - 1 ? '<li class="sep">仕上げ</li>' : ''}` +
+    `<li class="${p.cls || ''}"><button type="button" data-pane="${p.key}" title="${esc(p.name)}"><span class="n">${p.n}</span><span class="nm">${esc(p.name)}</span><span class="ct">${p.ct}</span></button></li>`).join('');
 
-  function paneHTML(s) {
+  function head(badge, cls, title, desc, key) {
+    const i = panes.findIndex((p) => p.key === key), prev = panes[i - 1], next = panes[i + 1];
+    return `<div class="pane-h"><div class="badge ${cls}">${badge}</div><div><h2>${title}</h2><p>${desc}</p></div>
+      <div class="nav">${prev ? `<button class="btn" data-pane="${prev.key}">← ${prev.n}</button>` : ''}${next ? `<button class="btn" data-pane="${next.key}">${next.n} →</button>` : ''}</div></div>`;
+  }
+
+  function introHTML() {
+    const groups = P.skillGroups().map((g) => `
+      <section class="grp"><h3>${esc(g.name)}</h3><ul>${g.skills.map((s) => `
+        <li><a href="bank.html?skill=${enc(s.name)}" title="${esc(s.desc)}"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></a><span class="cnt">${s.count}問</span>
+          <a class="mini" href="bank.html?skill=${enc(s.name)}&mode=guided&auto=4" title="${esc(s.name)}を４問、誘導つきで作る">４問作る</a></li>`).join('')}</ul></section>`).join('');
+    return head('入', 'intro', '入門　文章に慣れる',
+      '小学校高学年〜中学１年くらいのやさしく短い文章で、読むことに慣れる練習です。本編（ステージ０〜７）に入る前の準備や、読むのが苦手な人のくり返し練習に使います。', 'intro') + `
+      <div class="acts row">
+        <a class="act" href="bank.html?level=12&mode=guided&auto=5">おまかせ５問<small>★１・２・誘導つき</small></a>
+        <a class="act" href="bank.html?level=34&auto=5">おまかせ５問<small>★３・４・自力で</small></a>
+        <a class="act sub" href="bank.html?kind=kaizen">答案を直す練習<small>${D.kaizen.length}問</small></a>
+        <a class="act sub" href="bank.html">問題を見て選ぶ<small>→</small></a>
+      </div>
+      <div class="groups">${groups}</div>`;
+  }
+
+  function stageHTML(s) {
     const prints = Yomi.byStage(s.no);
     const rows = prints.map((p) => `
-      <li><a href="print.html?id=${p.id}" title="${p.sub || ''}">
+      <li><a href="print.html?id=${p.id}" title="${esc(p.sub || '')}">
         <span class="pid">${p.id}</span>
         <span><span class="pt">${p.title}</span><span class="ps">${p.sub || ''}</span></span>
         ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
       </a></li>`).join('');
-    const sum = Yomi.practice.summary(s.no);
-    const skills = Object.entries(sum.skills).sort((a, b) => b[1] - a[1]);
-    const chips = skills.slice(0, 6).map(([k, n]) => `<span class="chip">${k} ${n}</span>`).join('') +
-      (skills.length > 6 ? `<span class="chip">ほか${skills.length - 6}技能</span>` : '') +
-      (sum.big ? `<span class="chip">長文 ${sum.big}題</span>` : '') + (sum.kaizen ? `<span class="chip">答案改善 ${sum.kaizen}</span>` : '');
-    const base = `bank.html?stage=${s.no}`;
-    const i = stages.indexOf(s), prev = stages[i - 1], next = stages[i + 1];
-    return `<div class="pane-h"><div class="badge">${s.label}</div>
-        <div><h2>ステージ${s.label}　${s.name}</h2><p>${s.desc}</p></div>
-        <div class="nav">${prev ? `<button class="btn" data-no="${prev.no}">← ${prev.no}</button>` : ''}${next ? `<button class="btn" data-no="${next.no}">${next.no} →</button>` : ''}</div></div>
-      <div class="stage-body">
-        <div class="col">
-          <div class="col-h"><span class="k learn">1</span>解き方を学ぶ<span class="cnt">${prints.length}枚</span></div>
-          <ul class="plist">${rows}</ul>
-          <a class="more" href="print.html?stage=${s.no}">まとめて印刷 →</a>
-        </div>
-        <div class="col practice">
-          <div class="col-h"><span class="k practice">2</span>練習問題で定着<span class="cnt">${sum.total}問</span></div>
-          <div class="chips">${chips}</div>
-          <div class="acts">
-            <a class="act" href="${base}&level=12&mode=guided&auto=5">基礎を5問<small>誘導つきで作る</small></a>
-            <a class="act" href="${base}&level=34&auto=5">発展を5問<small>自力で解く</small></a>
-            ${sum.big ? `<a class="act sub" href="${base}&kind=big">長文の問題を選ぶ<small>${sum.big}題</small></a>` : ''}
-            ${sum.kaizen ? `<a class="act sub" href="${base}&kind=kaizen">答案改善を選ぶ<small>${sum.kaizen}問</small></a>` : ''}
-            <a class="act sub" href="${base}">問題を見て選ぶ<small>→</small></a>
-          </div>
-        </div>
+    const sk = P.skillsForStage(s.no);
+    const warm = sk.length ? `<p class="warm"><span class="k intro">入</span>読むのに慣れていないときは、先に入門で：${sk.map((n) => `<a href="bank.html?skill=${enc(n)}">${esc(n)}</a>`).join('・')}</p>` : '';
+    return head(s.label, '', `ステージ${s.label}　${s.name}`, s.desc, 'stage' + s.no) + `
+      <div class="card">
+        <div class="col-h"><span class="k learn">本</span>解き方を学ぶプリント<span class="cnt">${prints.length}枚</span><a class="more" href="print.html?stage=${s.no}">まとめて印刷 →</a></div>
+        <ul class="plist cols">${rows}</ul>
+        ${warm}
       </div>`;
   }
 
-  function show(no, push) {
-    const s = stages.find((x) => x.no === no) || stages[0];
-    document.getElementById('pane').innerHTML = paneHTML(s);
-    document.querySelectorAll('#rail button').forEach((b) => b.setAttribute('aria-current', String(Number(b.dataset.no) === s.no)));
+  function examHTML() {
+    const order = ['標準', '発展', '長文・入試接続', '長文・入試実戦'];
+    const sets = [...D.bigsets].sort((a, b) => order.indexOf(a.level) - order.indexOf(b.level));
+    const rows = sets.map((b) => `
+      <li><a href="bank.html?kind=big&pick=${b.id}" title="この大問のプリントを作る">
+        <span class="pid">${esc(b.genre.replace('文', ''))}</span>
+        <span><span class="pt">${esc(b.title.replace(/^(物語|説明)文?「(.*)」$/, '$2'))}</span><span class="ps">${esc(b.level)}・${b.passage.length}字・${b.questions.length}問</span></span>
+      </a></li>`).join('');
+    return head('試', 'exam', '入試演習　長文の大問',
+      '入試と同じ形式の長文問題です。記述・記号選択・抜き出しをまぜた大問で、各問に配点（合計100点）と採点基準・解説がついています。ステージ０〜７で身につけた解き方を、誘導なしで使います。', 'exam') + `
+      <div class="card">
+        <div class="col-h"><span class="k exam">試</span>大問を選んでプリントを作る<span class="cnt">${sets.length}題</span><a class="more" href="bank.html?kind=big">まとめて選ぶ →</a></div>
+        <ul class="plist cols">${rows}</ul>
+      </div>`;
+  }
+
+  function show(key, push) {
+    const p = panes.find((x) => x.key === key) || panes[0];
+    document.getElementById('pane').innerHTML = p.key === 'intro' ? introHTML() : p.key === 'exam' ? examHTML() : stageHTML(p.s);
+    document.querySelectorAll('#rail button').forEach((b) => b.setAttribute('aria-current', String(b.dataset.pane === p.key)));
     const cur = document.querySelector('#rail button[aria-current="true"]');
     if (cur && cur.scrollIntoView && window.innerWidth <= 760) cur.scrollIntoView({ inline: 'center', block: 'nearest' });
-    store.set(String(s.no));
-    if (push) history.replaceState(null, '', '#stage' + s.no);
+    store.set(p.key);
+    if (push) history.replaceState(null, '', '#' + p.key);
   }
   document.addEventListener('click', (e) => {
-    const b = e.target.closest('button[data-no]');
-    if (b) { show(Number(b.dataset.no), true); window.scrollTo(0, 0); }
+    const b = e.target.closest('button[data-pane]');
+    if (b) { show(b.dataset.pane, true); window.scrollTo(0, 0); }
   });
-  const fromHash = /^#stage(\d)$/.exec(location.hash);
-  show(Number(fromHash ? fromHash[1] : store.get() || 0), false);
+  const fromHash = /^#(intro|exam|stage\d)$/.exec(location.hash);
+  show(fromHash ? fromHash[1] : store.get() || 'intro', false);
 </script>
 </body>
 </html>
