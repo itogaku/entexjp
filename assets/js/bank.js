@@ -24,6 +24,9 @@
   }
   /** 設問文から「○字以内」「○字」の字数を読み取る */
   function charLimit(q) {
+    // 「最初の五字を書きなさい」なら、解答欄はその字数
+    const head = String(q).match(/(?:最初|初め)の([一二三四五六七八九十]+)字/);
+    if (head) return parseKanjiNum(head[1]);
     const m = String(q).match(/([0-9０-９]+|[一二三四五六七八九十百]+)字(以内|程度|で)?/);
     if (!m) return 0;
     const raw = m[1].replace(/[０-９]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 0xfee0));
@@ -112,12 +115,16 @@
     set.questions.forEach((q, i) => {
       const ans = q.choices && q.choices.length ? q.answer : esc(q.answer);
       const area = answerArea(q, ans);
-      blocks.push(Q(`問${kanji(i + 1)}`, esc(q.q), area));
+      blocks.push(Q(`問${kanji(i + 1)}`, esc(q.q) + (q.score ? `<span class="small">（${kanji(q.score)}点）</span>` : ''), area));
       if (guided && q.guide) blocks.push(guidedPart(q.guide, '同じ問いに、もう一度答えなさい。', answerArea(q, ans)));
     });
-    const kai = set.questions.map((q, i) => KAI(`問${kanji(i + 1)}`, esc(q.answer), '', `技能：${esc(q.skill)}`));
+    const kai = set.questions.map((q, i) => KAI(`問${kanji(i + 1)}`, esc(q.answer),
+      (q.points && q.points.length ? `<p><b class="gothic">採点基準</b>　${q.points.map(esc).join('　／　')}</p>` : '') +
+      (q.explain ? `<p>${esc(q.explain)}</p>` : ''),
+      `技能：${esc(q.skill)}${q.score ? `　配点：${kanji(q.score)}点` : ''}`));
+    const total = set.questions.reduce((n, q) => n + (q.score || 0), 0);
     const bst = stageOf(Yomi.practice.items.find((x) => x.key === 'big:' + set.id).stages[0]);
-    return { id: set.id, chip: `ステージ${bst.label}　長文`, title: `${title}　${esc(set.title)}`, sub: `${esc(set.genre)}・${esc(set.level)}`, levelText: guided ? '自力→誘導→再挑戦' : '自力で解く', blocks, kaisetsu: kai };
+    return { id: set.id, chip: `ステージ${bst.label}　長文`, title: `${title}　${esc(set.title)}`, sub: `${esc(set.genre)}・${esc(set.level)}`, levelText: guided ? '自力→誘導→再挑戦' : '自力で解く', score: total || undefined, blocks, kaisetsu: kai };
   }
 
   /* ---------- 画面（選ぶ） ---------- */
