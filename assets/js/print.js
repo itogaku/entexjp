@@ -19,6 +19,11 @@
   }
 
   document.getElementById('tb-title').textContent = title || 'プリントが見つかりません';
+  if (prints.length) {
+    const prac = document.getElementById('tb-prac');
+    prac.href = `bank.html?stage=${prints[0].stage}`;
+    prac.hidden = false;
+  }
   document.title = title ? `${title}｜読解プリント` : '読解プリント';
 
   function render() {
