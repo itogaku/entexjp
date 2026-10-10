@@ -11,19 +11,12 @@
 <link rel="stylesheet" href="assets/css/ui.css">
 <style>
   /* 練習問題ページ */
-  .stagebar { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; }
-  .stagebar > label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: var(--sub); }
-  .stagebar select { font-size: 16px; font-weight: 700; flex: 1 1 260px; }
-  .stage-info { margin-top: 10px; font-size: 13px; color: var(--sub); }
-  .stage-info p { margin: 0 0 6px; }
-  .stage-info .learn-links { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
-  .stage-info .learn-links b { color: var(--learn); margin-right: 4px; flex: none; white-space: nowrap; }
-  .stage-info .learn-links a { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); text-decoration: none; white-space: nowrap; }
 
   .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 14px; align-items: start; }
   .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; min-width: 0; }
 
   .tabs { display: flex; gap: 4px; padding: 3px; background: var(--soft); border-radius: 10px; margin-bottom: 12px; }
+  .tabs button .k { width: 18px; height: 18px; font-size: 11px; margin-right: 4px; vertical-align: -3px; }
   .tabs button { flex: 1; font: inherit; font-size: 14px; padding: 7px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--sub); cursor: pointer; }
   .tabs button[aria-pressed="true"] { background: #fff; color: var(--ink); font-weight: 700; box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
 
@@ -94,16 +87,12 @@
   /* PC：1画面に収め、問題の一覧だけを中でスクロールする */
   @media (min-width: 861px) {
     .wrap { max-width: 1240px; padding: 12px 16px; height: calc(100vh - 44px); display: flex; flex-direction: column; }
-    .stagebar { flex: none; padding: 10px 14px; margin-bottom: 10px; }
     .layout { flex: 1; min-height: 0; grid-template-rows: minmax(0, 1fr); align-items: stretch; }
     .layout > .panel { height: 100%; display: flex; flex-direction: column; }
     .list { flex: 1; min-height: 0; overflow-y: auto; padding-right: 4px; }
     .side { position: static; height: 100%; overflow-y: auto; }
   }
-  .stage-info p { display: none; }
   #out-bar[hidden] { display: none; }
-  .stage-info .learn-links { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; }
-  .stage-info { margin-top: 8px; }
   /* 作ったプリントの確認画面 */
   body.previewing .ui-shell, body.previewing #mbar { display: none; }
   #out-bar #back-pick { background: #fff; color: var(--ink); border-color: #fff; }
@@ -116,25 +105,21 @@
 <body class="ui-page bank">
 <div class="ui-shell">
   <header class="topbar">
-    <a class="back" href="index.html">← ステージ一覧</a>
-    <span class="logo">練習問題</span>
-    <span class="crumb">問題を選んで、プリントを作ります</span>
+    <a class="back" href="index.html">← トップ</a>
+    <span class="logo">問題を選んでプリントを作る</span>
+    <span class="crumb" id="kind-desc"></span>
   </header>
   <div class="wrap">
-    <div class="stagebar">
-      <label>ステージ<select id="f-stage"></select></label>
-      <div class="stage-info" id="stage-info" hidden></div>
-    </div>
     <div class="layout">
       <section class="panel">
         <div class="tabs" role="group" aria-label="問題の種類">
-          <button type="button" data-kind="skill" aria-pressed="true">技能別の問題</button>
-          <button type="button" data-kind="big" aria-pressed="false">長文の問題</button>
-          <button type="button" data-kind="kaizen" aria-pressed="false">答案改善</button>
+          <button type="button" data-kind="skill" aria-pressed="true"><span class="k intro">入</span>文章に慣れる</button>
+          <button type="button" data-kind="kaizen" aria-pressed="false"><span class="k intro">入</span>答案を直す</button>
+          <button type="button" data-kind="big" aria-pressed="false"><span class="k exam">試</span>入試演習（長文）</button>
         </div>
         <div class="filters">
           <label id="f-skill-wrap">技能<select id="f-skill"></select></label>
-          <label id="f-level-wrap">Level<select id="f-level"></select></label>
+          <label id="f-level-wrap">レベル<select id="f-level"></select></label>
           <label>検索<input type="text" id="f-q" placeholder="本文・設問の言葉"></label>
         </div>
         <div class="listbar">
@@ -153,7 +138,7 @@
         </div>
         <div class="panel opt">
           <h2>プリントの作り方</h2>
-          <label class="name" for="p-title">プリントの名前<input type="text" id="p-title" value="読解トレーニング"></label>
+          <label class="name" for="p-title">プリントの名前<input type="text" id="p-title" value="文章に慣れる練習"></label>
           <div class="modes">
             <label><input type="radio" name="mode" value="self" checked><span>自力で解く<small>問題だけのプリント</small></span></label>
             <label><input type="radio" name="mode" value="guided"><span>自力 → 誘導 → 再挑戦<small>解いたあと、読み方の誘導で確かめてもう一度解く</small></span></label>
@@ -182,14 +167,6 @@
 
 <script src="assets/js/yomi.js"></script>
 <script src="data/stages.js"></script>
-<script src="data/stage0.js"></script>
-<script src="data/stage1.js"></script>
-<script src="data/stage2.js"></script>
-<script src="data/stage3.js"></script>
-<script src="data/stage4.js"></script>
-<script src="data/stage5.js"></script>
-<script src="data/stage6.js"></script>
-<script src="data/stage7.js"></script>
 <script src="data/bank.js"></script>
 <script src="data/bank-plus.js"></script>
 <script src="assets/js/practice.js"></script>
