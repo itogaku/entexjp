@@ -8,111 +8,151 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDMincho&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/sheet.css">
+<link rel="stylesheet" href="assets/css/ui.css">
 <style>
-  :root { --ui-ink: #1f2328; --ui-sub: #59636e; --ui-line: #d1d9e0; --ui-bg: #f6f8fa; --ui-card: #fff; --ui-accent: #2f6fd6; --ui-sel: #eaf2ff; }
-  body.bank { background: var(--ui-bg); }
-  .ui { font-family: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", sans-serif; color: var(--ui-ink); line-height: 1.6; }
-  .ui header { background: var(--ui-ink); color: #fff; padding: 18px 16px; }
-  .ui header .in, .ui .wrap { max-width: 1100px; margin: 0 auto; }
-  .ui header a { color: #9cc8ff; text-decoration: none; font-size: 14px; }
-  .ui h1 { margin: 4px 0 2px; font-size: 22px; }
-  .ui header p { margin: 0; color: #c9d1d9; font-size: 13px; }
-  .ui .wrap { padding: 16px; display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
-  .ui .panel { background: var(--ui-card); border: 1px solid var(--ui-line); border-radius: 8px; padding: 14px; }
-  .ui .side { position: sticky; top: 12px; display: flex; flex-direction: column; gap: 10px; }
-  .ui .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-  .ui .tabs button { font: inherit; padding: 6px 14px; border: 1px solid var(--ui-line); border-radius: 999px; background: #fff; cursor: pointer; }
-  .ui .tabs button[aria-pressed="true"] { background: var(--ui-ink); color: #fff; border-color: var(--ui-ink); }
-  .ui .filters { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: end; margin-bottom: 10px; font-size: 13px; }
-  .ui .filters label { display: flex; flex-direction: column; gap: 2px; color: var(--ui-sub); }
-  .ui select, .ui input[type="text"], .ui input[type="number"] { font: inherit; font-size: 14px; padding: 5px 8px; border: 1px solid var(--ui-line); border-radius: 6px; background: #fff; color: var(--ui-ink); }
-  .ui .listbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--ui-sub); margin-bottom: 8px; }
-  .ui .btn { font: inherit; font-size: 13px; padding: 5px 12px; border: 1px solid var(--ui-line); border-radius: 6px; background: #fff; cursor: pointer; color: var(--ui-ink); }
-  .ui .btn.primary { background: var(--ui-accent); color: #fff; border-color: var(--ui-accent); font-weight: 700; font-size: 15px; padding: 9px 14px; width: 100%; }
-  .ui .btn:focus-visible, .ui .tabs button:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 2px; }
-  .ui .list { display: flex; flex-direction: column; gap: 6px; }
-  .ui .item { border: 1px solid var(--ui-line); border-radius: 6px; background: #fff; }
-  .ui .item.on { background: var(--ui-sel); border-color: var(--ui-accent); }
-  .ui .item .row { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; }
-  .ui .item input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
-  .ui .item .meta { font-size: 12px; color: var(--ui-sub); }
-  .ui .item .qtext { font-size: 14px; min-width: 0; }
-  .ui .item details { padding: 0 10px 8px 38px; font-size: 13px; }
-  .ui .item summary { cursor: pointer; color: var(--ui-accent); }
-  .ui .item .pv { white-space: pre-wrap; background: var(--ui-bg); padding: 8px; border-radius: 4px; margin: 6px 0; max-height: 260px; overflow: auto; }
-  .ui .stage-row select { font-size: 15px; font-weight: 700; }
-  .ui .stage-info { background: var(--ui-bg); border: 1px solid var(--ui-line); border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; font-size: 13px; }
-  .ui .stage-info p { margin: 4px 0 0; }
-  .ui .stage-info a { color: var(--ui-accent); text-decoration: none; white-space: nowrap; }
-  .ui .tag.st { background: var(--ui-ink); color: #fff; }
-  .ui .tag { display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 4px; background: #eef1f4; margin-right: 4px; }
-  .ui .side h2 { font-size: 15px; margin: 0 0 8px; }
-  .ui .side .count { font-size: 26px; font-weight: 700; }
-  .ui .opt { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
-  .ui .opt label { display: flex; gap: 6px; align-items: flex-start; }
-  .ui .small { font-size: 12px; color: var(--ui-sub); }
-  .ui .empty { padding: 20px; text-align: center; color: var(--ui-sub); }
-  #out-bar { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 12px 16px; background: var(--ui-ink); color: #fff; }
-  #out-bar .btn { background: var(--ui-accent); color: #fff; border: 0; font-weight: 700; }
+  /* 練習問題ページ */
+  .stagebar { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; }
+  .stagebar > label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: var(--sub); }
+  .stagebar select { font-size: 16px; font-weight: 700; flex: 1 1 260px; }
+  .stage-info { margin-top: 10px; font-size: 13px; color: var(--sub); }
+  .stage-info p { margin: 0 0 6px; }
+  .stage-info .learn-links { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .stage-info .learn-links b { color: var(--learn); margin-right: 4px; }
+  .stage-info .learn-links a { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); text-decoration: none; white-space: nowrap; }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 14px; align-items: start; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; min-width: 0; }
+
+  .tabs { display: flex; gap: 4px; padding: 3px; background: var(--soft); border-radius: 10px; margin-bottom: 12px; }
+  .tabs button { flex: 1; font: inherit; font-size: 14px; padding: 7px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--sub); cursor: pointer; }
+  .tabs button[aria-pressed="true"] { background: #fff; color: var(--ink); font-weight: 700; box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+
+  .filters { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin-bottom: 10px; }
+  .filters label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--sub); min-width: 0; }
+  .filters label[hidden] { display: none; }
+
+  .listbar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--sub); padding: 8px 0; border-top: 1px solid var(--line); }
+  .listbar #shown { margin-right: auto; font-weight: 700; color: var(--ink); }
+  .listbar .rand { display: inline-flex; align-items: center; gap: 4px; }
+  .listbar input[type="number"] { width: 4em; padding: 5px 6px; }
+
+  .list { display: flex; flex-direction: column; gap: 6px; }
+  .item { border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  .item.on { background: var(--practice-soft); border-color: var(--practice); }
+  .item .row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; cursor: pointer; }
+  .item input { margin-top: 3px; width: 18px; height: 18px; flex: none; accent-color: var(--practice); }
+  .item .qtext { font-size: 14px; min-width: 0; }
+  .item .meta { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 2px; }
+  .item details { padding: 0 12px 8px 40px; font-size: 13px; }
+  .item summary { cursor: pointer; color: var(--accent); font-size: 12px; }
+  .item .pv { white-space: pre-wrap; background: var(--bg); padding: 8px; border-radius: 6px; margin: 6px 0; max-height: 260px; overflow: auto; }
+  .tag { font-size: 11px; padding: 0 6px; border-radius: 4px; background: var(--soft); color: var(--sub); }
+  .tag.st { background: var(--ink); color: #fff; }
+  .empty { padding: 24px; text-align: center; color: var(--sub); }
+
+  .side { position: sticky; top: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .side h2 { font-size: 14px; margin: 0 0 8px; }
+  .countbox .count { font-size: 30px; font-weight: 700; color: var(--practice); font-variant-numeric: tabular-nums; }
+  .small { font-size: 12px; color: var(--sub); }
+  .opt { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+  .opt label { display: flex; gap: 6px; align-items: flex-start; }
+  .opt .name { flex-direction: column; gap: 2px; font-size: 12px; color: var(--sub); }
+  .opt .modes { display: grid; gap: 6px; }
+  .opt .modes label { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; cursor: pointer; }
+  .opt .modes label:has(input:checked) { border-color: var(--practice); background: var(--practice-soft); }
+  .opt .modes small { display: block; font-size: 11px; color: var(--sub); }
+  .opt .outs { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; }
+  .opt .btn.primary { padding: 10px 12px; font-size: 15px; width: 100%; }
+
+  /* スマホ：設定は一覧の上、作るボタンは画面下に固定 */
+  #mbar { display: none; }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .side { position: static; order: -1; }
+    .side .countbox { display: none; }
+    .opt .btn.primary, .opt .btn.primary + .small { display: none; }
+    .filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .filters label:first-child { grid-column: 1 / -1; }
+    .wrap { padding-bottom: 96px; }
+    #mbar {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+      align-items: center; gap: 12px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+      background: var(--ink); color: #fff;
+    }
+    #mbar .c { font-size: 14px; flex: 1; }
+    #mbar b { font-size: 20px; }
+    #mbar .btn.primary { padding: 9px 16px; }
+  }
+
+  #out-bar { position: sticky; top: 0; z-index: 25; display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 10px 16px; background: var(--ink); color: #fff; font-size: 14px; }
+  #out-bar .btn { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+  #out-bar .small { color: #c4ccd5; }
   #out-bar .warn { color: #ffb4b4; }
-  @media (max-width: 820px) { .ui .wrap { grid-template-columns: minmax(0, 1fr); } .ui .side { position: static; } }
-  @media print { .ui, #out-bar { display: none !important; } body.bank { background: none; } }
+  #sheets:not(:empty) { background: #8a8f96; }
+  @media print {
+    .ui-shell, #out-bar, #mbar { display: none !important; }
+    body.ui-page, #sheets:not(:empty) { background: none; }
+  }
 </style>
 </head>
-<body class="bank">
-<div class="ui">
-  <header><div class="in">
-    <a href="index.html">← ステージ一覧へ</a>
+<body class="ui-page bank">
+<div class="ui-shell">
+  <header class="site-head"><div class="in">
+    <a class="back" href="index.html">← ステージ一覧へ</a>
     <h1>練習問題</h1>
-    <p>各ステージで解き方を学んだあとに、同じ技能の問題をくり返し練習するためのページです。ステージを選ぶと、そのステージの練習になる問題だけが出ます。</p>
+    <p>解き方を学んだあとに、同じ技能の問題をくり返し練習するページです。問題を選んで、プリントを作ります。</p>
   </div></header>
   <div class="wrap">
-    <section class="panel">
-      <div class="filters stage-row">
-        <label>ステージ<select id="f-stage"></select></label>
-      </div>
+    <div class="stagebar">
+      <label>ステージ<select id="f-stage"></select></label>
       <div class="stage-info" id="stage-info" hidden></div>
-      <div class="tabs" role="group" aria-label="問題の種類">
-        <button type="button" data-kind="skill" aria-pressed="true">技能別の問題</button>
-        <button type="button" data-kind="big" aria-pressed="false">長文大問</button>
-        <button type="button" data-kind="kaizen" aria-pressed="false">答案改善</button>
-      </div>
-      <div class="filters">
-        <label id="f-skill-wrap">技能<select id="f-skill"></select></label>
-        <label id="f-level-wrap">Level<select id="f-level"></select></label>
-        <label>検索<input type="text" id="f-q" placeholder="本文・設問の言葉"></label>
-      </div>
-      <div class="listbar">
-        <span id="shown"></span>
-        <button type="button" class="btn" id="sel-all">表示中を全部選ぶ</button>
-        <button type="button" class="btn" id="sel-rand">表示中からランダムに</button>
-        <input type="number" id="rand-n" value="5" min="1" max="30" aria-label="ランダムに選ぶ数" style="width:4.5em">問
-        <button type="button" class="btn" id="sel-clear">選択を全部外す</button>
-      </div>
-      <div class="list" id="list"></div>
-    </section>
-    <aside class="side">
-      <div class="panel">
-        <h2>選んだ問題</h2>
-        <div><span class="count" id="count">0</span> 問</div>
-        <div class="small" id="count-detail"></div>
-      </div>
-      <div class="panel opt">
-        <h2>プリントの作り方</h2>
-        <label for="p-title" style="flex-direction:column;gap:2px">プリントの名前<input type="text" id="p-title" value="読解トレーニング"></label>
-        <label><input type="radio" name="mode" value="self" checked> 自力で解く（問題だけ）</label>
-        <label><input type="radio" name="mode" value="guided"> 自力 → 読み方の誘導 → 再挑戦</label>
-        <div class="small">「自力→誘導→再挑戦」は、まず誘導なしで答え、次に誘導にそって読み直し、最後に同じ問題をもう一度解く形です。</div>
-        <hr style="border:0;border-top:1px solid var(--ui-line);width:100%">
-        <label><input type="checkbox" id="o-q" checked> 問題</label>
-        <label><input type="checkbox" id="o-a" checked> 解答（赤字入り）</label>
-        <label><input type="checkbox" id="o-k" checked> 解説</label>
-        <button type="button" class="btn primary" id="make">プリントを作る</button>
-        <div class="small">作ったプリントは、このページの下に表示されます。</div>
-      </div>
-    </aside>
+    </div>
+    <div class="layout">
+      <section class="panel">
+        <div class="tabs" role="group" aria-label="問題の種類">
+          <button type="button" data-kind="skill" aria-pressed="true">技能別の問題</button>
+          <button type="button" data-kind="big" aria-pressed="false">長文の問題</button>
+          <button type="button" data-kind="kaizen" aria-pressed="false">答案改善</button>
+        </div>
+        <div class="filters">
+          <label id="f-skill-wrap">技能<select id="f-skill"></select></label>
+          <label id="f-level-wrap">Level<select id="f-level"></select></label>
+          <label>検索<input type="text" id="f-q" placeholder="本文・設問の言葉"></label>
+        </div>
+        <div class="listbar">
+          <span id="shown"></span>
+          <span class="rand"><button type="button" class="btn" id="sel-rand">ランダムに</button><input type="number" id="rand-n" value="5" min="1" max="30" aria-label="ランダムに選ぶ数">問選ぶ</span>
+          <button type="button" class="btn" id="sel-all">全部選ぶ</button>
+          <button type="button" class="btn" id="sel-clear">選択を外す</button>
+        </div>
+        <div class="list" id="list"></div>
+      </section>
+      <aside class="side">
+        <div class="panel countbox">
+          <h2>選んだ問題</h2>
+          <div><span class="count" id="count">0</span> 問</div>
+          <div class="small" id="count-detail"></div>
+        </div>
+        <div class="panel opt">
+          <h2>プリントの作り方</h2>
+          <label class="name" for="p-title">プリントの名前<input type="text" id="p-title" value="読解トレーニング"></label>
+          <div class="modes">
+            <label><input type="radio" name="mode" value="self" checked><span>自力で解く<small>問題だけのプリント</small></span></label>
+            <label><input type="radio" name="mode" value="guided"><span>自力 → 誘導 → 再挑戦<small>解いたあと、読み方の誘導で確かめてもう一度解く</small></span></label>
+          </div>
+          <div class="outs">
+            <label><input type="checkbox" id="o-q" checked> 問題</label>
+            <label><input type="checkbox" id="o-a" checked> 解答（赤字）</label>
+            <label><input type="checkbox" id="o-k" checked> 解説</label>
+          </div>
+          <button type="button" class="btn primary" id="make">プリントを作る</button>
+          <div class="small">作ったプリントは、このページの下に表示されます。</div>
+        </div>
+      </aside>
+    </div>
   </div>
 </div>
+<div id="mbar"><span class="c"><b id="mcount">0</b> 問を選択中</span><button type="button" class="btn primary" id="mmake">プリントを作る</button></div>
 <div id="out-bar" hidden>
   <span id="out-info"></span>
   <button type="button" class="btn" id="do-print">印刷する</button>
@@ -135,5 +175,6 @@
 <script src="data/bank-plus.js"></script>
 <script src="assets/js/practice.js"></script>
 <script src="assets/js/bank.js"></script>
+<script src="assets/js/fit.js"></script>
 </body>
 </html>

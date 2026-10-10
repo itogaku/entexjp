@@ -183,7 +183,7 @@
       head = esc(p.title);
       pv = `<div class="pv">${esc(p.passage)}</div><div><b>設問</b> ${esc(p.question)}</div><div><b>不十分な答案</b> ${esc(p.wrong)}</div>`;
     }
-    return `<div class="item${on ? ' on' : ''}"><label class="row"><input type="checkbox" data-key="${key}"${on ? ' checked' : ''}><span class="qtext"><span class="meta">${stTags}${tags}</span><br>${head}</span></label><details><summary>本文と設問を見る</summary>${pv}</details></div>`;
+    return `<div class="item${on ? ' on' : ''}"><label class="row"><input type="checkbox" data-key="${key}"${on ? ' checked' : ''}><span class="qtext"><span class="meta">${stTags}${tags}</span>${head}</span></label><details><summary>本文と設問を見る</summary>${pv}</details></div>`;
   }
 
   function renderList() {
@@ -195,6 +195,8 @@
     const c = { skill: 0, big: 0, kaizen: 0 };
     state.chosen.forEach((k) => c[k.split(':')[0]]++);
     $('count').textContent = state.chosen.size;
+    const m = document.getElementById('mcount');
+    if (m) m.textContent = state.chosen.size;
     $('count-detail').textContent = `技能別 ${c.skill}問・長文大問 ${c.big}題・答案改善 ${c.kaizen}問`;
   }
 
@@ -253,7 +255,7 @@
 
     if (!prints.length) {
       $('out-bar').hidden = false;
-      $('out-info').textContent = '問題が選ばれていません。左の一覧から選んでください。';
+      $('out-info').textContent = '問題が選ばれていません。一覧から選んでください。';
       $('do-print').hidden = true;
       return;
     }
@@ -269,8 +271,10 @@
     $('out-info').textContent = `${sheets}枚のプリントを作りました。`;
     $('out-warn').textContent = bad.length ? `用紙からはみ出している部分があります（赤枠）` : '';
     $('out-bar').scrollIntoView({ behavior: 'smooth' });
+    window.dispatchEvent(new Event('resize'));
   }
   $('make').addEventListener('click', make);
+  if (document.getElementById('mmake')) document.getElementById('mmake').addEventListener('click', make);
   $('do-print').addEventListener('click', () => window.print());
 
   function showStageInfo() {
@@ -279,8 +283,8 @@
     const st = stageOf(Number(v));
     const prints = Yomi.byStage(st.no);
     box.hidden = false;
-    box.innerHTML = `<b>ステージ${st.label}　${esc(st.name)}</b><p>${esc(st.desc)}</p>` +
-      `<p class="small">先に解き方を学ぶプリント：${prints.map((p) => `<a href="print.html?id=${p.id}">${p.id} ${esc(p.title)}</a>`).join('　')}</p>`;
+    box.innerHTML = `<p>${esc(st.desc)}</p>` +
+      `<div class="learn-links"><b>① 解き方を学ぶプリント</b>${prints.map((p) => `<a href="print.html?id=${p.id}" title="${esc(p.title)}">${p.id} ${esc(p.title.replace(/^練習：/, ''))}</a>`).join('')}</div>`;
   }
 
   // URL：?stage=4&level=12&kind=skill&mode=guided&auto=5
