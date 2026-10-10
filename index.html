@@ -12,23 +12,18 @@
   .plist .pt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .plist .ps { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .plist a > span:nth-child(2) { min-width: 0; }
+  .pane .stage-body { margin: 0; }
 </style>
 </head>
 <body class="ui-page">
-<header class="site-head"><div class="in">
-  <h1>読解ステップ</h1>
-  <p>公立高校入試・国語の文章読解を、基礎から入試レベルまで段階的に練習する印刷用プリント集（中学３年生向け）</p>
-</div></header>
-<nav class="route" aria-label="ステージ"><ol id="route"></ol></nav>
-
-<div class="wrap">
-  <div class="flow3">
-    <div><b><span class="k learn">1</span>解き方を学ぶ</b>ポイント・例題・誘導つきのプリントで、そのステージの読み方を身につける。二回目は「誘導なし」で自力で。</div>
-    <div><b><span class="k practice">2</span>練習問題で定着</b>同じ技能の問題を「自力 → 読み方の誘導 → 再挑戦」でくり返す。最初にステージのルールがのる。</div>
-    <div><b><span class="k exam">７</span>入試形式で仕上げ</b>ステージ０〜６を終えたら、設問分析・答案改善と、配点つきの実戦問題へ。</div>
-  </div>
-  <p class="note-line">印刷：A4・横向き／余白なし／倍率100％／「背景のグラフィック」をオン（Chrome・Edge 推奨）</p>
-  <div id="list"></div>
+<header class="topbar">
+  <a class="logo" href="index.html">読解ステップ</a>
+  <span class="crumb"><span class="k learn">1</span>解き方を学ぶ → <span class="k practice">2</span>練習問題で定着 → ステージ７で入試形式へ</span>
+  <span class="tip">印刷：A4横・余白なし・倍率100％・背景のグラフィックをオン</span>
+</header>
+<div class="app">
+  <nav class="rail" aria-label="ステージ"><ol id="rail"></ol></nav>
+  <main class="pane" id="pane"></main>
 </div>
 
 <script src="assets/js/yomi.js"></script>
@@ -45,13 +40,16 @@
 <script src="data/bank-plus.js"></script>
 <script src="assets/js/practice.js"></script>
 <script>
-  const lastNo = Yomi.stages[Yomi.stages.length - 1].no;
+  const stages = Yomi.stages;
   const dots = (n) => `<span class="lv" title="${Yomi.LEVELS[n] || ''}">${[1, 2, 3].map((i) => `<i class="${i <= Math.min(n, 3) ? 'on' : ''}"></i>`).join('')}</span>`;
+  const store = { get() { try { return localStorage.getItem('yomi-stage'); } catch (e) { return null; } }, set(v) { try { localStorage.setItem('yomi-stage', v); } catch (e) {} } };
 
-  document.getElementById('route').innerHTML = Yomi.stages.map((s) =>
-    `<li><a href="#stage${s.no}"><span class="n">${s.no}</span>${s.name.replace(/（.*）/, '')}</a></li>`).join('');
+  document.getElementById('rail').innerHTML = stages.map((s) => {
+    const n = Yomi.byStage(s.no).length, m = Yomi.practice.forStage(s.no).length;
+    return `<li><button type="button" data-no="${s.no}" title="${s.name}"><span class="n">${s.no}</span><span class="nm">${s.name}</span><span class="ct">解き方 ${n}枚・練習 ${m}問</span></button></li>`;
+  }).join('');
 
-  document.getElementById('list').innerHTML = Yomi.stages.map((s) => {
+  function paneHTML(s) {
     const prints = Yomi.byStage(s.no);
     const rows = prints.map((p) => `
       <li><a href="print.html?id=${p.id}" title="${p.sub || ''}">
@@ -59,26 +57,25 @@
         <span><span class="pt">${p.title}</span><span class="ps">${p.sub || ''}</span></span>
         ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
       </a></li>`).join('');
-
     const sum = Yomi.practice.summary(s.no);
     const skills = Object.entries(sum.skills).sort((a, b) => b[1] - a[1]);
-    const shown = skills.slice(0, 6).map(([k, n]) => `<span class="chip">${k} ${n}</span>`).join('');
-    const rest = skills.length > 6 ? `<span class="chip">ほか${skills.length - 6}技能</span>` : '';
-    const extra = (sum.big ? `<span class="chip">長文 ${sum.big}題</span>` : '') + (sum.kaizen ? `<span class="chip">答案改善 ${sum.kaizen}</span>` : '');
+    const chips = skills.slice(0, 6).map(([k, n]) => `<span class="chip">${k} ${n}</span>`).join('') +
+      (skills.length > 6 ? `<span class="chip">ほか${skills.length - 6}技能</span>` : '') +
+      (sum.big ? `<span class="chip">長文 ${sum.big}題</span>` : '') + (sum.kaizen ? `<span class="chip">答案改善 ${sum.kaizen}</span>` : '');
     const base = `bank.html?stage=${s.no}`;
-
-    return `<section class="stage${s.no === lastNo ? ' final' : ''}" id="stage${s.no}">
-      <div class="stage-h"><div class="badge">${s.label}</div>
-        <div><h2>ステージ${s.label}　${s.name}</h2><p>${s.desc}</p></div></div>
+    const i = stages.indexOf(s), prev = stages[i - 1], next = stages[i + 1];
+    return `<div class="pane-h"><div class="badge">${s.label}</div>
+        <div><h2>ステージ${s.label}　${s.name}</h2><p>${s.desc}</p></div>
+        <div class="nav">${prev ? `<button class="btn" data-no="${prev.no}">← ${prev.no}</button>` : ''}${next ? `<button class="btn" data-no="${next.no}">${next.no} →</button>` : ''}</div></div>
       <div class="stage-body">
         <div class="col">
           <div class="col-h"><span class="k learn">1</span>解き方を学ぶ<span class="cnt">${prints.length}枚</span></div>
           <ul class="plist">${rows}</ul>
-          <a class="more" href="print.html?stage=${s.no}">このステージの解き方プリントをまとめて印刷 →</a>
+          <a class="more" href="print.html?stage=${s.no}">まとめて印刷 →</a>
         </div>
         <div class="col practice">
           <div class="col-h"><span class="k practice">2</span>練習問題で定着<span class="cnt">${sum.total}問</span></div>
-          <div class="chips">${shown}${rest}${extra}</div>
+          <div class="chips">${chips}</div>
           <div class="acts">
             <a class="act" href="${base}&level=12&mode=guided&auto=5">基礎を5問<small>誘導つきで作る</small></a>
             <a class="act" href="${base}&level=34&auto=5">発展を5問<small>自力で解く</small></a>
@@ -87,9 +84,24 @@
             <a class="act sub" href="${base}">問題を見て選ぶ<small>→</small></a>
           </div>
         </div>
-      </div>
-    </section>`;
-  }).join('');
+      </div>`;
+  }
+
+  function show(no, push) {
+    const s = stages.find((x) => x.no === no) || stages[0];
+    document.getElementById('pane').innerHTML = paneHTML(s);
+    document.querySelectorAll('#rail button').forEach((b) => b.setAttribute('aria-current', String(Number(b.dataset.no) === s.no)));
+    const cur = document.querySelector('#rail button[aria-current="true"]');
+    if (cur && cur.scrollIntoView && window.innerWidth <= 760) cur.scrollIntoView({ inline: 'center', block: 'nearest' });
+    store.set(String(s.no));
+    if (push) history.replaceState(null, '', '#stage' + s.no);
+  }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-no]');
+    if (b) { show(Number(b.dataset.no), true); window.scrollTo(0, 0); }
+  });
+  const fromHash = /^#stage(\d)$/.exec(location.hash);
+  show(Number(fromHash ? fromHash[1] : store.get() || 0), false);
 </script>
 </body>
 </html>

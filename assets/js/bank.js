@@ -254,9 +254,8 @@
     pick('big').forEach((set) => prints.push(bigPrint(set, guided, title)));
 
     if (!prints.length) {
-      $('out-bar').hidden = false;
-      $('out-info').textContent = '問題が選ばれていません。一覧から選んでください。';
-      $('do-print').hidden = true;
+      const btns = [$('make'), document.getElementById('mmake')].filter(Boolean);
+      btns.forEach((x) => { x.textContent = '先に問題を選んでください'; setTimeout(() => (x.textContent = 'プリントを作る'), 1800); });
       return;
     }
     const bad = [];
@@ -270,12 +269,26 @@
     $('do-print').hidden = false;
     $('out-info').textContent = `${sheets}枚のプリントを作りました。`;
     $('out-warn').textContent = bad.length ? `用紙からはみ出している部分があります（赤枠）` : '';
-    $('out-bar').scrollIntoView({ behavior: 'smooth' });
+    document.body.classList.add('previewing');
+    window.scrollTo(0, 0);
     window.dispatchEvent(new Event('resize'));
   }
   $('make').addEventListener('click', make);
   if (document.getElementById('mmake')) document.getElementById('mmake').addEventListener('click', make);
+  // スマホ下のバーの「形」と、設定欄のラジオボタンを連動させる
+  const mmode = document.getElementById('mmode');
+  if (mmode) {
+    const syncFromRadio = () => { mmode.value = document.querySelector('input[name="mode"]:checked').value; };
+    mmode.addEventListener('change', () => { document.querySelector(`input[name="mode"][value="${mmode.value}"]`).checked = true; });
+    document.querySelectorAll('input[name="mode"]').forEach((r) => r.addEventListener('change', syncFromRadio));
+    setTimeout(syncFromRadio, 0);
+  }
   $('do-print').addEventListener('click', () => window.print());
+  $('back-pick').addEventListener('click', () => {
+    document.body.classList.remove('previewing');
+    $('out-bar').hidden = true;
+    $('sheets').innerHTML = '';
+  });
 
   function showStageInfo() {
     const v = $('f-stage').value, box = $('stage-info');
