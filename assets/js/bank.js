@@ -38,7 +38,7 @@
 
   /* ---------- 解答欄 ---------- */
   function answerArea(q, ans) {
-    if (q.choices && q.choices.length) return CH(q.choices.map(esc), ans) + `<p class="indent">答え　${K(esc(ans))}</p>`;
+    if (q.choices && q.choices.length) return CH(q.choices.map((c) => esc(String(c).replace(/^[ア-オ][　 ]+/, ''))), ans) + `<p class="indent">答え　${K(esc(ans))}</p>`;
     const n = charLimit(q.q);
     if (n && n <= 120) return G(n, ans, n <= 40 ? Math.min(20, n) : 20);
     return L(rowsFor(ans, 2), esc(ans), 0);
