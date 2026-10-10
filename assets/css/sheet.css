@@ -25,22 +25,29 @@ body {
 /* ---------- 画面用ツールバー ---------- */
 .toolbar {
   position: sticky; top: 0; z-index: 10;
-  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+  display: flex; flex-direction: column; gap: 6px;
   padding: 10px 16px;
   background: #1f2328; color: #fff;
   font-family: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", sans-serif;
   font-size: 14px;
 }
-.toolbar a { color: #9cc8ff; text-decoration: none; }
-.toolbar .title { font-weight: bold; margin-right: auto; }
+.toolbar .tb-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.toolbar a { color: #a9cbff; text-decoration: none; }
+.toolbar .title { font-weight: bold; font-size: 15px; margin-right: auto; }
+.toolbar .tb-prac { padding: 4px 12px; border-radius: 999px; background: #1a7f5a; color: #fff; font-weight: bold; font-size: 13px; }
+.toolbar .tb-group { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: #33383e; }
+.toolbar .tb-group label { padding: 4px 10px; border-radius: 6px; }
+.toolbar .tb-group label:has(input:checked) { background: #4a5058; }
 .toolbar label { display: inline-flex; gap: 4px; align-items: center; cursor: pointer; }
+.toolbar input { accent-color: #2f81f7; }
 .toolbar button {
   font: inherit; font-weight: bold;
-  padding: 6px 18px; border: 0; border-radius: 4px;
+  padding: 6px 22px; border: 0; border-radius: 6px; margin-left: auto;
   background: #2f81f7; color: #fff; cursor: pointer;
 }
-.toolbar .warn { color: #ffb4b4; font-weight: bold; width: 100%; }
-.toolbar .note { color: #c9d1d9; font-size: 12px; width: 100%; }
+.toolbar .warn { color: #ffb4b4; font-weight: bold; }
+.toolbar .note { color: #aeb7c0; font-size: 12px; }
+.toolbar :focus-visible { outline: 2px solid #a9cbff; outline-offset: 2px; }
 
 .sheets { padding: 16px 0 40px; }
 
@@ -98,7 +105,7 @@ body {
   background: var(--ink); color: #fff;
   font-size: 9pt; line-height: 1.3; font-weight: bold;
 }
-.head .ttl { font-size: 17pt; font-weight: bold; line-height: 1.25; letter-spacing: .04em; }
+.head .ttl { font-size: 15.5pt; font-weight: bold; line-height: 1.25; letter-spacing: .04em; }
 .head .subttl { font-size: 9.5pt; color: var(--sub); line-height: 1.4; }
 .head .level { font-size: 9pt; line-height: 1.4; }
 .head .fields { display: flex; gap: 0; align-items: stretch; font-size: 8.5pt; line-height: 1.4; }
@@ -108,9 +115,9 @@ body {
   inline-size: auto;
 }
 .head .field + .field { border-block-start: 0; }
-.head .field.name { min-inline-size: 42mm; }
-.head .field.date { min-inline-size: 28mm; }
-.head .field.self { min-inline-size: 34mm; }
+.head .field.name { min-inline-size: 36mm; }
+.head .field.date { min-inline-size: 25mm; }
+.head .field.self { min-inline-size: 30mm; }
 .head.cont .ttl { font-size: 12pt; }
 
 /* ---------- ねらい ---------- */
@@ -400,3 +407,6 @@ table.tbl td.tw .a { position: absolute; inset: 1mm; font-size: 9pt; line-height
 /* 会話文の行は字下げしない */
 .passage p:has(> .noind-line:first-child) { text-indent: 0; }
 .tw-sp { display: inline-block; block-size: 2.4em; }
+
+/* 画面の縮小表示（fit.js）は印刷では使わない */
+@media print { .sheets { zoom: 1 !important; } }

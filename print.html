@@ -11,15 +11,21 @@
 </head>
 <body>
 <div class="toolbar">
-  <a href="index.html">← 一覧へ</a>
-  <span class="title" id="tb-title">読解プリント</span>
-  <a id="tb-prac" hidden>このステージの練習問題 →</a>
-  <label><input type="checkbox" id="opt-q" checked> 問題</label>
-  <label><input type="checkbox" id="opt-a" checked> 解答（赤字入り）</label>
-  <label><input type="checkbox" id="opt-k" checked> 解説</label>
-  <label title="ポイント・例題・ヒントを省き、まず自力で解く版を印刷します"><input type="checkbox" id="opt-ng"> 誘導なし（自力で解く版）</label>
-  <button type="button" id="btn-print">印刷する</button>
-  <div class="note">印刷設定：用紙 A4・横向き／余白「なし」／倍率 100％／「背景のグラフィック」をオンにすると、きれいに印刷できます（Chrome・Edge 推奨）。</div>
+  <div class="tb-row">
+    <a href="index.html" class="tb-back">← ステージ一覧</a>
+    <span class="title" id="tb-title">読解プリント</span>
+    <a id="tb-prac" class="tb-prac" hidden>② このステージの練習問題 →</a>
+  </div>
+  <div class="tb-row tb-opts">
+    <span class="tb-group" role="group" aria-label="印刷するもの">
+      <label><input type="checkbox" id="opt-q" checked> 問題</label>
+      <label><input type="checkbox" id="opt-a" checked> 解答（赤字）</label>
+      <label><input type="checkbox" id="opt-k" checked> 解説</label>
+    </span>
+    <label class="tb-ng" title="ポイント・例題・ヒントを省き、まず自力で解く版を印刷します"><input type="checkbox" id="opt-ng"> 誘導なし（自力で解く版）</label>
+    <button type="button" id="btn-print">印刷する</button>
+  </div>
+  <div class="note">印刷設定：A4・横向き／余白「なし」／倍率100％／「背景のグラフィック」をオン（Chrome・Edge 推奨）</div>
   <div class="warn" id="tb-warn" hidden></div>
 </div>
 <main class="sheets" id="sheets"></main>
@@ -35,5 +41,6 @@
 <script src="data/stage6.js"></script>
 <script src="data/stage7.js"></script>
 <script src="assets/js/print.js"></script>
+<script src="assets/js/fit.js"></script>
 </body>
 </html>

@@ -7,69 +7,30 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/ui.css">
 <style>
-  :root { --ink: #1f2328; --sub: #59636e; --line: #d1d9e0; --bg: #f6f8fa; --card: #fff; --accent: #2f6fd6; }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", sans-serif; line-height: 1.7; }
-  header { background: var(--ink); color: #fff; padding: 28px 16px 24px; }
-  header .in, main { max-width: 980px; margin: 0 auto; }
-  h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: .04em; }
-  header p { margin: 0; color: #c9d1d9; font-size: 14px; }
-  main { padding: 20px 16px 60px; }
-  .howto { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; font-size: 14px; margin-bottom: 20px; }
-  .howto b { color: var(--accent); }
-  .howto ol { margin: 6px 0 0; padding-left: 1.4em; }
-  .stage { background: var(--card); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
-  .stage-h { display: flex; gap: 14px; align-items: flex-start; padding: 14px 18px; border-bottom: 1px solid var(--line); }
-  .badge { flex: none; width: 46px; height: 46px; border-radius: 8px; background: var(--ink); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 20px; }
-  .stage-h h2 { margin: 0; font-size: 18px; }
-  .stage-h p { margin: 2px 0 0; color: var(--sub); font-size: 13px; }
-  .stage-h .all { margin-left: auto; flex: none; font-size: 13px; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 6px; padding: 4px 10px; white-space: nowrap; }
-  .learn-h, .prac-h { display: flex; gap: 8px; align-items: center; padding: 10px 18px 4px; font-size: 14px; }
-  .step { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; }
-  .cnt { color: var(--sub); font-size: 12px; }
-  .prac { border-top: 1px solid var(--line); background: #f8fafc; padding-bottom: 12px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 18px 8px 48px; }
-  .chip { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: #eef1f4; color: var(--sub); }
-  .btns { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 18px 0 48px; }
-  .btn { font-size: 13px; padding: 5px 12px; border-radius: 6px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 700; }
-  .btn.line { background: #fff; color: var(--accent); border: 1px solid var(--accent); }
-  .btn:hover { filter: brightness(1.08); }
-  @media (max-width: 600px) { .chips, .btns { padding-left: 18px; } }
-  ul { list-style: none; margin: 0; padding: 0; }
-  li a { display: flex; gap: 12px; align-items: baseline; padding: 10px 18px; color: inherit; text-decoration: none; border-top: 1px solid #eef1f4; }
-  li:first-child a { border-top: 0; }
-  li a:hover { background: #f0f6ff; }
-  .pid { flex: none; width: 2.6em; font-weight: 700; color: var(--accent); }
-  .ptitle { font-weight: 700; }
-  .psub { color: var(--sub); font-size: 13px; }
-  .plv { margin-left: auto; flex: none; font-size: 12px; color: var(--sub); white-space: nowrap; }
-  @media (max-width: 600px) {
-    .stage-h { flex-wrap: wrap; }
-    .stage-h .all { margin-left: 60px; }
-    li a { flex-wrap: wrap; }
-    .plv { margin-left: 3.6em; width: 100%; }
-  }
+  .plist .pt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .plist .ps { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .plist a > span:nth-child(2) { min-width: 0; }
 </style>
 </head>
-<body>
-<header><div class="in">
+<body class="ui-page">
+<header class="site-head"><div class="in">
   <h1>読解ステップ</h1>
-  <p>公立高校入試・国語　文章読解の「解く前に身につけたいこと」を、基礎から入試レベルまで段階的に練習するプリント集（中学３年生向け）</p>
+  <p>公立高校入試・国語の文章読解を、基礎から入試レベルまで段階的に練習する印刷用プリント集（中学３年生向け）</p>
 </div></header>
-<main>
-  <div class="howto">
-    <b>使い方</b>
-    <ol>
-      <li>各ステージは、<b>①解き方を学ぶ</b>（ポイント・例題・誘導つきのプリント）→ <b>②練習問題で定着させる</b>（同じ技能の問題をくり返す）の順に進めます。</li>
-      <li>練習問題は「自力で解く」か「自力 → 読み方の誘導 → 再挑戦」の形で作れます。プリントの最初に、そのステージのルールがのります。</li>
-      <li>解き方のプリントも、印刷ページで「誘導なし（自力で解く版）」を選ぶと、ポイント・例題・ヒントを省いて二回目の練習に使えます。</li>
-      <li>印刷設定は <b>A4・横向き／余白なし／倍率100％／背景のグラフィックをオン</b>（Chrome・Edge 推奨）。</li>
-      <li>ステージ０から順に進めると、ステージ７で入試形式の問題（誘導なし）に取り組めるように組み立てています。</li>
-    </ol>
+<nav class="route" aria-label="ステージ"><ol id="route"></ol></nav>
+
+<div class="wrap">
+  <div class="flow3">
+    <div><b><span class="k learn">1</span>解き方を学ぶ</b>ポイント・例題・誘導つきのプリントで、そのステージの読み方を身につける。二回目は「誘導なし」で自力で。</div>
+    <div><b><span class="k practice">2</span>練習問題で定着</b>同じ技能の問題を「自力 → 読み方の誘導 → 再挑戦」でくり返す。最初にステージのルールがのる。</div>
+    <div><b><span class="k exam">７</span>入試形式で仕上げ</b>ステージ０〜６を終えたら、設問分析・答案改善と、配点つきの実戦問題へ。</div>
   </div>
+  <p class="note-line">印刷：A4・横向き／余白なし／倍率100％／「背景のグラフィック」をオン（Chrome・Edge 推奨）</p>
   <div id="list"></div>
-</main>
+</div>
+
 <script src="assets/js/yomi.js"></script>
 <script src="data/stages.js"></script>
 <script src="data/stage0.js"></script>
@@ -84,34 +45,50 @@
 <script src="data/bank-plus.js"></script>
 <script src="assets/js/practice.js"></script>
 <script>
-  const list = document.getElementById('list');
-  list.innerHTML = Yomi.stages.map((s) => {
-    const items = Yomi.byStage(s.no).map((p) => `
-      <li><a href="print.html?id=${p.id}">
+  const lastNo = Yomi.stages[Yomi.stages.length - 1].no;
+  const dots = (n) => `<span class="lv" title="${Yomi.LEVELS[n] || ''}">${[1, 2, 3].map((i) => `<i class="${i <= Math.min(n, 3) ? 'on' : ''}"></i>`).join('')}</span>`;
+
+  document.getElementById('route').innerHTML = Yomi.stages.map((s) =>
+    `<li><a href="#stage${s.no}"><span class="n">${s.no}</span>${s.name.replace(/（.*）/, '')}</a></li>`).join('');
+
+  document.getElementById('list').innerHTML = Yomi.stages.map((s) => {
+    const prints = Yomi.byStage(s.no);
+    const rows = prints.map((p) => `
+      <li><a href="print.html?id=${p.id}" title="${p.sub || ''}">
         <span class="pid">${p.id}</span>
-        <span><span class="ptitle">${p.title}</span><br><span class="psub">${p.sub || ''}</span></span>
-        <span class="plv">${Yomi.LEVELS[p.level] || ''}</span>
+        <span><span class="pt">${p.title}</span><span class="ps">${p.sub || ''}</span></span>
+        ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
       </a></li>`).join('');
+
     const sum = Yomi.practice.summary(s.no);
-    const chips = Object.entries(sum.skills).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<span class="chip">${k} ${n}</span>`).join('') +
-      (sum.big ? `<span class="chip">長文大問 ${sum.big}題</span>` : '') + (sum.kaizen ? `<span class="chip">答案改善 ${sum.kaizen}</span>` : '');
+    const skills = Object.entries(sum.skills).sort((a, b) => b[1] - a[1]);
+    const shown = skills.slice(0, 6).map(([k, n]) => `<span class="chip">${k} ${n}</span>`).join('');
+    const rest = skills.length > 6 ? `<span class="chip">ほか${skills.length - 6}技能</span>` : '';
+    const extra = (sum.big ? `<span class="chip">長文 ${sum.big}題</span>` : '') + (sum.kaizen ? `<span class="chip">答案改善 ${sum.kaizen}</span>` : '');
     const base = `bank.html?stage=${s.no}`;
-    const practice = `<div class="prac">
-        <div class="prac-h"><span class="step">②</span><b>練習問題で定着させる</b><span class="cnt">${sum.total}問</span></div>
-        <div class="chips">${chips}</div>
-        <div class="btns">
-          <a class="btn" href="${base}&level=12&mode=guided&auto=5">基礎 5問（誘導つき）</a>
-          <a class="btn" href="${base}&level=34&auto=5">発展 5問（自力）</a>
-          ${sum.big ? `<a class="btn" href="${base}&kind=big">長文大問を選ぶ</a>` : ''}
-          ${sum.kaizen ? `<a class="btn" href="${base}&kind=kaizen">答案改善を選ぶ</a>` : ''}
-          <a class="btn line" href="${base}">問題を見て選ぶ →</a>
-        </div></div>`;
-    return `<section class="stage" id="stage${s.no}">
+
+    return `<section class="stage${s.no === lastNo ? ' final' : ''}" id="stage${s.no}">
       <div class="stage-h"><div class="badge">${s.label}</div>
-        <div><h2>ステージ${s.label}　${s.name}</h2><p>${s.desc}</p></div>
-        <a class="all" href="print.html?stage=${s.no}">解き方プリントをまとめて印刷</a></div>
-      <div class="learn-h"><span class="step">①</span><b>解き方を学ぶ</b><span class="cnt">${Yomi.byStage(s.no).length}枚</span></div>
-      <ul>${items}</ul>${practice}</section>`;
+        <div><h2>ステージ${s.label}　${s.name}</h2><p>${s.desc}</p></div></div>
+      <div class="stage-body">
+        <div class="col">
+          <div class="col-h"><span class="k learn">1</span>解き方を学ぶ<span class="cnt">${prints.length}枚</span></div>
+          <ul class="plist">${rows}</ul>
+          <a class="more" href="print.html?stage=${s.no}">このステージの解き方プリントをまとめて印刷 →</a>
+        </div>
+        <div class="col practice">
+          <div class="col-h"><span class="k practice">2</span>練習問題で定着<span class="cnt">${sum.total}問</span></div>
+          <div class="chips">${shown}${rest}${extra}</div>
+          <div class="acts">
+            <a class="act" href="${base}&level=12&mode=guided&auto=5">基礎を5問<small>誘導つきで作る</small></a>
+            <a class="act" href="${base}&level=34&auto=5">発展を5問<small>自力で解く</small></a>
+            ${sum.big ? `<a class="act sub" href="${base}&kind=big">長文の問題を選ぶ<small>${sum.big}題</small></a>` : ''}
+            ${sum.kaizen ? `<a class="act sub" href="${base}&kind=kaizen">答案改善を選ぶ<small>${sum.kaizen}問</small></a>` : ''}
+            <a class="act sub" href="${base}">問題を見て選ぶ<small>→</small></a>
+          </div>
+        </div>
+      </div>
+    </section>`;
   }).join('');
 </script>
 </body>
