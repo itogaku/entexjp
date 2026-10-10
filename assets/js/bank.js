@@ -1,7 +1,7 @@
 /* 問題バンク：問題を選んでプリントを作る */
 (function () {
   'use strict';
-  const { B, K, L, G, CH, BO, Q, QC, HINT, PASS, KAI } = Yomi.h;
+  const { B, K, L, G, CH, BO, Q, QC, HINT, PASS, KAI, POINT } = Yomi.h;
   const D = Yomi.bank;
   const $ = (id) => document.getElementById(id);
 
@@ -65,8 +65,13 @@
     if (guided) blocks.push(guidedPart(p.guide || [], p.retry, answerArea(p, p.answer)));
     return blocks;
   }
+  /** 誤答診断：まちがえたら原因に○をつけ、戻る手順を確かめる */
+  function diagHTML(skill) {
+    const rows = D.diag[skill] || [['A', '根拠不足', '本文の根拠がない', '本文にもどって根拠に線を引く'], ['B', '条件不足', '設問の条件が落ちている', '設問の条件に線を引く'], ['C', '関係ずれ', 'つながりが説明できていない', '関係（理由・変化・対比）を整理する']];
+    return `<p class="small mt"><b class="gothic">まちがえたら原因に○</b>　${rows.map((d) => `〔${d[0]}〕${esc(d[1])}：${esc(d[2])}→${esc(d[3])}`).join('　')}</p>`;
+  }
   function skillKai(p, no) {
-    return KAI(kanji(no), esc(p.answer), `<p>${esc(p.explain || '')}</p>`, `技能：${esc(p.skill)}`);
+    return KAI(kanji(no), esc(p.answer), `<p>${esc(p.explain || '')}</p>${diagHTML(p.skill)}`, `技能：${esc(p.skill)}`);
   }
 
   function kaizenBlocks(x, no, guided) {
@@ -111,26 +116,29 @@
       if (guided && q.guide) blocks.push(guidedPart(q.guide, '同じ問いに、もう一度答えなさい。', answerArea(q, ans)));
     });
     const kai = set.questions.map((q, i) => KAI(`問${kanji(i + 1)}`, esc(q.answer), '', `技能：${esc(q.skill)}`));
-    return { id: set.id, chip: '長文大問', title: `${title}　${esc(set.title)}`, sub: `${esc(set.genre)}・${esc(set.level)}`, levelText: guided ? '自力→誘導→再挑戦' : '自力で解く', blocks, kaisetsu: kai };
+    const bst = stageOf(Yomi.practice.items.find((x) => x.key === 'big:' + set.id).stages[0]);
+    return { id: set.id, chip: `ステージ${bst.label}　長文`, title: `${title}　${esc(set.title)}`, sub: `${esc(set.genre)}・${esc(set.level)}`, levelText: guided ? '自力→誘導→再挑戦' : '自力で解く', blocks, kaisetsu: kai };
   }
 
   /* ---------- 画面（選ぶ） ---------- */
   const state = { kind: 'skill', chosen: new Set() };
   const keyOf = (kind, id) => `${kind}:${id}`;
-  const all = {
-    skill: D.problems.map((p) => ({ key: keyOf('skill', p.id), p })),
-    big: D.bigsets.map((p) => ({ key: keyOf('big', p.id), p })),
-    kaizen: D.kaizen.map((p) => ({ key: keyOf('kaizen', p.id), p })),
-  };
+  const all = { skill: [], big: [], kaizen: [] };
+  Yomi.practice.items.forEach((x) => all[x.kind].push(x));
   const skillOrder = new Map(D.skills.map((s, i) => [s.name, i]));
   all.skill.sort((a, b) => skillOrder.get(a.p.skill) - skillOrder.get(b.p.skill) || a.p.level - b.p.level);
+  const stageOf = (no) => Yomi.stages.find((s) => s.no === no);
 
   function fillFilters() {
     const fs = $('f-skill'), fl = $('f-level');
     if (state.kind === 'skill') {
-      fs.innerHTML = '<option value="">すべての技能</option>' + D.groups.map(([label, a, b]) =>
-        `<optgroup label="${esc(label)}">${D.skills.slice(a, b).map((s) => `<option value="${esc(s.name)}">${esc(s.name)}（${esc(s.desc)}）</option>`).join('')}</optgroup>`).join('');
-      fl.innerHTML = '<option value="">すべて</option>' + [1, 2, 3, 4].map((n) => `<option value="${n}">Level ${n}${n === 4 ? '（入試接続）' : ''}</option>`).join('');
+      // 技能は、選んだステージで出てくるものだけを、ステージ順に並べる
+      const st = $('f-stage').value;
+      const inStage = all.skill.filter((x) => st === '' || x.stages.includes(Number(st)));
+      const names = [...new Set(inStage.map((x) => x.p.skill))];
+      const desc = new Map(D.skills.map((s) => [s.name, s.desc]));
+      fs.innerHTML = '<option value="">すべての技能</option>' + names.map((n) => `<option value="${esc(n)}">${esc(n)}（${esc(desc.get(n) || '')}）</option>`).join('');
+      fl.innerHTML = '<option value="">すべて</option><option value="12">Level 1・2（基礎）</option><option value="34">Level 3・4（発展・入試接続）</option>' + [1, 2, 3, 4].map((n) => `<option value="${n}">Level ${n}${n === 4 ? '（入試接続）' : ''}</option>`).join('');
     } else if (state.kind === 'big') {
       fs.innerHTML = '<option value="">すべて</option><option value="物語">物語</option><option value="説明文">説明文</option>';
       const lv = [...new Set(D.bigsets.map((s) => s.level))];
@@ -144,9 +152,10 @@
   }
 
   function visible() {
-    const s = $('f-skill').value, l = $('f-level').value, q = $('f-q').value.trim();
-    return all[state.kind].filter(({ p }) => {
-      if (state.kind === 'skill') { if (s && p.skill !== s) return false; if (l && String(p.level) !== l) return false; }
+    const s = $('f-skill').value, l = $('f-level').value, q = $('f-q').value.trim(), st = $('f-stage').value;
+    return all[state.kind].filter(({ p, stages }) => {
+      if (st !== '' && !stages.includes(Number(st))) return false;
+      if (state.kind === 'skill') { if (s && p.skill !== s) return false; if (l && !l.split('').includes(String(p.level))) return false; }
       if (state.kind === 'big') { if (s && !p.genre.startsWith(s)) return false; if (l && p.level !== l) return false; }
       if (state.kind === 'kaizen') { if (l && p.level !== l) return false; }
       if (q) {
@@ -157,9 +166,10 @@
     });
   }
 
-  function itemHTML({ key, p }) {
+  function itemHTML({ key, p, stages }) {
     const on = state.chosen.has(key);
     let tags = '', head = '', pv = '';
+    const stTags = stages.map((n) => `<span class="tag st">ステージ${stageOf(n).label}</span>`).join('');
     if (state.kind === 'skill') {
       tags = `<span class="tag">${esc(p.skill)}</span><span class="tag">Level ${p.level}</span>`;
       head = esc(p.q);
@@ -173,7 +183,7 @@
       head = esc(p.title);
       pv = `<div class="pv">${esc(p.passage)}</div><div><b>設問</b> ${esc(p.question)}</div><div><b>不十分な答案</b> ${esc(p.wrong)}</div>`;
     }
-    return `<div class="item${on ? ' on' : ''}"><label class="row"><input type="checkbox" data-key="${key}"${on ? ' checked' : ''}><span class="qtext"><span class="meta">${tags}</span><br>${head}</span></label><details><summary>本文と設問を見る</summary>${pv}</details></div>`;
+    return `<div class="item${on ? ' on' : ''}"><label class="row"><input type="checkbox" data-key="${key}"${on ? ' checked' : ''}><span class="qtext"><span class="meta">${stTags}${tags}</span><br>${head}</span></label><details><summary>本文と設問を見る</summary>${pv}</details></div>`;
   }
 
   function renderList() {
@@ -202,6 +212,7 @@
     fillFilters(); renderList();
   }));
   ['f-skill', 'f-level'].forEach((id) => $(id).addEventListener('change', renderList));
+  $('f-stage').addEventListener('change', () => { fillFilters(); renderList(); showStageInfo(); });
   $('f-q').addEventListener('input', renderList);
   $('sel-all').addEventListener('click', () => { visible().forEach((x) => state.chosen.add(x.key)); renderList(); updateCount(); });
   $('sel-clear').addEventListener('click', () => { state.chosen.clear(); renderList(); updateCount(); });
@@ -227,8 +238,16 @@
     let no = 0;
     pick('skill').forEach((p) => { no++; blocks.push(...skillBlocks(p, no, guided)); kai.push(skillKai(p, no)); });
     pick('kaizen').forEach((x) => { no++; blocks.push(...kaizenBlocks(x, no, guided)); kai.push(kaizenKai(x, no)); });
+    // 選んだ問題がすべて同じステージなら、そのステージのルールを最初に載せる
+    const chosenItems = Yomi.practice.items.filter((x) => state.chosen.has(x.key));
+    const common = Yomi.stages.filter((st) => chosenItems.length && chosenItems.every((x) => x.stages.includes(st.no)));
+    const sel = $('f-stage').value;
+    const st = common.find((x) => String(x.no) === sel) || common[0];
+    const chip = st ? `ステージ${st.label}　練習` : '練習問題';
+    const rulesBlock = st && st.rules ? POINT(`ステージ${st.label}のルール　${esc(st.name)}`, st.rules.map((r) => `<p class="hang">・${esc(r)}</p>`).join('')) : '';
     if (blocks.length) {
-      prints.push({ id: 'bank', chip: '問題バンク', title, sub: guided ? 'まず自力で解く → 読み方の誘導で確かめる → もう一度解く' : 'まず自力で解きましょう', levelText: `${no}問`, blocks, kaisetsu: kai });
+      if (rulesBlock) blocks.unshift(rulesBlock);
+      prints.push({ id: 'bank', chip, title, sub: guided ? 'まず自力で解く → 読み方の誘導で確かめる → もう一度解く' : 'まず自力で解きましょう', levelText: `${no}問`, blocks, kaisetsu: kai });
     }
     pick('big').forEach((set) => prints.push(bigPrint(set, guided, title)));
 
@@ -254,6 +273,38 @@
   $('make').addEventListener('click', make);
   $('do-print').addEventListener('click', () => window.print());
 
-  fillFilters(); renderList(); updateCount();
+  function showStageInfo() {
+    const v = $('f-stage').value, box = $('stage-info');
+    if (v === '') { box.hidden = true; return; }
+    const st = stageOf(Number(v));
+    const prints = Yomi.byStage(st.no);
+    box.hidden = false;
+    box.innerHTML = `<b>ステージ${st.label}　${esc(st.name)}</b><p>${esc(st.desc)}</p>` +
+      `<p class="small">先に解き方を学ぶプリント：${prints.map((p) => `<a href="print.html?id=${p.id}">${p.id} ${esc(p.title)}</a>`).join('　')}</p>`;
+  }
+
+  // URL：?stage=4&level=12&kind=skill&mode=guided&auto=5
+  (function applyParams() {
+    const q = new URLSearchParams(location.search);
+    $('f-stage').innerHTML = '<option value="">すべてのステージ</option>' + Yomi.stages.map((s) => `<option value="${s.no}">ステージ${s.label}　${esc(s.name)}（${Yomi.practice.forStage(s.no).length}）</option>`).join('');
+    if (q.has('stage')) $('f-stage').value = q.get('stage');
+    const kind = q.get('kind');
+    if (kind && all[kind]) {
+      state.kind = kind;
+      document.querySelectorAll('.tabs button').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.kind === kind)));
+    }
+    fillFilters();
+    if (q.has('level')) $('f-level').value = q.get('level');
+    if (q.get('mode') === 'guided') document.querySelector('input[name="mode"][value="guided"]').checked = true;
+    const st = q.has('stage') ? stageOf(Number(q.get('stage'))) : null;
+    if (st) $('p-title').value = `${st.name}の練習`;
+    renderList(); updateCount(); showStageInfo();
+    const n = Number(q.get('auto'));
+    if (n > 0) {
+      $('rand-n').value = String(n);
+      $('sel-rand').click();
+      make();
+    }
+  })();
   Yomi.bankUI = { make, state, all };
 })();

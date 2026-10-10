@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>問題バンク｜読解ステップ</title>
+<title>練習問題｜読解ステップ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDMincho&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
@@ -40,6 +40,11 @@
   .ui .item details { padding: 0 10px 8px 38px; font-size: 13px; }
   .ui .item summary { cursor: pointer; color: var(--ui-accent); }
   .ui .item .pv { white-space: pre-wrap; background: var(--ui-bg); padding: 8px; border-radius: 4px; margin: 6px 0; max-height: 260px; overflow: auto; }
+  .ui .stage-row select { font-size: 15px; font-weight: 700; }
+  .ui .stage-info { background: var(--ui-bg); border: 1px solid var(--ui-line); border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; font-size: 13px; }
+  .ui .stage-info p { margin: 4px 0 0; }
+  .ui .stage-info a { color: var(--ui-accent); text-decoration: none; white-space: nowrap; }
+  .ui .tag.st { background: var(--ui-ink); color: #fff; }
   .ui .tag { display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 4px; background: #eef1f4; margin-right: 4px; }
   .ui .side h2 { font-size: 15px; margin: 0 0 8px; }
   .ui .side .count { font-size: 26px; font-weight: 700; }
@@ -57,12 +62,16 @@
 <body class="bank">
 <div class="ui">
   <header><div class="in">
-    <a href="index.html">← プリント一覧へ</a>
-    <h1>問題バンク</h1>
-    <p>技能別の短い問題・長文大問・答案改善の問題から選んで、自分だけのプリントを作れます（「読解プリントメーカー v86」の問題を収録）。</p>
+    <a href="index.html">← ステージ一覧へ</a>
+    <h1>練習問題</h1>
+    <p>各ステージで解き方を学んだあとに、同じ技能の問題をくり返し練習するためのページです。ステージを選ぶと、そのステージの練習になる問題だけが出ます。</p>
   </div></header>
   <div class="wrap">
     <section class="panel">
+      <div class="filters stage-row">
+        <label>ステージ<select id="f-stage"></select></label>
+      </div>
+      <div class="stage-info" id="stage-info" hidden></div>
       <div class="tabs" role="group" aria-label="問題の種類">
         <button type="button" data-kind="skill" aria-pressed="true">技能別の問題</button>
         <button type="button" data-kind="big" aria-pressed="false">長文大問</button>
@@ -114,7 +123,17 @@
 
 <script src="assets/js/yomi.js"></script>
 <script src="data/stages.js"></script>
+<script src="data/stage0.js"></script>
+<script src="data/stage1.js"></script>
+<script src="data/stage2.js"></script>
+<script src="data/stage3.js"></script>
+<script src="data/stage4.js"></script>
+<script src="data/stage5.js"></script>
+<script src="data/stage6.js"></script>
+<script src="data/stage7.js"></script>
 <script src="data/bank.js"></script>
+<script src="data/bank-plus.js"></script>
+<script src="assets/js/practice.js"></script>
 <script src="assets/js/bank.js"></script>
 </body>
 </html>
