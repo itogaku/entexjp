@@ -17,7 +17,7 @@
   .stage-info { margin-top: 10px; font-size: 13px; color: var(--sub); }
   .stage-info p { margin: 0 0 6px; }
   .stage-info .learn-links { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
-  .stage-info .learn-links b { color: var(--learn); margin-right: 4px; }
+  .stage-info .learn-links b { color: var(--learn); margin-right: 4px; flex: none; white-space: nowrap; }
   .stage-info .learn-links a { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); text-decoration: none; white-space: nowrap; }
 
   .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 14px; align-items: start; }
@@ -68,7 +68,7 @@
   #mbar { display: none; }
   @media (max-width: 860px) {
     .layout { grid-template-columns: minmax(0, 1fr); }
-    .side { position: static; order: -1; }
+    .side { position: static; }
     .side .countbox { display: none; }
     .opt .btn.primary, .opt .btn.primary + .small { display: none; }
     .filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
@@ -79,7 +79,8 @@
       align-items: center; gap: 12px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
       background: var(--ink); color: #fff;
     }
-    #mbar .c { font-size: 14px; flex: 1; }
+    #mbar .c { font-size: 14px; flex: 1; white-space: nowrap; }
+    #mbar select { font-size: 13px; padding: 6px; }
     #mbar b { font-size: 20px; }
     #mbar .btn.primary { padding: 9px 16px; }
   }
@@ -89,6 +90,23 @@
   #out-bar .small { color: #c4ccd5; }
   #out-bar .warn { color: #ffb4b4; }
   #sheets:not(:empty) { background: #8a8f96; }
+
+  /* PC：1画面に収め、問題の一覧だけを中でスクロールする */
+  @media (min-width: 861px) {
+    .wrap { max-width: 1240px; padding: 12px 16px; height: calc(100vh - 44px); display: flex; flex-direction: column; }
+    .stagebar { flex: none; padding: 10px 14px; margin-bottom: 10px; }
+    .layout { flex: 1; min-height: 0; grid-template-rows: minmax(0, 1fr); align-items: stretch; }
+    .layout > .panel { height: 100%; display: flex; flex-direction: column; }
+    .list { flex: 1; min-height: 0; overflow-y: auto; padding-right: 4px; }
+    .side { position: static; height: 100%; overflow-y: auto; }
+  }
+  .stage-info p { display: none; }
+  #out-bar[hidden] { display: none; }
+  .stage-info .learn-links { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; }
+  .stage-info { margin-top: 8px; }
+  /* 作ったプリントの確認画面 */
+  body.previewing .ui-shell, body.previewing #mbar { display: none; }
+  #out-bar #back-pick { background: #fff; color: var(--ink); border-color: #fff; }
   @media print {
     .ui-shell, #out-bar, #mbar { display: none !important; }
     body.ui-page, #sheets:not(:empty) { background: none; }
@@ -97,11 +115,11 @@
 </head>
 <body class="ui-page bank">
 <div class="ui-shell">
-  <header class="site-head"><div class="in">
-    <a class="back" href="index.html">← ステージ一覧へ</a>
-    <h1>練習問題</h1>
-    <p>解き方を学んだあとに、同じ技能の問題をくり返し練習するページです。問題を選んで、プリントを作ります。</p>
-  </div></header>
+  <header class="topbar">
+    <a class="back" href="index.html">← ステージ一覧</a>
+    <span class="logo">練習問題</span>
+    <span class="crumb">問題を選んで、プリントを作ります</span>
+  </header>
   <div class="wrap">
     <div class="stagebar">
       <label>ステージ<select id="f-stage"></select></label>
@@ -146,14 +164,15 @@
             <label><input type="checkbox" id="o-k" checked> 解説</label>
           </div>
           <button type="button" class="btn primary" id="make">プリントを作る</button>
-          <div class="small">作ったプリントは、このページの下に表示されます。</div>
+          <div class="small">作ったプリントを確かめてから印刷できます。</div>
         </div>
       </aside>
     </div>
   </div>
 </div>
-<div id="mbar"><span class="c"><b id="mcount">0</b> 問を選択中</span><button type="button" class="btn primary" id="mmake">プリントを作る</button></div>
+<div id="mbar"><span class="c"><b id="mcount">0</b> 問</span><select id="mmode" aria-label="プリントの形"><option value="self">自力で解く</option><option value="guided">自力→誘導→再挑戦</option></select><button type="button" class="btn primary" id="mmake">プリントを作る</button></div>
 <div id="out-bar" hidden>
+  <button type="button" class="btn" id="back-pick">← 問題選びにもどる</button>
   <span id="out-info"></span>
   <button type="button" class="btn" id="do-print">印刷する</button>
   <span class="small">A4・横向き／余白なし／倍率100％／背景のグラフィックをオン</span>

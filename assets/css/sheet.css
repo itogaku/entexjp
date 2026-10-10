@@ -25,15 +25,15 @@ body {
 /* ---------- 画面用ツールバー ---------- */
 .toolbar {
   position: sticky; top: 0; z-index: 10;
-  display: flex; flex-direction: column; gap: 6px;
-  padding: 10px 16px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  padding: 8px 16px;
   background: #1f2328; color: #fff;
   font-family: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", sans-serif;
   font-size: 14px;
 }
 .toolbar .tb-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
 .toolbar a { color: #a9cbff; text-decoration: none; }
-.toolbar .title { font-weight: bold; font-size: 15px; margin-right: auto; }
+.toolbar .title { font-weight: bold; font-size: 15px; margin-right: auto; min-width: 0; }
 .toolbar .tb-prac { padding: 4px 12px; border-radius: 999px; background: #1a7f5a; color: #fff; font-weight: bold; font-size: 13px; }
 .toolbar .tb-group { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: #33383e; }
 .toolbar .tb-group label { padding: 4px 10px; border-radius: 6px; }
@@ -42,10 +42,10 @@ body {
 .toolbar input { accent-color: #2f81f7; }
 .toolbar button {
   font: inherit; font-weight: bold;
-  padding: 6px 22px; border: 0; border-radius: 6px; margin-left: auto;
+  padding: 6px 22px; border: 0; border-radius: 6px;
   background: #2f81f7; color: #fff; cursor: pointer;
 }
-.toolbar .warn { color: #ffb4b4; font-weight: bold; }
+.toolbar .warn { color: #ffb4b4; font-weight: bold; width: 100%; }
 .toolbar .note { color: #aeb7c0; font-size: 12px; }
 .toolbar :focus-visible { outline: 2px solid #a9cbff; outline-offset: 2px; }
 
@@ -410,3 +410,4 @@ table.tbl td.tw .a { position: absolute; inset: 1mm; font-size: 9pt; line-height
 
 /* 画面の縮小表示（fit.js）は印刷では使わない */
 @media print { .sheets { zoom: 1 !important; } }
+.sheets:empty { padding: 0; }
