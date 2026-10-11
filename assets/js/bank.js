@@ -114,7 +114,7 @@
           const per = set.band === '34' ? 12 : set.band === '12' ? 20 : 15;
           area = G(n, a, Math.min(n, per));
         }
-        return `<div class="kq"><span class="kq-no">（${KNO[i]}）</span>${R(q.q)}${guided && q.hint ? `<div class="khint">ヒント：${R(q.hint)}</div>` : ''}${area}</div>`;
+        return `<div class="kq"><span class="kq-no">（${KNO[i]}）</span>${slot(R(q.q))}${guided && q.hint ? `<div class="khint">ヒント：${slot(R(q.hint))}</div>` : ''}${area}</div>`;
       }).join('');
     return [Q(kanji(no), `${R(set.title)}　<span class="small">${esc(set.genre)}・${STARS[set.level] || ''}</span>`, body)];
   }
