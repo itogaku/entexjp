@@ -39,6 +39,8 @@
 <script src="data/bank.js"></script>
 <script src="data/bank-plus.js"></script>
 <script src="data/kids.js"></script>
+<script src="data/bank-kids.js"></script>
+<script src="data/write.js"></script>
 <script src="assets/js/practice.js"></script>
 <script>
   const stages = Yomi.stages, D = Yomi.bank, P = Yomi.practice;
@@ -63,6 +65,29 @@
     const i = panes.findIndex((p) => p.key === key), prev = panes[i - 1], next = panes[i + 1];
     return `<div class="pane-h"><div class="badge ${cls}">${badge}</div><div><h2>${title}</h2><p>${desc}</p></div>
       <div class="nav">${prev ? `<button class="btn" data-pane="${prev.key}">← ${prev.n}</button>` : ''}${next ? `<button class="btn" data-pane="${next.key}">${next.n} →</button>` : ''}</div></div>`;
+  }
+
+  /** 書く練習の一覧（band：'34'・'56'・'chu'） */
+  const W = Yomi.write;
+  function writeCard(band) {
+    const mine = W.sets.filter((x) => x.band === band);
+    if (!mine.length) return '';
+    const u = (extra) => `bank.html?kind=write&band=${band}${extra}`;
+    return `<section class="grp wgrp"><h3><span class="k write">書</span>書く練習　<a class="more" href="${u('')}">選ぶ →</a></h3><ul>${W.skills.filter((s) => mine.some((x) => x.skill === s.name)).map((s) => `
+        <li><a href="${u('&skill=' + enc(s.name))}" title="${esc(s.desc)}"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></a><span class="cnt">${mine.filter((x) => x.skill === s.name).length}題</span>
+          <a class="mini" href="${u('&skill=' + enc(s.name) + '&mode=guided&auto=2')}">２題作る</a></li>`).join('')}</ul></section>`;
+  }
+  /** 技能別の練習（中学入門の小学生版） */
+  function skillkCard(band) {
+    const mine = (Yomi.bankKids || []).filter((x) => x.band === band);
+    if (!mine.length) return '';
+    const u = (extra) => `bank.html?kind=skillk&band=${band}${extra}`;
+    const by = {};
+    mine.forEach((x) => { by[x.skill] = (by[x.skill] || 0) + 1; });
+    return `<section class="grp"><h3><span class="k kid">技</span>技能別の練習（中学「入門」の小学生版）　<a class="more" href="${u('')}">選ぶ →</a></h3>
+      <p class="small">主語・指示語・接続語・理由・気持ち・要約など、技能ごとの短い問題です（${mine.length}問）。</p>
+      <div class="acts row"><a class="act" href="${u('&mode=guided&auto=5')}">おまかせ５問<small>誘導つき</small></a><a class="act sub" href="${u('&auto=5')}">おまかせ５問<small>自分で</small></a></div>
+      <p class="small">${Object.entries(by).map(([k, n]) => `<a href="${u('&skill=' + enc(k))}">${esc(k)}</a>（${n}）`).join('　')}</p></section>`;
   }
 
   function kidsHTML(b) {
@@ -91,6 +116,7 @@
         <section class="grp"><h3>${{ '12': 'お話を読む', '34': 'お話を読む', '56': '物語と理由' }[b.key]}</h3><ul>${b.skills.slice(0, half).map(li).join('')}</ul></section>
         <section class="grp"><h3>${{ '12': '気持ち・わけ・ことば', '34': 'わけ・ことば・説明文', '56': '説明文とことば' }[b.key]}</h3><ul>${b.skills.slice(half).map(li).join('')}</ul></section>
       </div>
+      ${b.key !== '12' ? `<div class="groups more2">${skillkCard(b.key)}${writeCard(b.key)}</div>` : ''}
       <p class="kidnote">${nextB ? `次は「${esc(nextB.title)}」へ。` : '次は中学生向けの「入門　文章に慣れる」へ。'}</p></div>`;
   }
 
@@ -107,7 +133,8 @@
         <a class="act sub" href="bank.html?kind=kaizen">答案を直す練習<small>${D.kaizen.length}問</small></a>
         <a class="act sub" href="bank.html">問題を見て選ぶ<small>→</small></a>
       </div>
-      <div class="groups">${groups}</div>`;
+      <div class="groups">${groups}</div>
+      <div class="groups more2">${writeCard('chu')}</div>`;
   }
 
   function stageHTML(s) {
