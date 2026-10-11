@@ -6,6 +6,7 @@
   const D = Yomi.bank;
 
   const items = [
+    ...(Yomi.kids ? Yomi.kids.sets : []).map((p) => ({ kind: 'kids', key: 'kids:' + p.id, p })),
     ...D.problems.map((p) => ({ kind: 'skill', key: 'skill:' + p.id, p })),
     ...D.kaizen.map((p) => ({ kind: 'kaizen', key: 'kaizen:' + p.id, p })),
     ...D.bigsets.map((p) => ({ kind: 'big', key: 'big:' + p.id, p })),

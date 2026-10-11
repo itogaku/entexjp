@@ -26,6 +26,14 @@
 
   const esc = (s) => String(s);
 
+  /** ふりがな：「山《やま》」→ ルビ。漢字の続きに《よみ》をつける書き方 */
+  //   「二十字｜以内《いない》」のように｜で始まりを示すと、｜から《までにふりがなをつける
+  Yomi.ruby = (text) => String(text)
+    .replace(/｜([^｜《]+)《([^》]+)》/g, '<ruby>$1<rt>$2</rt></ruby>')
+    .replace(/([\u4e00-\u9fff々〆]+)《([^》]+)》/g, '<ruby>$1<rt>$2</rt></ruby>');
+  /** ふりがなの書き方をはずした文字列 */
+  Yomi.plain = (text) => String(text).replace(/《[^》]*》/g, '').replace(/｜/g, '');
+
   /* ---------------- 部品 ---------------- */
   const h = (Yomi.h = {
     /** （　　）型の書き込み欄。len＝文字数の目安（em） */
@@ -170,7 +178,7 @@
 
   function newSheet(root, p, kind, cont) {
     const sheet = document.createElement('section');
-    sheet.className = 'sheet';
+    sheet.className = 'sheet' + (p.kid ? ' kid b' + p.kid : '');
     sheet.innerHTML = `<div class="sheet-body">${head(p, kind, cont)}</div><div class="sheet-foot"></div>`;
     root.appendChild(sheet);
     return sheet;

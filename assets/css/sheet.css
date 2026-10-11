@@ -298,7 +298,7 @@ body {
   font-size: 10.5pt; line-height: 7mm; text-align: center;
   vertical-align: top;
 }
-.genko .cell + .cell { border-block-start: 1px dotted #9a9a9a; }
+.genko .cell + .cell { border-inline-start: 1px dotted #9a9a9a; }
 .genko .cell .a { font-family: "BIZ UDMincho", serif; }
 .genko-cap { font-family: "BIZ UDPGothic", sans-serif; font-size: 8pt; color: var(--sub); }
 
@@ -411,3 +411,29 @@ table.tbl td.tw .a { position: absolute; inset: 1mm; font-size: 9pt; line-height
 /* 画面の縮小表示（fit.js）は印刷では使わない */
 @media print { .sheets { zoom: 1 !important; } }
 .sheets:empty { padding: 0; }
+
+/* ---------- 小学校低学年（はじめての読みとり） ---------- */
+.sheet.kid .sheet-body { font-size: 15pt; line-height: 2.25; font-family: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", sans-serif; }
+.sheet.kid .head { font-size: 10.5pt; line-height: 1.6; }
+.sheet.kid .passage { font-size: 15pt; line-height: 2.4; }
+.sheet.kid .passage p { line-height: 2.4; }
+.sheet.kid ruby rt { font-size: 0.48em; letter-spacing: 0; }
+.sheet.kid .choices > div { margin-block-end: 2mm; }
+.sheet.kid .kq { margin-block-start: 3mm; }
+.sheet.kid .kq-no { display: inline-block; font-weight: bold; margin-block-end: 1mm; }
+.sheet.kid .khint { font-size: 11pt; color: var(--sub); }
+.sheet.kid .genko .gc { block-size: 12mm; }
+.sheet.kid .genko .cell { inline-size: 12mm; block-size: 12mm; line-height: 12mm; font-size: 15pt; }
+.sheet.kid .genko .cell + .cell { border-inline-start: 1px solid #9a9a9a; }
+.sheet.kid .kai { font-size: 11pt; }
+ruby rt { font-size: 0.5em; }
+/* 小３・４、小５・６は少し小さく */
+.sheet.kid.b34 .sheet-body, .sheet.kid.b34 .passage { font-size: 13pt; line-height: 2.1; }
+.sheet.kid.b34 .passage p { line-height: 2.2; }
+.sheet.kid.b34 .genko .gc { block-size: 10mm; }
+.sheet.kid.b34 .genko .cell { inline-size: 10mm; block-size: 10mm; line-height: 10mm; font-size: 13pt; }
+.sheet.kid.b56 .sheet-body, .sheet.kid.b56 .passage { font-size: 11.5pt; line-height: 1.95; font-family: "BIZ UDMincho", "Hiragino Mincho ProN", serif; }
+.sheet.kid.b56 .passage p { line-height: 2.05; }
+.sheet.kid.b56 .genko .gc { block-size: 8.5mm; }
+.sheet.kid.b56 .genko .cell { inline-size: 8.5mm; block-size: 8.5mm; line-height: 8.5mm; font-size: 11.5pt; }
+.sheet.kid.b56 .khint, .sheet.kid.b34 .khint { font-size: 10pt; }
