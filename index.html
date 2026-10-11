@@ -88,8 +88,8 @@
         <a class="act sub" href="${u('')}">問題を見て選ぶ<small>→</small></a>
       </div>
       <div class="groups">
-        <section class="grp"><h3>${b.key === '56' ? '物語を読む' : 'お話を読む'}</h3><ul>${b.skills.slice(0, half).map(li).join('')}</ul></section>
-        <section class="grp"><h3>${b.key === '12' ? '気持ち・わけ・ことば' : 'わけ・ことば・説明文'}</h3><ul>${b.skills.slice(half).map(li).join('')}</ul></section>
+        <section class="grp"><h3>${{ '12': 'お話を読む', '34': 'お話を読む', '56': '物語と理由' }[b.key]}</h3><ul>${b.skills.slice(0, half).map(li).join('')}</ul></section>
+        <section class="grp"><h3>${{ '12': '気持ち・わけ・ことば', '34': 'わけ・ことば・説明文', '56': '説明文とことば' }[b.key]}</h3><ul>${b.skills.slice(half).map(li).join('')}</ul></section>
       </div>
       <p class="kidnote">${nextB ? `次は「${esc(nextB.title)}」へ。` : '次は中学生向けの「入門　文章に慣れる」へ。'}</p></div>`;
   }

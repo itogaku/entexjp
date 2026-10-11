@@ -104,7 +104,7 @@
       set.qs.map((q, i) => {
         let area;
         if (q.choices && q.choices.length) {
-          area = CH(q.choices.map(R), q.answer);
+          area = CH(q.choices.map((c) => R(String(c).replace(/^[ア-オ][　 ]+/, ''))), q.answer);
         } else {
           const a = Yomi.plain(q.answer).replace(/[\s　]/g, '');
           const lim = charLimit(Yomi.plain(q.q));
