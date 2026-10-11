@@ -107,8 +107,10 @@
           area = CH(q.choices.map(R), q.answer);
         } else {
           const a = Yomi.plain(q.answer).replace(/[\s　]/g, '');
-          const n = Math.min(20, Math.max(4, Array.from(a).length + 2));
-          area = G(n, a, n);
+          const lim = charLimit(Yomi.plain(q.q));
+          const n = lim || Math.min(20, Math.max(4, Array.from(a).length + 2));
+          const per = set.band === '56' ? 15 : set.band === '34' ? 12 : 20;
+          area = G(n, a, Math.min(n, per));
         }
         return `<div class="kq"><span class="kq-no">（${KNO[i]}）</span>${R(q.q)}${guided && q.hint ? `<div class="khint">ヒント：${R(q.hint)}</div>` : ''}${area}</div>`;
       }).join('');
@@ -161,8 +163,9 @@
   function fillFilters() {
     const fs = $('f-skill'), fl = $('f-level');
     if (state.kind === 'kids') {
-      fs.innerHTML = '<option value="">すべて</option>' + Yomi.kids.skills.map((x) => `<option value="${esc(x.name)}">${esc(x.name)}（${x.desc}）</option>`).join('');
-      fl.innerHTML = '<option value="">すべて</option>' + [1, 2, 3].map((n) => `<option value="${n}">${STARS[n]}${n === 1 ? '（一年生・分かち書き）' : n === 2 ? '（一〜二年生）' : '（二年生）'}</option>`).join('');
+      fs.innerHTML = '<option value="">すべての学年</option>' + Yomi.kids.bands.map((b) =>
+        `<optgroup label="${esc(b.short)}"><option value="${b.key}:">${esc(b.short)}　すべて</option>${b.skills.map((x) => `<option value="${b.key}:${esc(x.name)}">${esc(b.short)}　${esc(x.name)}（${esc(x.desc)}）</option>`).join('')}</optgroup>`).join('');
+      fl.innerHTML = '<option value="">すべて</option>' + [1, 2, 3].map((n) => `<option value="${n}">${STARS[n]}${['', '（各学年の前の学年向け）', '（上の学年向け）', '（上の学年・長め）'][n]}</option>`).join('');
     } else if (state.kind === 'skill') {
       fs.innerHTML = '<option value="">すべての技能</option>' + Yomi.practice.skillGroups().map((g) =>
         `<optgroup label="${esc(g.name)}">${g.skills.map((x) => `<option value="${esc(x.name)}">${esc(x.name)}（${x.count}）</option>`).join('')}</optgroup>`).join('');
@@ -175,7 +178,7 @@
       fs.innerHTML = '<option value="">すべて</option>';
       fl.innerHTML = '<option value="">すべて</option><option value="基礎">基礎</option><option value="発展">発展</option>';
     }
-    $('f-skill-wrap').firstChild.textContent = state.kind === 'big' ? 'ジャンル' : '技能';
+    $('f-skill-wrap').firstChild.textContent = state.kind === 'big' ? 'ジャンル' : state.kind === 'kids' ? '学年・技能' : '技能';
     $('f-level-wrap').firstChild.textContent = state.kind === 'skill' || state.kind === 'kids' ? 'レベル' : '難しさ';
     $('f-skill-wrap').hidden = state.kind === 'kaizen';
     const info = KINDS[state.kind];
@@ -183,7 +186,7 @@
     document.body.dataset.kind = state.kind;
   }
   const KINDS = {
-    kids: { chip: 'はじめての読みとり', title: 'はじめての読みとり', desc: '小学一・二年生向け。短いお話や説明の文を読み、○をつけたり書きぬいたりします。漢字にはすべてふりがな、大きな文字で印刷します。' },
+    kids: { chip: '小学生の読みとり', title: '読みとり', desc: '小学生向け（一・二年／三・四年／五・六年）。漢字はその学年までに習う字だけを使い、新しく習う字にはふりがなをつけます。' },
     skill: { chip: '入門　文章に慣れる', title: '文章に慣れる練習', desc: 'やさしく短い文章で、技能ごとに読む練習をします。読むのに慣れていない人や、本編（ステージ０〜７）に入る前の準備に。' },
     kaizen: { chip: '入門　答案を直す', title: '答案を直す練習', desc: '不十分な答案のどこが足りないかを見つけて、書き直す練習です。' },
     big: { chip: '入試演習', title: '入試演習', desc: '入試と同じ形式の長文の大問です。各問に配点（合計100点）・採点基準・解説がついています。' },
@@ -192,7 +195,7 @@
   function visible() {
     const s = $('f-skill').value, l = $('f-level').value, q = $('f-q').value.trim();
     return all[state.kind].filter(({ p }) => {
-      if (state.kind === 'kids') { if (s && p.skill !== s) return false; if (l && !l.split('').includes(String(p.level))) return false; }
+      if (state.kind === 'kids') { const [bk, sk] = s ? s.split(':') : ['', '']; if (bk && p.band !== bk) return false; if (sk && p.skill !== sk) return false; if (l && !l.split('').includes(String(p.level))) return false; }
       if (state.kind === 'skill') { if (s && p.skill !== s) return false; if (l && !l.split('').includes(String(p.level))) return false; }
       if (state.kind === 'big') { if (s && !p.genre.startsWith(s)) return false; if (l && p.level !== l) return false; }
       if (state.kind === 'kaizen') { if (l && p.level !== l) return false; }
@@ -209,7 +212,8 @@
     let tags = '', head = '', pv = '';
     const stTags = '';
     if (state.kind === 'kids') {
-      tags = `<span class="tag st">${esc(p.skill)}</span><span class="tag">${STARS[p.level] || ''}</span><span class="tag">${esc(p.genre)}</span>`;
+      const bd = Yomi.kids.bands.find((b) => b.key === p.band);
+      tags = `<span class="tag st">${esc(bd ? bd.short : '')}</span><span class="tag">${esc(p.skill)}</span><span class="tag">${STARS[p.level] || ''}</span><span class="tag">${esc(p.genre)}</span>`;
       head = R(p.title);
       pv = `<div class="pv">${R(p.passage)}</div><ol>${p.qs.map((q) => `<li>${R(q.q)}　<b>答え</b> ${R(q.answer)}</li>`).join('')}</ol>`;
     } else if (state.kind === 'skill') {
@@ -294,9 +298,15 @@
     }
     pick('big').forEach((set) => prints.push(bigPrint(set, guided, title)));
     // 低学年は大きな文字の別プリントにする
-    const kb = [], kk = [];
-    pick('kids').forEach((set, i) => { kb.push(...kidsBlocks(set, i + 1, guided)); kk.push(kidsKai(set, i + 1)); });
-    if (kb.length) prints.unshift({ id: 'kids', kid: true, chip: KINDS.kids.chip, title, sub: guided ? 'ヒントつき' : 'よく よんで こたえよう', levelText: `${kb.length}だい`, blocks: kb, kaisetsu: kk });
+    // 学年のまとまりごとに別のプリント（文字の大きさがちがう）
+    [...Yomi.kids.bands].reverse().forEach((b) => {
+      const sets = pick('kids').filter((x) => x.band === b.key);
+      if (!sets.length) return;
+      const kb = [], kk = [];
+      sets.forEach((set, i) => { kb.push(...kidsBlocks(set, i + 1, guided)); kk.push(kidsKai(set, i + 1)); });
+      const low = b.key === '12';
+      prints.unshift({ id: 'kids' + b.key, kid: b.key, chip: b.short, title: title === '読みとり' ? esc(b.title) : title, sub: guided ? (low ? 'ヒントつき' : 'ヒントつき・よく読んで答えよう') : (low ? 'よく よんで こたえよう' : 'よく読んで答えよう'), levelText: `${kb.length}${low ? 'だい' : '題'}`, blocks: kb, kaisetsu: kk });
+    });
 
     if (!prints.length) {
       const btns = [$('make'), document.getElementById('mmake')].filter(Boolean);
@@ -344,10 +354,11 @@
       document.querySelectorAll('.tabs button').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.kind === kind)));
     }
     fillFilters();
-    if (q.has('skill')) $('f-skill').value = q.get('skill');
+    if (state.kind === 'kids' && q.has('band')) $('f-skill').value = `${q.get('band')}:${q.get('skill') || ''}`;
+    else if (q.has('skill')) $('f-skill').value = q.get('skill');
     if (q.has('level')) $('f-level').value = q.get('level');
     if (q.get('mode') === 'guided') document.querySelector('input[name="mode"][value="guided"]').checked = true;
-    $('p-title').value = q.has('skill') && state.kind === 'skill' ? `${q.get('skill')}の練習` : KINDS[state.kind].title;
+    $('p-title').value = state.kind === 'kids' && q.has('band') ? (Yomi.kids.bands.find((b) => b.key === q.get('band')) || {}).title || '読みとり' : q.has('skill') && state.kind === 'skill' ? `${q.get('skill')}の練習` : KINDS[state.kind].title;
     renderList(); updateCount();
     const picks = (q.get('pick') || '').split(',').filter(Boolean);
     picks.forEach((id) => { const k = keyOf(state.kind, id); if (all[state.kind].some((x) => x.key === k)) state.chosen.add(k); });

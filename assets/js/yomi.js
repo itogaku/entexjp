@@ -175,7 +175,7 @@
 
   function newSheet(root, p, kind, cont) {
     const sheet = document.createElement('section');
-    sheet.className = 'sheet' + (p.kid ? ' kid' : '');
+    sheet.className = 'sheet' + (p.kid ? ' kid b' + p.kid : '');
     sheet.innerHTML = `<div class="sheet-body">${head(p, kind, cont)}</div><div class="sheet-foot"></div>`;
     root.appendChild(sheet);
     return sheet;

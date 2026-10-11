@@ -18,7 +18,7 @@
 <body class="ui-page">
 <header class="topbar">
   <a class="logo" href="index.html">読解ステップ</a>
-  <span class="crumb"><span class="k kid">小</span>はじめての読みとり → <span class="k intro">入</span>文章に慣れる → <span class="k learn">本</span>解き方を学ぶ（ステージ０〜７） → <span class="k exam">試</span>入試演習</span>
+  <span class="crumb"><span class="k kid">小</span>小学生の読みとり → <span class="k intro">入</span>文章に慣れる → <span class="k learn">本</span>解き方を学ぶ（ステージ０〜７） → <span class="k exam">試</span>入試演習</span>
   <span class="tip">印刷：A4横・余白なし・倍率100％・背景のグラフィックをオン</span>
 </header>
 <div class="app">
@@ -50,13 +50,13 @@
   /* 左の一覧：入門 → ステージ０〜７ → 入試演習 */
   const K = Yomi.kids;
   const panes = [
-    { key: 'kids', n: '小', cls: 'kid', name: 'はじめての読みとり', ct: `小１・２・${K.sets.length}題` },
+    ...K.bands.map((b) => ({ key: 'kids' + b.key, n: b.badge, cls: 'kid', name: b.title, ct: `${b.name}・${K.sets.filter((x) => x.band === b.key).length}題`, b })),
     { key: 'intro', n: '入', cls: 'intro', name: '文章に慣れる', ct: `入門・${D.problems.length}問` },
     ...stages.map((s) => ({ key: 'stage' + s.no, n: s.no, name: s.name, ct: `解き方 ${Yomi.byStage(s.no).length}枚`, s })),
     { key: 'exam', n: '試', cls: 'exam', name: '入試演習', ct: `長文 ${D.bigsets.length}題` },
   ];
   document.getElementById('rail').innerHTML = panes.map((p, i) =>
-    `${i === 0 ? '<li class="sep">小学校低学年</li>' : ''}${i === 1 ? '<li class="sep">入門</li>' : ''}${i === 2 ? '<li class="sep">本編　解き方を学ぶ</li>' : ''}${i === panes.length - 1 ? '<li class="sep">仕上げ</li>' : ''}` +
+    `${i === 0 ? '<li class="sep">小学生</li>' : ''}${p.key === 'intro' ? '<li class="sep">中学生　入門</li>' : ''}${p.key === 'stage0' ? '<li class="sep">本編　解き方を学ぶ</li>' : ''}${i === panes.length - 1 ? '<li class="sep">仕上げ</li>' : ''}` +
     `<li class="${p.cls || ''}"><button type="button" data-pane="${p.key}" title="${esc(p.name)}"><span class="n">${p.n}</span><span class="nm">${esc(p.name)}</span><span class="ct">${p.ct}</span></button></li>`).join('');
 
   function head(badge, cls, title, desc, key) {
@@ -65,25 +65,33 @@
       <div class="nav">${prev ? `<button class="btn" data-pane="${prev.key}">← ${prev.n}</button>` : ''}${next ? `<button class="btn" data-pane="${next.key}">${next.n} →</button>` : ''}</div></div>`;
   }
 
-  function kidsHTML() {
-    const cnt = (sk) => K.sets.filter((x) => x.skill === sk).length;
-    const rows = K.skills.map((s) => `
-        <li><a href="bank.html?kind=kids&skill=${enc(s.name)}" title="${esc(s.desc)}"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></a><span class="cnt">${cnt(s.name)}題</span>
-          <a class="mini" href="bank.html?kind=kids&skill=${enc(s.name)}&mode=guided&auto=3">３題作る</a></li>`).join('');
-    const half = Math.ceil(K.skills.length / 2);
-    return `<div class="kidpane">` + head('小', 'kid', 'はじめての読みとり（小学一・二年生）',
-      '短いお話や説明の文を読んで、○をつけたり、ことばを書きぬいたりします。漢字にはすべてふりがなをつけ、大きな文字で印刷します。いちばんやさしい★は、ことばの間をあける「分かち書き」です。', 'kids') + `
+  function kidsHTML(b) {
+    const mine = K.sets.filter((x) => x.band === b.key);
+    const cnt = (sk) => mine.filter((x) => x.skill === sk).length;
+    const u = (extra) => `bank.html?kind=kids&band=${b.key}${extra}`;
+    const li = (s) => `
+        <li><a href="${u('&skill=' + enc(s.name))}" title="${esc(s.desc)}"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></a><span class="cnt">${cnt(s.name)}題</span>
+          <a class="mini" href="${u('&skill=' + enc(s.name) + '&mode=guided&auto=3')}">３題作る</a></li>`;
+    const half = Math.ceil(b.skills.length / 2);
+    const g = { '12': ['一年生', '一〜二年生', '二年生'], '34': ['三年生', '四年生', '四年生・長め'], '56': ['五年生', '六年生', '六年生・長め'] }[b.key];
+    const desc = {
+      '12': '短いお話や説明の文を読んで、○をつけたり、ことばを書きぬいたりします。漢字はその学年までに習う字だけで、すべてにふりがなをつけ、大きな文字で印刷します。★は、ことばの間をあける「分かち書き」です。',
+      '34': '物語と説明文を読んで、選んだり、書きぬいたり、短く書いたりします。★は三年生、★★・★★★は四年生向けで、その学年までに習う漢字だけを使い、その学年で習う漢字にはふりがなをつけます。',
+      '56': '物語と説明文を読んで、選ぶ・ぬき出す・字数を決めて書く問題に答えます。★は五年生、★★・★★★は六年生向けで、その学年までに習う漢字だけを使い、その学年で習う漢字にはふりがなをつけます。中学の勉強への橋わたしです。',
+    }[b.key];
+    const i = K.bands.indexOf(b), nextB = K.bands[i + 1];
+    return `<div class="kidpane">` + head(b.badge, 'kid', `${esc(b.title)}（${esc(b.name)}生）`, desc, 'kids' + b.key) + `
       <div class="acts row">
-        <a class="act" href="bank.html?kind=kids&level=1&mode=guided&auto=3">★を３題<small>一年生・ヒントつき</small></a>
-        <a class="act" href="bank.html?kind=kids&level=2&mode=guided&auto=3">★★を３題<small>一〜二年生</small></a>
-        <a class="act" href="bank.html?kind=kids&level=3&auto=3">★★★を３題<small>二年生</small></a>
-        <a class="act sub" href="bank.html?kind=kids">問題を見て選ぶ<small>→</small></a>
+        <a class="act" href="${u('&level=1&mode=guided&auto=3')}">★を３題<small>${g[0]}・ヒントつき</small></a>
+        <a class="act" href="${u('&level=2&mode=guided&auto=3')}">★★を３題<small>${g[1]}</small></a>
+        <a class="act" href="${u('&level=3&auto=3')}">★★★を３題<small>${g[2]}</small></a>
+        <a class="act sub" href="${u('')}">問題を見て選ぶ<small>→</small></a>
       </div>
       <div class="groups">
-        <section class="grp"><h3>お話を読む</h3><ul>${rows.split('</li>').slice(0, half).join('</li>')}</li></ul></section>
-        <section class="grp"><h3>気持ち・わけ・ことば</h3><ul>${rows.split('</li>').slice(half, K.skills.length).join('</li>')}</li></ul></section>
+        <section class="grp"><h3>${b.key === '56' ? '物語を読む' : 'お話を読む'}</h3><ul>${b.skills.slice(0, half).map(li).join('')}</ul></section>
+        <section class="grp"><h3>${b.key === '12' ? '気持ち・わけ・ことば' : 'わけ・ことば・説明文'}</h3><ul>${b.skills.slice(half).map(li).join('')}</ul></section>
       </div>
-      <p class="kidnote">読めるようになったら、次は「入門　文章に慣れる」へ。</p></div>`;
+      <p class="kidnote">${nextB ? `次は「${esc(nextB.title)}」へ。` : '次は中学生向けの「入門　文章に慣れる」へ。'}</p></div>`;
   }
 
   function introHTML() {
@@ -92,7 +100,7 @@
         <li><a href="bank.html?skill=${enc(s.name)}" title="${esc(s.desc)}"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></a><span class="cnt">${s.count}問</span>
           <a class="mini" href="bank.html?skill=${enc(s.name)}&mode=guided&auto=4" title="${esc(s.name)}を４問、誘導つきで作る">４問作る</a></li>`).join('')}</ul></section>`).join('');
     return head('入', 'intro', '入門　文章に慣れる',
-      '小学校高学年〜中学１年くらいのやさしく短い文章で、読むことに慣れる練習です。本編（ステージ０〜７）に入る前の準備や、読むのが苦手な人のくり返し練習に使います。', 'intro') + `
+      '中学生向けの入門です。やさしく短い文章で、技能ごとに読むことに慣れる練習をします。本編（ステージ０〜７）に入る前の準備や、読むのが苦手な人のくり返し練習に使います。', 'intro') + `
       <div class="acts row">
         <a class="act" href="bank.html?level=12&mode=guided&auto=5">おまかせ５問<small>★１・２・誘導つき</small></a>
         <a class="act" href="bank.html?level=34&auto=5">おまかせ５問<small>★３・４・自力で</small></a>
@@ -138,7 +146,7 @@
 
   function show(key, push) {
     const p = panes.find((x) => x.key === key) || panes[0];
-    document.getElementById('pane').innerHTML = p.key === 'kids' ? kidsHTML() : p.key === 'intro' ? introHTML() : p.key === 'exam' ? examHTML() : stageHTML(p.s);
+    document.getElementById('pane').innerHTML = p.b ? kidsHTML(p.b) : p.key === 'intro' ? introHTML() : p.key === 'exam' ? examHTML() : stageHTML(p.s);
     document.querySelectorAll('#rail button').forEach((b) => b.setAttribute('aria-current', String(b.dataset.pane === p.key)));
     const cur = document.querySelector('#rail button[aria-current="true"]');
     if (cur && cur.scrollIntoView && window.innerWidth <= 760) cur.scrollIntoView({ inline: 'center', block: 'nearest' });
@@ -149,8 +157,9 @@
     const b = e.target.closest('button[data-pane]');
     if (b) { show(b.dataset.pane, true); window.scrollTo(0, 0); }
   });
-  const fromHash = /^#(kids|intro|exam|stage\d)$/.exec(location.hash);
-  show(fromHash ? fromHash[1] : store.get() || 'intro', false);
+  const fromHash = /^#(kids\d\d|kids|intro|exam|stage\d)$/.exec(location.hash);
+  const want = fromHash ? fromHash[1] : store.get() || 'intro';
+  show(want === 'kids' ? 'kids12' : want, false);
 </script>
 </body>
 </html>
