@@ -432,8 +432,9 @@ ruby rt { font-size: 0.5em; }
 .sheet.kid.b34 .passage p { line-height: 2.2; }
 .sheet.kid.b34 .genko .gc { block-size: 10mm; }
 .sheet.kid.b34 .genko .cell { inline-size: 10mm; block-size: 10mm; line-height: 10mm; font-size: 13pt; }
+.sheet.kid.bchu .sheet-body, .sheet.kid.bchu .passage,
 .sheet.kid.b56 .sheet-body, .sheet.kid.b56 .passage { font-size: 11.5pt; line-height: 1.95; font-family: "BIZ UDMincho", "Hiragino Mincho ProN", serif; }
-.sheet.kid.b56 .passage p { line-height: 2.05; }
-.sheet.kid.b56 .genko .gc { block-size: 8.5mm; }
-.sheet.kid.b56 .genko .cell { inline-size: 8.5mm; block-size: 8.5mm; line-height: 8.5mm; font-size: 11.5pt; }
+.sheet.kid.b56 .passage p, .sheet.kid.bchu .passage p { line-height: 2.05; }
+.sheet.kid.b56 .genko .gc, .sheet.kid.bchu .genko .gc { block-size: 8.5mm; }
+.sheet.kid.bchu .genko .cell, .sheet.kid.b56 .genko .cell { inline-size: 8.5mm; block-size: 8.5mm; line-height: 8.5mm; font-size: 11.5pt; }
 .sheet.kid.b56 .khint, .sheet.kid.b34 .khint { font-size: 10pt; }
