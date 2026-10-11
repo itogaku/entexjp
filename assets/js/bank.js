@@ -96,6 +96,29 @@
     return KAI(kanji(no), esc(x.answer), `<p>足りない点：${esc(x.cause)}</p>`, `${esc(x.title.replace(/^問\d+\s*/, ''))}`);
   }
 
+  /* ---------- 小学校低学年 ---------- */
+  const R = (t) => Yomi.ruby(esc(t));
+  const KNO = ['１', '２', '３', '４', '５'];
+  function kidsBlocks(set, no, guided) {
+    const body = PASS({ frame: true, paras: String(set.passage).split(/\n+/).filter(Boolean).map(R) }) +
+      set.qs.map((q, i) => {
+        let area;
+        if (q.choices && q.choices.length) {
+          area = CH(q.choices.map(R), q.answer);
+        } else {
+          const a = Yomi.plain(q.answer).replace(/[\s　]/g, '');
+          const n = Math.min(20, Math.max(4, Array.from(a).length + 2));
+          area = G(n, a, n);
+        }
+        return `<div class="kq"><span class="kq-no">（${KNO[i]}）</span>${R(q.q)}${guided && q.hint ? `<div class="khint">ヒント：${R(q.hint)}</div>` : ''}${area}</div>`;
+      }).join('');
+    return [Q(kanji(no), `${R(set.title)}　<span class="small">${esc(set.genre)}・${STARS[set.level] || ''}</span>`, body)];
+  }
+  function kidsKai(set, no) {
+    const ans = set.qs.map((q, i) => `（${KNO[i]}）${R(q.answer)}`).join('　');
+    return KAI(kanji(no), ans, `<p>${esc(set.note || '')}</p>`, `${esc(set.skill)}`);
+  }
+
   function bigPrint(set, guided, title) {
     let text = esc(set.passage);
     // 設問で「　」として引用された部分に傍線を引く
@@ -130,14 +153,17 @@
   /* ---------- 画面（選ぶ） ---------- */
   const state = { kind: 'skill', chosen: new Set() };
   const keyOf = (kind, id) => `${kind}:${id}`;
-  const all = { skill: [], big: [], kaizen: [] };
+  const all = { kids: [], skill: [], big: [], kaizen: [] };
   Yomi.practice.items.forEach((x) => all[x.kind].push(x));
   const skillOrder = new Map(D.skills.map((s, i) => [s.name, i]));
   all.skill.sort((a, b) => skillOrder.get(a.p.skill) - skillOrder.get(b.p.skill) || a.p.level - b.p.level);
 
   function fillFilters() {
     const fs = $('f-skill'), fl = $('f-level');
-    if (state.kind === 'skill') {
+    if (state.kind === 'kids') {
+      fs.innerHTML = '<option value="">すべて</option>' + Yomi.kids.skills.map((x) => `<option value="${esc(x.name)}">${esc(x.name)}（${x.desc}）</option>`).join('');
+      fl.innerHTML = '<option value="">すべて</option>' + [1, 2, 3].map((n) => `<option value="${n}">${STARS[n]}${n === 1 ? '（一年生・分かち書き）' : n === 2 ? '（一〜二年生）' : '（二年生）'}</option>`).join('');
+    } else if (state.kind === 'skill') {
       fs.innerHTML = '<option value="">すべての技能</option>' + Yomi.practice.skillGroups().map((g) =>
         `<optgroup label="${esc(g.name)}">${g.skills.map((x) => `<option value="${esc(x.name)}">${esc(x.name)}（${x.count}）</option>`).join('')}</optgroup>`).join('');
       fl.innerHTML = '<option value="">すべて</option><option value="12">★１・２（やさしい）</option><option value="34">★３・４（少し長い）</option>' + [1, 2, 3, 4].map((n) => `<option value="${n}">${STARS[n]}</option>`).join('');
@@ -150,13 +176,14 @@
       fl.innerHTML = '<option value="">すべて</option><option value="基礎">基礎</option><option value="発展">発展</option>';
     }
     $('f-skill-wrap').firstChild.textContent = state.kind === 'big' ? 'ジャンル' : '技能';
-    $('f-level-wrap').firstChild.textContent = state.kind === 'skill' ? 'レベル' : '難しさ';
+    $('f-level-wrap').firstChild.textContent = state.kind === 'skill' || state.kind === 'kids' ? 'レベル' : '難しさ';
     $('f-skill-wrap').hidden = state.kind === 'kaizen';
     const info = KINDS[state.kind];
     $('kind-desc').textContent = info.desc;
     document.body.dataset.kind = state.kind;
   }
   const KINDS = {
+    kids: { chip: 'はじめての読みとり', title: 'はじめての読みとり', desc: '小学一・二年生向け。短いお話や説明の文を読み、○をつけたり書きぬいたりします。漢字にはすべてふりがな、大きな文字で印刷します。' },
     skill: { chip: '入門　文章に慣れる', title: '文章に慣れる練習', desc: 'やさしく短い文章で、技能ごとに読む練習をします。読むのに慣れていない人や、本編（ステージ０〜７）に入る前の準備に。' },
     kaizen: { chip: '入門　答案を直す', title: '答案を直す練習', desc: '不十分な答案のどこが足りないかを見つけて、書き直す練習です。' },
     big: { chip: '入試演習', title: '入試演習', desc: '入試と同じ形式の長文の大問です。各問に配点（合計100点）・採点基準・解説がついています。' },
@@ -165,6 +192,7 @@
   function visible() {
     const s = $('f-skill').value, l = $('f-level').value, q = $('f-q').value.trim();
     return all[state.kind].filter(({ p }) => {
+      if (state.kind === 'kids') { if (s && p.skill !== s) return false; if (l && !l.split('').includes(String(p.level))) return false; }
       if (state.kind === 'skill') { if (s && p.skill !== s) return false; if (l && !l.split('').includes(String(p.level))) return false; }
       if (state.kind === 'big') { if (s && !p.genre.startsWith(s)) return false; if (l && p.level !== l) return false; }
       if (state.kind === 'kaizen') { if (l && p.level !== l) return false; }
@@ -180,7 +208,11 @@
     const on = state.chosen.has(key);
     let tags = '', head = '', pv = '';
     const stTags = '';
-    if (state.kind === 'skill') {
+    if (state.kind === 'kids') {
+      tags = `<span class="tag st">${esc(p.skill)}</span><span class="tag">${STARS[p.level] || ''}</span><span class="tag">${esc(p.genre)}</span>`;
+      head = R(p.title);
+      pv = `<div class="pv">${R(p.passage)}</div><ol>${p.qs.map((q) => `<li>${R(q.q)}　<b>答え</b> ${R(q.answer)}</li>`).join('')}</ol>`;
+    } else if (state.kind === 'skill') {
       tags = `<span class="tag st">${esc(p.skill)}</span><span class="tag">${STARS[p.level] || ''}</span>`;
       head = esc(p.q);
       pv = `<div class="pv">${esc(p.passage)}</div><div><b>問</b> ${esc(p.q)}</div><div><b>解答例</b> ${esc(p.answer)}</div>`;
@@ -202,12 +234,12 @@
     $('list').innerHTML = v.length ? v.map(itemHTML).join('') : '<div class="empty">条件に合う問題がありません。</div>';
   }
   function updateCount() {
-    const c = { skill: 0, big: 0, kaizen: 0 };
+    const c = { kids: 0, skill: 0, big: 0, kaizen: 0 };
     state.chosen.forEach((k) => c[k.split(':')[0]]++);
     $('count').textContent = state.chosen.size;
     const m = document.getElementById('mcount');
     if (m) m.textContent = state.chosen.size;
-    $('count-detail').textContent = `入門 ${c.skill}問・答案を直す ${c.kaizen}問・入試演習 ${c.big}題`;
+    $('count-detail').textContent = `${c.kids ? `低学年 ${c.kids}題・` : ''}入門 ${c.skill}問・答案を直す ${c.kaizen}問・入試演習 ${c.big}題`;
   }
 
   $('list').addEventListener('change', (e) => {
@@ -261,6 +293,10 @@
       prints.push({ id: 'bank', chip, title, sub: guided ? 'まず自力で解く → 読み方の誘導で確かめる → もう一度解く' : 'まず自力で解きましょう', levelText: `${no}問`, blocks, kaisetsu: kai });
     }
     pick('big').forEach((set) => prints.push(bigPrint(set, guided, title)));
+    // 低学年は大きな文字の別プリントにする
+    const kb = [], kk = [];
+    pick('kids').forEach((set, i) => { kb.push(...kidsBlocks(set, i + 1, guided)); kk.push(kidsKai(set, i + 1)); });
+    if (kb.length) prints.unshift({ id: 'kids', kid: true, chip: KINDS.kids.chip, title, sub: guided ? 'ヒントつき' : 'よく よんで こたえよう', levelText: `${kb.length}だい`, blocks: kb, kaisetsu: kk });
 
     if (!prints.length) {
       const btns = [$('make'), document.getElementById('mmake')].filter(Boolean);
