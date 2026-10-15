@@ -49,7 +49,7 @@ body.ui-page {
 /* 解き方プリントの一覧（1行1枚） */
 .plist { list-style: none; margin: 0; padding: 0; }
 .plist a {
-  display: grid; grid-template-columns: 2.6em minmax(0, 1fr) auto; gap: 8px; align-items: baseline;
+  display: grid; grid-template-columns: 3.2em minmax(0, 1fr) auto; gap: 8px; align-items: baseline;
   padding: 7px 8px; margin: 0 -8px; border-radius: 6px; color: var(--ink); text-decoration: none;
 }
 .plist a:hover { background: var(--accent-soft); }
