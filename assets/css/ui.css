@@ -148,6 +148,8 @@ body.ui-page {
 .badge.saku { background: #2f7d6d; }
 .k.saku { background: #2f7d6d; color: #fff; }
 .ui-page .dcard .act { background: #6b4fa3; display: inline-flex; }
+.ui-page .dcard .act.sub { background: #f1ecf8; color: #4b3578; border-color: #c9bce3; }
+.ui-page .dcard .act.sub small { color: #6b4fa3; }
 .dcard h3 { color: #6b4fa3 !important; }
 .ui-page .kidpane .acts.row .act:not(.sub) { background: var(--kid); }
 .ui-page .kidpane .act.sub { color: var(--kid); border-color: var(--kid); }
