@@ -19,7 +19,7 @@
   }
 
   document.getElementById('tb-title').textContent = title || 'プリントが見つかりません';
-  if (prints.length) {
+  if (prints.length && typeof prints[0].stage === 'number') {
     const prac = document.getElementById('tb-prac');
     prac.href = `bank.html?stage=${prints[0].stage}`;
     prac.hidden = false;
