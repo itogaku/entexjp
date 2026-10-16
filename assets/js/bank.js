@@ -121,7 +121,9 @@
   }
   function kidsKai(set, no) {
     const ans = set.qs.map((q, i) => `（${KNO[i]}）${R(q.answer)}`).join('　');
-    return KAI(kanji(no), ans, `<p>${esc(set.note || '')}</p>`, `${esc(set.skill)}`);
+    // ex：問いごとの、子ども向けの解説（学年の漢字・ふりがなに合わせてある）。ないときは先生向けの note
+    const body = set.ex ? set.ex.map((t, i) => `<p>（${KNO[i]}）${R(t)}</p>`).join('') : `<p>${esc(set.note || '')}</p>`;
+    return KAI(kanji(no), ans, body, `${esc(set.skill)}`);
   }
 
   function bigPrint(set, guided, title) {

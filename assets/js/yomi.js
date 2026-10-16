@@ -56,7 +56,12 @@
     /** 原稿用紙：chars＝マス数、per＝一行のマス数 */
     G(chars, ans = '', per = 20) {
       const cols = Math.ceil(chars / per);
-      const ansChars = Array.from(ans);
+      // 答えの「\n」は改段落：次の行（列）の頭から続ける
+      const ansChars = [];
+      String(ans).split('\n').forEach((p, k) => {
+        if (k) while (ansChars.length % per) ansChars.push('');
+        ansChars.push(...Array.from(p));
+      });
       let html = '<span class="genko">';
       for (let c = 0; c < cols; c++) {
         const five = (c + 1) % 5 === 0 && c + 1 < cols ? ' five' : '';
