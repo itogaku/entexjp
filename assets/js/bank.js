@@ -121,7 +121,9 @@
   }
   function kidsKai(set, no) {
     const ans = set.qs.map((q, i) => `（${KNO[i]}）${R(q.answer)}`).join('　');
-    return KAI(kanji(no), ans, `<p>${esc(set.note || '')}</p>`, `${esc(set.skill)}`);
+    // ex：問いごとの、子ども向けの解説（学年の漢字・ふりがなに合わせてある）。ないときは先生向けの note
+    const body = set.ex ? set.ex.map((t, i) => `<p>（${KNO[i]}）${R(t)}</p>`).join('') : `<p>${esc(set.note || '')}</p>`;
+    return KAI(kanji(no), ans, body, `${esc(set.skill)}`);
   }
 
   function bigPrint(set, guided, title) {
@@ -197,7 +199,7 @@
         `<optgroup label="${esc(g.name)}">${g.skills.map((x) => `<option value="${esc(x.name)}">${esc(x.name)}（${x.count}）</option>`).join('')}</optgroup>`).join('');
       fl.innerHTML = '<option value="">すべて</option><option value="12">★１・２（やさしい）</option><option value="34">★３・４（少し長い）</option>' + [1, 2, 3, 4].map((n) => `<option value="${n}">${STARS[n]}</option>`).join('');
     } else if (state.kind === 'big') {
-      fs.innerHTML = '<option value="">すべて</option><option value="物語">物語</option><option value="説明文">説明文</option>';
+      fs.innerHTML = '<option value="">すべて</option><option value="物語">物語</option><option value="説明文">説明文</option><option value="古文">古文</option>';
       const lv = [...new Set(D.bigsets.map((x) => x.level))];
       fl.innerHTML = '<option value="">すべて</option>' + lv.map((l) => `<option value="${esc(l)}">${esc(l)}</option>`).join('');
     } else {
