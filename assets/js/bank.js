@@ -1,7 +1,7 @@
 /* 問題バンク：問題を選んでプリントを作る */
 (function () {
   'use strict';
-  const { B, K, L, G, CH, BO, Q, QC, HINT, PASS, KAI, POINT } = Yomi.h;
+  const { B, K, L, G, CH, BO, Q, QC, HINT, PASS, KAI, POINT, TBL } = Yomi.h;
   const D = Yomi.bank;
   const $ = (id) => document.getElementById(id);
 
@@ -30,7 +30,8 @@
     // 「最初の五字を書きなさい」なら、解答欄はその字数
     const head = String(q).match(/(?:最初|初め)の([一二三四五六七八九十]+)字/);
     if (head) return parseKanjiNum(head[1]);
-    const m = String(q).match(/([0-9０-９]+|[一二三四五六七八九十百]+)字(以内|程度|で)?/);
+    // 「四十字以上五十字以内」なら、上限（以内）の字数
+    const m = String(q).match(/([0-9０-９]+|[一二三四五六七八九十百]+)字以内/) || String(q).match(/([0-9０-９]+|[一二三四五六七八九十百]+)字(以内|程度|で)?/);
     if (!m) return 0;
     const raw = m[1].replace(/[０-９]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 0xfee0));
     return parseKanjiNum(raw);
@@ -110,7 +111,7 @@
         } else {
           const a = Yomi.plain(q.answer).replace(/[\s　]/g, '');
           const lim = charLimit(Yomi.plain(q.q));
-          const n = lim || Math.min(20, Math.max(4, Array.from(a).length + 2));
+          const n = lim || Math.min(40, Math.max(4, Array.from(a).length + 2));
           const per = set.band === '34' ? 12 : set.band === '12' ? 20 : 15;
           area = G(n, a, Math.min(n, per));
         }
@@ -135,10 +136,20 @@
         }
       });
     });
-    const lines = text.split(/\n/).map((t) => t.trim()).filter(Boolean).map((t) => {
-      t = t.replace(/\u0000(\d+)\u0001([^\u0002]*)\u0002/g, (_, i, s) => BO(s, `問${kanji(Number(i) + 1)}`));
-      return /^[「『]/.test(t) ? `<span class="noind-line">${t}</span>` : t;
-    });
+    const mark = (t) => t.replace(/\u0000(\d+)\u0001([^\u0002]*)\u0002/g, (_, i, s) => BO(s, `問${kanji(Number(i) + 1)}`));
+    const raw = text.split(/\n/).map((t) => t.trim()).filter(Boolean);
+    const lines = [];
+    for (let i = 0; i < raw.length; i++) {
+      const t = mark(raw[i]);
+      // 【表】の見出しの次から、全角空白で区切った行を表にする（一行目は見出し）
+      if (/^【表】/.test(raw[i])) {
+        const rows = [];
+        while (i + 1 < raw.length && /^[^。]+(　[^。　]+)+$/.test(raw[i + 1])) rows.push(mark(raw[++i]).split('　'));
+        lines.push(`<span class="noind-line gothic">${t}</span>` + (rows.length ? TBL(rows.map((r, k) => (k ? r : r.map((c) => '#' + c))), 'ps-tbl') : ''));
+        continue;
+      }
+      lines.push(/^[「『]/.test(t) ? `<span class="noind-line">${t}</span>` : t);
+    }
     const blocks = [PASS({ title: `次の文章を読んで、あとの問いに答えなさい。　〔${esc(set.genre)}〕`, paras: lines })];
     set.questions.forEach((q, i) => {
       const ans = q.choices && q.choices.length ? q.answer : esc(q.answer);

@@ -36,8 +36,10 @@
 <script src="data/stage5.js"></script>
 <script src="data/stage6.js"></script>
 <script src="data/stage7.js"></script>
+<script src="data/diag.js"></script>
 <script src="data/bank.js"></script>
 <script src="data/bank-plus.js"></script>
+<script src="data/bank-plus2.js"></script>
 <script src="data/kids.js"></script>
 <script src="data/bank-kids.js"></script>
 <script src="data/write.js"></script>
@@ -52,13 +54,14 @@
   /* 左の一覧：入門 → ステージ０〜７ → 入試演習 */
   const K = Yomi.kids;
   const panes = [
+    { key: 'diag', n: '診', cls: 'diag', name: '診断テスト', ct: '中学生用・小学生用' },
     ...K.bands.map((b) => ({ key: 'kids' + b.key, n: b.badge, cls: 'kid', name: b.title, ct: `${b.name}・${K.sets.filter((x) => x.band === b.key).length}題`, b })),
     { key: 'intro', n: '入', cls: 'intro', name: '文章に慣れる', ct: `入門・${D.problems.length}問` },
     ...stages.map((s) => ({ key: 'stage' + s.no, n: s.no, name: s.name, ct: `解き方 ${Yomi.byStage(s.no).length}枚`, s })),
     { key: 'exam', n: '試', cls: 'exam', name: '入試演習', ct: `長文 ${D.bigsets.length}題` },
   ];
   document.getElementById('rail').innerHTML = panes.map((p, i) =>
-    `${i === 0 ? '<li class="sep">小学生</li>' : ''}${p.key === 'intro' ? '<li class="sep">中学生　入門</li>' : ''}${p.key === 'stage0' ? '<li class="sep">本編　解き方を学ぶ</li>' : ''}${i === panes.length - 1 ? '<li class="sep">仕上げ</li>' : ''}` +
+    `${i === 0 ? '<li class="sep">はじめに</li>' : ''}${i === 1 ? '<li class="sep">小学生</li>' : ''}${p.key === 'intro' ? '<li class="sep">中学生　入門</li>' : ''}${p.key === 'stage0' ? '<li class="sep">本編　解き方を学ぶ</li>' : ''}${i === panes.length - 1 ? '<li class="sep">仕上げ</li>' : ''}` +
     `<li class="${p.cls || ''}"><button type="button" data-pane="${p.key}" title="${esc(p.name)}"><span class="n">${p.n}</span><span class="nm">${esc(p.name)}</span><span class="ct">${p.ct}</span></button></li>`).join('');
 
   function head(badge, cls, title, desc, key) {
@@ -120,6 +123,21 @@
       <p class="kidnote">${nextB ? `次は「${esc(nextB.title)}」へ。` : '次は中学生向けの「入門　文章に慣れる」へ。'}</p></div>`;
   }
 
+  function diagHTML() {
+    const card = (id, who, how) => {
+      const p = Yomi.find(id);
+      return `<section class="grp dcard"><h3>${esc(who)}</h3>
+        <p><a class="act" href="print.html?id=${id}">${esc(p.title.replace(/<[^>]+>/g, ''))}を印刷<small>問題・解答・解説</small></a></p>
+        <p class="small">${how}</p></section>`;
+    };
+    return head('診', 'diag', '診断テスト　どこから始めるかを決める',
+      '新しい生徒や、学期のはじめに使います。解き終えたら解説ページの表に区分ごとの得点を書き、合計点で始める場所を、半分未満の区分で重点的に練習するところを決めます。', 'diag') + `
+      <div class="groups">
+        ${card('D-1', '中学生用（約三十分・百点）', '十問。区分（本文照合・具体と抽象・対比・理由・指示語と接続語・要旨・心情・条件つき記述）ごとに、弱いところのステージが分かります。合計点で「入門／ステージ０から／弱い区分から／入試演習」を決めます。')}
+        ${card('D-2', '小学生用（小３〜６・約二十分・百点）', '八問。漢字は四年生まで（三・四年の漢字にふりがな）。合計点で「小１・２／小３・４／小５・６／中学入門」のどこから始めるかを決めます。')}
+      </div>`;
+  }
+
   function introHTML() {
     const groups = P.skillGroups().map((g) => `
       <section class="grp"><h3>${esc(g.name)}</h3><ul>${g.skills.map((s) => `
@@ -173,7 +191,7 @@
 
   function show(key, push) {
     const p = panes.find((x) => x.key === key) || panes[0];
-    document.getElementById('pane').innerHTML = p.b ? kidsHTML(p.b) : p.key === 'intro' ? introHTML() : p.key === 'exam' ? examHTML() : stageHTML(p.s);
+    document.getElementById('pane').innerHTML = p.key === 'diag' ? diagHTML() : p.b ? kidsHTML(p.b) : p.key === 'intro' ? introHTML() : p.key === 'exam' ? examHTML() : stageHTML(p.s);
     document.querySelectorAll('#rail button').forEach((b) => b.setAttribute('aria-current', String(b.dataset.pane === p.key)));
     const cur = document.querySelector('#rail button[aria-current="true"]');
     if (cur && cur.scrollIntoView && window.innerWidth <= 760) cur.scrollIntoView({ inline: 'center', block: 'nearest' });
@@ -184,7 +202,7 @@
     const b = e.target.closest('button[data-pane]');
     if (b) { show(b.dataset.pane, true); window.scrollTo(0, 0); }
   });
-  const fromHash = /^#(kids\d\d|kids|intro|exam|stage\d)$/.exec(location.hash);
+  const fromHash = /^#(diag|kids\d\d|kids|intro|exam|stage\d)$/.exec(location.hash);
   const want = fromHash ? fromHash[1] : store.get() || 'intro';
   show(want === 'kids' ? 'kids12' : want, false);
 </script>
