@@ -364,20 +364,39 @@
       btns.forEach((x) => { x.textContent = '先に問題を選んでください'; setTimeout(() => (x.textContent = 'プリントを作る'), 1800); });
       return;
     }
-    const bad = [];
-    let sheets = 0;
-    prints.forEach((p) => {
-      const s = Yomi.renderPrint(root, p, opt);
-      sheets += s.length;
-      if (s.some((x) => x.classList.contains('overflow'))) bad.push(p.title);
-    });
+    const draw = () => {
+      root.innerHTML = '';
+      const bad = [];
+      let sheets = 0;
+      prints.forEach((p) => {
+        const s = Yomi.renderPrint(root, p, opt);
+        sheets += s.length;
+        if (s.some((x) => x.classList.contains('overflow'))) bad.push(p.title);
+      });
+      $('out-info').textContent = `${sheets}枚のプリントを作りました。`;
+      $('out-warn').textContent = bad.length ? `用紙からはみ出している部分があります（赤枠）` : '';
+      window.dispatchEvent(new Event('resize'));
+    };
     $('out-bar').hidden = false;
     $('do-print').hidden = false;
-    $('out-info').textContent = `${sheets}枚のプリントを作りました。`;
-    $('out-warn').textContent = bad.length ? `用紙からはみ出している部分があります（赤枠）` : '';
     document.body.classList.add('previewing');
+    draw();
     window.scrollTo(0, 0);
-    window.dispatchEvent(new Event('resize'));
+    // Google Fonts の日本語フォントは使う文字ごとに読み込まれる。読み込みが終わったら、字の幅が変わるので組み直す
+    const gen = (make.gen = (make.gen || 0) + 1);
+    document.body.dataset.ready = '';
+    const done = () => { document.body.dataset.ready = '1'; };
+    if (document.fonts && document.fonts.ready) {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      (async () => {
+        for (let i = 0; i < 3; i++) {
+          await Promise.race([document.fonts.ready, wait(5000)]);
+          if (document.fonts.status === 'loaded') break;
+        }
+        if (gen === make.gen && document.body.classList.contains('previewing')) draw();
+        done();
+      })();
+    } else done();
   }
   $('make').addEventListener('click', make);
   if (document.getElementById('mmake')) document.getElementById('mmake').addEventListener('click', make);
