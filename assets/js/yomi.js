@@ -31,6 +31,18 @@
   Yomi.ruby = (text) => String(text)
     .replace(/｜([^｜《]+)《([^》]+)》/g, '<ruby>$1<rt>$2</rt></ruby>')
     .replace(/([\u4e00-\u9fff々〆]+)《([^》]+)》/g, '<ruby>$1<rt>$2</rt></ruby>');
+  /** 漢文（訓読文）：「学(ビテ)而時(ニ)習(フ)[レ]之(ヲ)」のように、字のあとに（送り仮名）と［返り点］を書く。
+      送り仮名は字の右下、返り点は字の左下に小さく出す */
+  Yomi.kanbun = (src) => String(src).replace(/([^()\[\]])(?:\(([^)]*)\))?(?:\[([^\]]*)\])?(?:\(([^)]*)\))?/g, (all, c, o1, t, o2) => {
+    const o = o1 || o2;
+    if (!o && !t) return c;
+    // 送り仮名が長いときは、次の字とぶつからないように字のあとをあける
+    const gap = o ? Math.max(0, Array.from(o).length * 0.5 - 0.45) : 0;
+    return `<span class="kb"${gap ? ` style="margin-inline-end:${gap.toFixed(2)}em"` : ''}>${c}${o ? `<span class="ko">${o}</span>` : ''}${t ? `<span class="kt">${t}</span>` : ''}</span>`;
+  });
+  /** 漢文の書き方をはずした白文（返り点・送り仮名なし） */
+  Yomi.hakubun = (src) => String(src).replace(/\([^)]*\)|\[[^\]]*\]/g, '');
+
   /** ふりがなの書き方をはずした文字列 */
   Yomi.plain = (text) => String(text).replace(/《[^》]*》/g, '').replace(/｜/g, '');
 
@@ -52,6 +64,10 @@
     L(cols, ans = '', len = 0) {
       const size = len ? `inline-size:${len}mm;` : '';
       return `<span class="lines" style="--lh:9mm;block-size:${cols * 9}mm;line-height:9mm;${size}"><span class="a">${esc(ans)}</span></span>`;
+    },
+    /** 漢文の本文（一行＝一句）。lines：訓読の書き方の文字列の配列 */
+    KAN(lines, title = '') {
+      return `<div class="passage kanbun">${title ? `<div class="ps-ttl">${title}</div>` : ''}${lines.map((l) => `<p class="noind">${Yomi.kanbun(l)}</p>`).join('')}</div>`;
     },
     /** 原稿用紙：chars＝マス数、per＝一行のマス数 */
     G(chars, ans = '', per = 20) {

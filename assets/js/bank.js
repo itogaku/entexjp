@@ -150,6 +150,8 @@
         lines.push(`<span class="noind-line gothic">${t}</span>` + (rows.length ? TBL(rows.map((r, k) => (k ? r : r.map((c) => '#' + c))), 'ps-tbl') : ''));
         continue;
       }
+      // 「＃」で始まる行は漢文（訓読文）：送り仮名（　）と返り点［　］をつけて出す
+      if (/^＃/.test(raw[i])) { lines.push(`<span class="noind-line kanbun-line">${Yomi.kanbun(t.slice(1))}</span>`); continue; }
       lines.push(/^[「『]/.test(t) ? `<span class="noind-line">${t}</span>` : t);
     }
     const blocks = [PASS({ title: `次の文章を読んで、あとの問いに答えなさい。　〔${esc(set.genre)}〕`, paras: lines })];
@@ -199,7 +201,7 @@
         `<optgroup label="${esc(g.name)}">${g.skills.map((x) => `<option value="${esc(x.name)}">${esc(x.name)}（${x.count}）</option>`).join('')}</optgroup>`).join('');
       fl.innerHTML = '<option value="">すべて</option><option value="12">★１・２（やさしい）</option><option value="34">★３・４（少し長い）</option>' + [1, 2, 3, 4].map((n) => `<option value="${n}">${STARS[n]}</option>`).join('');
     } else if (state.kind === 'big') {
-      fs.innerHTML = '<option value="">すべて</option><option value="物語">物語</option><option value="説明文">説明文</option><option value="古文">古文</option>';
+      fs.innerHTML = '<option value="">すべて</option><option value="物語">物語</option><option value="説明文">説明文</option><option value="古文">古文</option><option value="漢文">漢文</option>';
       const lv = [...new Set(D.bigsets.map((x) => x.level))];
       fl.innerHTML = '<option value="">すべて</option>' + lv.map((l) => `<option value="${esc(l)}">${esc(l)}</option>`).join('');
     } else {
