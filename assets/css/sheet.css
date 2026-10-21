@@ -438,3 +438,10 @@ ruby rt { font-size: 0.5em; }
 .sheet.kid.b56 .genko .gc, .sheet.kid.bchu .genko .gc { block-size: 8.5mm; }
 .sheet.kid.bchu .genko .cell, .sheet.kid.b56 .genko .cell { inline-size: 8.5mm; block-size: 8.5mm; line-height: 8.5mm; font-size: 11.5pt; }
 .sheet.kid.b56 .khint, .sheet.kid.b34 .khint { font-size: 10pt; }
+
+/* 漢文：送り仮名は字の右下、返り点は字の左下 */
+.kanbun p, .kanbun-line { letter-spacing: 0.15em; }
+.kanbun p { line-height: 2.4; }
+.kb { position: relative; }
+.kb .ko { position: absolute; top: 0.62em; right: -0.62em; font-size: 0.5em; line-height: 1.05; letter-spacing: 0; white-space: nowrap; }
+.kb .kt { position: absolute; top: 0.78em; left: -0.5em; font-size: 0.5em; line-height: 1; letter-spacing: 0; white-space: nowrap; }

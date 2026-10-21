@@ -40,6 +40,9 @@
 <script src="data/diag-chu.js"></script>
 <script src="data/diag-sho.js"></script>
 <script src="data/sakubun.js"></script>
+<script src="data/koten-bun.js"></script>
+<script src="data/koten-doku.js"></script>
+<script src="data/koten-kan.js"></script>
 <script src="data/bank.js"></script>
 <script src="data/bank-plus.js"></script>
 <script src="data/bank-plus2.js"></script>
@@ -63,6 +66,7 @@
     ...stages.map((s) => ({ key: 'stage' + s.no, n: s.no, name: s.name, ct: `解き方 ${Yomi.byStage(s.no).length}枚`, s })),
     { key: 'exam', n: '試', cls: 'exam', name: '入試演習', ct: `長文 ${D.bigsets.length}題` },
     { key: 'saku', n: '作', cls: 'saku', name: '作文', ct: `条件作文 ${Yomi.byStage('S').length}枚` },
+    { key: 'koten', n: '古', cls: 'koten', name: '古典', ct: `文法と読解 ${Yomi.byStage('K').length}枚` },
   ];
   document.getElementById('rail').innerHTML = panes.map((p, i) =>
     `${i === 0 ? '<li class="sep">はじめに</li>' : ''}${i === 1 ? '<li class="sep">小学生</li>' : ''}${p.key === 'intro' ? '<li class="sep">中学生　入門</li>' : ''}${p.key === 'stage0' ? '<li class="sep">本編　解き方を学ぶ</li>' : ''}${p.key === 'exam' ? '<li class="sep">仕上げ</li>' : ''}` +
@@ -182,7 +186,7 @@
   }
 
   function examHTML() {
-    const order = ['標準', '発展', '長文・入試接続', '長文・入試実戦', '古典入門'];
+    const order = ['標準', '発展', '長文・入試接続', '長文・入試実戦', '古典入門', '古典実戦'];
     const sets = [...D.bigsets].sort((a, b) => order.indexOf(a.level) - order.indexOf(b.level));
     const rows = sets.map((b) => `
       <li><a href="bank.html?kind=big&pick=${b.id}" title="この大問のプリントを作る">
@@ -213,9 +217,33 @@
       </div>`;
   }
 
+  function kotenHTML() {
+    const prints = Yomi.byStage('K');
+    const rows = prints.map((p) => `
+      <li><a href="print.html?id=${p.id}" title="${esc(p.sub || '')}">
+        <span class="pid">${p.id}</span>
+        <span><span class="pt">${p.title}</span><span class="ps">${p.sub || ''}</span></span>
+        ${dots(p.level)}
+      </a></li>`).join('');
+    const big = D.bigsets.filter((b) => b.genre === '古文' || b.genre === '漢文');
+    const brow = big.map((b) => `
+      <li><a href="bank.html?kind=big&pick=${b.id}"><span class="pid">${esc(b.genre)}</span>
+        <span><span class="pt">${esc(b.title)}</span><span class="ps">${esc(b.level)}・${b.questions.length}問</span></span></a></li>`).join('');
+    return head('古', 'koten', '古典　文法と読解',
+      '歴史的仮名遣い・古語・係り結び・主語・会話文から、現代語訳との対応・主題、和歌と俳句、漢文の返り点と漢詩までを、解き方のプリントで学びます。仕上げは古文・漢文の入試演習です。', 'koten') + `
+      <div class="card">
+        <div class="col-h"><span class="k koten">古</span>解き方を学ぶプリント<span class="cnt">${prints.length}枚</span><a class="more" href="print.html?stage=K">まとめて印刷 →</a></div>
+        <ul class="plist cols">${rows}</ul>
+      </div>
+      <div class="card">
+        <div class="col-h"><span class="k exam">試</span>古文・漢文の入試演習<span class="cnt">${big.length}題</span><a class="more" href="bank.html?kind=big">まとめて選ぶ →</a></div>
+        <ul class="plist cols">${brow}</ul>
+      </div>`;
+  }
+
   function show(key, push) {
     const p = panes.find((x) => x.key === key) || panes[0];
-    document.getElementById('pane').innerHTML = p.key === 'diag' ? diagHTML() : p.b ? kidsHTML(p.b) : p.key === 'intro' ? introHTML() : p.key === 'exam' ? examHTML() : p.key === 'saku' ? sakuHTML() : stageHTML(p.s);
+    document.getElementById('pane').innerHTML = p.key === 'diag' ? diagHTML() : p.b ? kidsHTML(p.b) : p.key === 'intro' ? introHTML() : p.key === 'exam' ? examHTML() : p.key === 'saku' ? sakuHTML() : p.key === 'koten' ? kotenHTML() : stageHTML(p.s);
     document.querySelectorAll('#rail button').forEach((b) => b.setAttribute('aria-current', String(b.dataset.pane === p.key)));
     const cur = document.querySelector('#rail button[aria-current="true"]');
     if (cur && cur.scrollIntoView && window.innerWidth <= 760) cur.scrollIntoView({ inline: 'center', block: 'nearest' });
@@ -226,7 +254,7 @@
     const b = e.target.closest('button[data-pane]');
     if (b) { show(b.dataset.pane, true); window.scrollTo(0, 0); }
   });
-  const fromHash = /^#(diag|kids\d\d|kids|intro|exam|saku|stage\d)$/.exec(location.hash);
+  const fromHash = /^#(diag|kids\d\d|kids|intro|exam|saku|koten|stage\d)$/.exec(location.hash);
   const want = fromHash ? fromHash[1] : store.get() || 'intro';
   show(want === 'kids' ? 'kids12' : want, false);
 </script>

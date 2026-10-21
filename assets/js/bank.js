@@ -150,6 +150,8 @@
         lines.push(`<span class="noind-line gothic">${t}</span>` + (rows.length ? TBL(rows.map((r, k) => (k ? r : r.map((c) => '#' + c))), 'ps-tbl') : ''));
         continue;
       }
+      // 「＃」で始まる行は漢文（訓読文）：送り仮名（　）と返り点［　］をつけて出す
+      if (/^＃/.test(raw[i])) { lines.push(`<span class="noind-line kanbun-line">${Yomi.kanbun(t.slice(1))}</span>`); continue; }
       lines.push(/^[「『]/.test(t) ? `<span class="noind-line">${t}</span>` : t);
     }
     const blocks = [PASS({ title: `次の文章を読んで、あとの問いに答えなさい。　〔${esc(set.genre)}〕`, paras: lines })];
@@ -199,7 +201,7 @@
         `<optgroup label="${esc(g.name)}">${g.skills.map((x) => `<option value="${esc(x.name)}">${esc(x.name)}（${x.count}）</option>`).join('')}</optgroup>`).join('');
       fl.innerHTML = '<option value="">すべて</option><option value="12">★１・２（やさしい）</option><option value="34">★３・４（少し長い）</option>' + [1, 2, 3, 4].map((n) => `<option value="${n}">${STARS[n]}</option>`).join('');
     } else if (state.kind === 'big') {
-      fs.innerHTML = '<option value="">すべて</option><option value="物語">物語</option><option value="説明文">説明文</option><option value="古文">古文</option>';
+      fs.innerHTML = '<option value="">すべて</option><option value="物語">物語</option><option value="説明文">説明文</option><option value="古文">古文</option><option value="漢文">漢文</option>';
       const lv = [...new Set(D.bigsets.map((x) => x.level))];
       fl.innerHTML = '<option value="">すべて</option>' + lv.map((l) => `<option value="${esc(l)}">${esc(l)}</option>`).join('');
     } else {
@@ -362,20 +364,39 @@
       btns.forEach((x) => { x.textContent = '先に問題を選んでください'; setTimeout(() => (x.textContent = 'プリントを作る'), 1800); });
       return;
     }
-    const bad = [];
-    let sheets = 0;
-    prints.forEach((p) => {
-      const s = Yomi.renderPrint(root, p, opt);
-      sheets += s.length;
-      if (s.some((x) => x.classList.contains('overflow'))) bad.push(p.title);
-    });
+    const draw = () => {
+      root.innerHTML = '';
+      const bad = [];
+      let sheets = 0;
+      prints.forEach((p) => {
+        const s = Yomi.renderPrint(root, p, opt);
+        sheets += s.length;
+        if (s.some((x) => x.classList.contains('overflow'))) bad.push(p.title);
+      });
+      $('out-info').textContent = `${sheets}枚のプリントを作りました。`;
+      $('out-warn').textContent = bad.length ? `用紙からはみ出している部分があります（赤枠）` : '';
+      window.dispatchEvent(new Event('resize'));
+    };
     $('out-bar').hidden = false;
     $('do-print').hidden = false;
-    $('out-info').textContent = `${sheets}枚のプリントを作りました。`;
-    $('out-warn').textContent = bad.length ? `用紙からはみ出している部分があります（赤枠）` : '';
     document.body.classList.add('previewing');
+    draw();
     window.scrollTo(0, 0);
-    window.dispatchEvent(new Event('resize'));
+    // Google Fonts の日本語フォントは使う文字ごとに読み込まれる。読み込みが終わったら、字の幅が変わるので組み直す
+    const gen = (make.gen = (make.gen || 0) + 1);
+    document.body.dataset.ready = '';
+    const done = () => { document.body.dataset.ready = '1'; };
+    if (document.fonts && document.fonts.ready) {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      (async () => {
+        for (let i = 0; i < 3; i++) {
+          await Promise.race([document.fonts.ready, wait(5000)]);
+          if (document.fonts.status === 'loaded') break;
+        }
+        if (gen === make.gen && document.body.classList.contains('previewing')) draw();
+        done();
+      })();
+    } else done();
   }
   $('make').addEventListener('click', make);
   if (document.getElementById('mmake')) document.getElementById('mmake').addEventListener('click', make);

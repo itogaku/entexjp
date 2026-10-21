@@ -12,10 +12,13 @@
     const p = Yomi.find(params.get('id'));
     if (p) { prints = [p]; title = `${p.id}　${p.title}`; }
   } else if (params.has('stage')) {
-    const no = Number(params.get('stage'));
+    // 数字はステージ、文字は古典（K）・作文（S）などのまとまり
+    const raw = params.get('stage');
+    const no = /^\d+$/.test(raw) ? Number(raw) : raw;
     prints = Yomi.byStage(no);
     const s = Yomi.stages.find((x) => x.no === no);
-    title = s ? `ステージ${s.label}　${s.name}（まとめて印刷）` : '';
+    const NAMES = { K: '古典　文法と読解', S: '作文', D: '診断テスト' };
+    title = s ? `ステージ${s.label}　${s.name}（まとめて印刷）` : NAMES[no] ? `${NAMES[no]}（まとめて印刷）` : '';
   }
 
   document.getElementById('tb-title').textContent = title || 'プリントが見つかりません';
