@@ -1,4 +1,4 @@
-/* ステージ２　くらべる（対比） */
+/* ステージ２　対比 */
 (function () {
   const { B, K, L, G, S, CH, BO, GO, GRID, AIM, POINT, RULE, EX, Q, QC, HINT, PASS, TBL, FLOW, STEPS, KAI } = Yomi.h;
   const M = (l) => `<span class="slot">${l}</span>`;

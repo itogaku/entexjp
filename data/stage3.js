@@ -1,4 +1,4 @@
-/* ステージ３　たどる（因果） */
+/* ステージ３　因果関係 */
 (function () {
   const { B, K, L, G, S, CH, BO, GO, GRID, AIM, POINT, RULE, EX, Q, QC, HINT, PASS, TBL, FLOW, STEPS, KAI } = Yomi.h;
   const M = (l) => `<span class="slot">${l}</span>`;

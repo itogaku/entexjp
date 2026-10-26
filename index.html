@@ -27,6 +27,7 @@
 </div>
 
 <script src="assets/js/yomi.js"></script>
+<script src="assets/js/drill.js"></script>
 <script src="data/stages.js"></script>
 <script src="data/stage0.js"></script>
 <script src="data/stage1.js"></script>
@@ -36,6 +37,14 @@
 <script src="data/stage5.js"></script>
 <script src="data/stage6.js"></script>
 <script src="data/stage7.js"></script>
+<script src="data/drill-s0.js"></script>
+<script src="data/drill-s1.js"></script>
+<script src="data/drill-s2.js"></script>
+<script src="data/drill-s3.js"></script>
+<script src="data/drill-s4.js"></script>
+<script src="data/drill-s5.js"></script>
+<script src="data/drill-s6.js"></script>
+<script src="data/drill-s7.js"></script>
 <script src="data/diag.js"></script>
 <script src="data/diag-chu.js"></script>
 <script src="data/diag-sho.js"></script>
@@ -180,12 +189,13 @@
         <span class="pid">${p.id}</span>
         <span><span class="pt">${p.title}</span><span class="ps">${p.sub || ''}</span></span>
         ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
-      </a></li>`).join('');
+      </a>${Yomi.drillsOf(p.id).length ? `<span class="drl">別の文章で練習：${Yomi.drillsOf(p.id).map((d) => `<a href="print.html?drill=${p.id}&v=${d.v}">${Yomi.drillLetter(d.v)}</a>`).join('')}</span>` : ''}</li>`).join('');
+    const nd = Yomi.drillsOfStage(s.no).length;
     const sk = P.skillsForStage(s.no);
     const warm = sk.length ? `<p class="warm"><span class="k intro">入</span>読むのに慣れていないときは、先に入門で：${sk.map((n) => `<a href="bank.html?skill=${enc(n)}">${esc(n)}</a>`).join('・')}</p>` : '';
     return head(s.label, '', `ステージ${s.label}　${s.name}`, s.desc, 'stage' + s.no) + `
       <div class="card">
-        <div class="col-h"><span class="k learn">本</span>解き方を学ぶプリント<span class="cnt">${prints.length}枚</span><a class="more" href="print.html?stage=${s.no}">まとめて印刷 →</a></div>
+        <div class="col-h"><span class="k learn">本</span>解き方を学ぶプリント<span class="cnt">${prints.length}枚</span>${nd ? `<a class="more" href="print.html?drill=stage:${s.no}">別の文章で練習（${nd}題）→</a>` : ''}<a class="more" href="print.html?stage=${s.no}">まとめて印刷 →</a></div>
         <ul class="plist cols">${rows}</ul>
         ${warm}
       </div>`;

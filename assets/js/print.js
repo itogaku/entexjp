@@ -11,6 +11,15 @@
   if (params.has('id')) {
     const p = Yomi.find(params.get('id'));
     if (p) { prints = [p]; title = `${p.id}　${p.title}`; }
+  } else if (params.has('drill')) {
+    // ?drill=3-2（そのプリントの練習すべて）／?drill=3-2&v=2（一つだけ）／?drill=stage:3（ステージの練習すべて）
+    const key = params.get('drill');
+    const m = /^stage:(\d+)$/.exec(key);
+    let list = m ? Yomi.drillsOfStage(Number(m[1])) : Yomi.drillsOf(key);
+    if (params.has('v')) list = list.filter((d) => String(d.v) === params.get('v'));
+    prints = list.map(Yomi.drillPrint);
+    const base = m ? null : Yomi.find(key);
+    title = !list.length ? '' : m ? `ステージ${m[1]}　別の文章で練習（まとめて印刷）` : list.length === 1 ? `${key}　${base ? base.title : ''}　練習${Yomi.drillLetter(list[0].v)}` : `${key}　${base ? base.title : ''}　別の文章で練習（${list.length}題）`;
   } else if (params.has('stage')) {
     // 数字はステージ、文字は古典（K）・作文（S）などのまとまり
     const raw = params.get('stage');

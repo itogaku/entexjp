@@ -1,4 +1,4 @@
-/* ステージ１　言いかえる（抽象と具体） */
+/* ステージ１　抽象と具体 */
 (function () {
   const { B, K, L, G, S, CH, BO, GO, GRID, AIM, POINT, RULE, EX, Q, QC, HINT, PASS, TBL, FLOW, STEPS, KAI } = Yomi.h;
   const M = (l) => `<span class="slot">${l}</span>`;
