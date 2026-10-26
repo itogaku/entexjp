@@ -24,7 +24,7 @@
     const { CH, G, B, K } = Yomi.h;
     const ans = String(q.answer);
     if (q.type === 'choice') return CH(q.choices, ans);
-    if (q.type === 'mark') return `<p class="indent mt">答え　${K(ans)}</p>`;
+    if (q.type === 'mark') return `<p class="indent mt">答え　${Array.from(ans).length > 2 ? B(Array.from(ans).length + 2, ans) : K(ans)}</p>`;
     if (q.type === 'write' || q.type === 'extract') {
       const n = q.n || Array.from(ans).length;
       return G(n, ans, n <= 40 ? Math.min(20, n) : 20);
