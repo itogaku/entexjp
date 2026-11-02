@@ -128,6 +128,7 @@ body.ui-page {
 .rail li.saku .n { background: #2f7d6d; color: #fff; }
 .rail li.koten .n { background: #8a5a2b; color: #fff; }
 .rail li.bunpo .n { background: #3d6a9e; color: #fff; }
+.rail li.kiso .n { background: #4f7a3a; color: #fff; }
 .rail .sep { font-size: 11px; color: var(--sub); padding: 6px 8px 0; font-weight: 700; }
 @media (min-width: 761px) {
   .rail button { padding: 4px 8px; }
@@ -153,6 +154,8 @@ body.ui-page {
 .k.koten { background: #8a5a2b; color: #fff; }
 .badge.bunpo { background: #3d6a9e; }
 .k.bunpo { background: #3d6a9e; color: #fff; }
+.badge.kiso { background: #4f7a3a; }
+.k.kiso { background: #4f7a3a; color: #fff; }
 .ui-page .dcard .act { background: #6b4fa3; display: inline-flex; }
 .ui-page .dcard .act.sub { background: #f1ecf8; color: #4b3578; border-color: #c9bce3; }
 .ui-page .dcard .act.sub small { color: #6b4fa3; }
