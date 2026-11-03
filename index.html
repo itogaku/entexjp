@@ -35,6 +35,7 @@
 <script src="data/stage3.js"></script>
 <script src="data/stage4.js"></script>
 <script src="data/stage5.js"></script>
+<script src="data/stage5-0.js"></script>
 <script src="data/stage6.js"></script>
 <script src="data/stage7.js"></script>
 <script src="data/kiso.js"></script>
@@ -188,12 +189,15 @@
 
   function stageHTML(s) {
     const prints = Yomi.byStage(s.no);
-    const rows = prints.map((p) => `
+    const row = (p) => `
       <li><a href="print.html?id=${p.id}" title="${esc(p.sub || '')}">
         <span class="pid">${p.id}</span>
-        <span><span class="pt">${p.title}</span><span class="ps">${p.sub || ''}</span></span>
+        <span><span class="pt">${p.title}</span><span class="ps">${p.genre ? `<span class="gtag g-${p.genre === '論説文' ? 'ron' : p.genre === '説明文' ? 'set' : 'etc'}">${esc(p.genre)}</span>` : ''}${p.sub || ''}</span></span>
         ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
-      </a>${Yomi.drillsOf(p.id).length ? `<span class="drl">別の文章で練習：${Yomi.drillsOf(p.id).map((d) => `<a href="print.html?drill=${p.id}&v=${d.v}">${Yomi.drillLetter(d.v)}</a>`).join('')}</span>` : ''}</li>`).join('');
+      </a>${Yomi.drillsOf(p.id).length ? `<span class="drl">別の文章で練習：${Yomi.drillsOf(p.id).map((d) => `<a href="print.html?drill=${p.id}&v=${d.v}">${Yomi.drillLetter(d.v)}</a>`).join('')}</span>` : ''}</li>`;
+    // ステージ５は、説明文で学ぶプリントと論説文で学ぶプリントに分けて見せる
+    const groups = s.no === 5 ? [['見分ける', (p) => !p.genre || !/説明文|論説文/.test(p.genre)], ['説明文で学ぶ', (p) => p.genre === '説明文'], ['論説文で学ぶ', (p) => p.genre === '論説文']] : null;
+    const rows = groups ? groups.map(([name, f]) => { const ps = prints.filter(f); return ps.length ? `<li class="gsep">${name}</li>${ps.map(row).join('')}` : ''; }).join('') : prints.map(row).join('');
     const nd = Yomi.drillsOfStage(s.no).length;
     const sk = P.skillsForStage(s.no);
     const warm = sk.length ? `<p class="warm"><span class="k intro">入</span>読むのに慣れていないときは、先に入門で：${sk.map((n) => `<a href="bank.html?skill=${enc(n)}">${esc(n)}</a>`).join('・')}</p>` : '';
