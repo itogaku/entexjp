@@ -196,7 +196,7 @@
         ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
       </a>${Yomi.drillsOf(p.id).length ? `<span class="drl">別の文章で練習：${Yomi.drillsOf(p.id).map((d) => `<a href="print.html?drill=${p.id}&v=${d.v}">${Yomi.drillLetter(d.v)}</a>`).join('')}</span>` : ''}</li>`;
     // ステージ５は、説明文で学ぶプリントと論説文で学ぶプリントに分けて見せる
-    const groups = s.no === 5 ? [['見分ける', (p) => !p.genre || !/説明文|論説文/.test(p.genre)], ['説明文で学ぶ', (p) => p.genre === '説明文'], ['論説文で学ぶ', (p) => p.genre === '論説文']] : null;
+    const groups = s.no === 5 ? [['見分ける', (p) => !p.genre], ['説明文で学ぶ', (p) => p.genre === '説明文'], ['論説文で学ぶ', (p) => p.genre === '論説文'], ['両方を読む', (p) => p.genre && p.genre !== '説明文' && p.genre !== '論説文']] : null;
     const rows = groups ? groups.map(([name, f]) => { const ps = prints.filter(f); return ps.length ? `<li class="gsep">${name}</li>${ps.map(row).join('')}` : ''; }).join('') : prints.map(row).join('');
     const nd = Yomi.drillsOfStage(s.no).length;
     const sk = P.skillsForStage(s.no);
@@ -215,7 +215,7 @@
     const rows = sets.map((b) => `
       <li><a href="bank.html?kind=big&pick=${b.id}" title="この大問のプリントを作る">
         <span class="pid">${esc(b.genre.replace('文', ''))}</span>
-        <span><span class="pt">${esc(b.title.replace(/^(物語|説明)文?「(.*)」$/, '$2'))}</span><span class="ps">${esc(b.level)}・${b.passage.length}字・${b.questions.length}問</span></span>
+        <span><span class="pt">${esc(b.title.replace(/^(物語|説明|論説)文?「(.*)」$/, '$2'))}</span><span class="ps">${esc(b.level)}・${b.passage.length}字・${b.questions.length}問</span></span>
       </a></li>`).join('');
     return head('試', 'exam', '入試演習　長文の大問',
       '入試と同じ形式の長文問題です。記述・記号選択・抜き出しをまぜた大問で、各問に配点（合計100点）と採点基準・解説がついています。ステージ０〜７で身につけた解き方を、誘導なしで使います。', 'exam') + `

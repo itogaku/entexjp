@@ -4,7 +4,7 @@
 
   /* ---------------- 2-1 ---------------- */
   Yomi.register({
-    id: '2-1', stage: 2, level: 2,
+    id: '2-1', stage: 2, genre: '随筆', level: 2,
     title: '書かれていない側を補う',
     sub: 'かくれた相手を表の空き欄に入れる',
     blocks: [
@@ -54,7 +54,7 @@
 
   /* ---------------- 2-2 ---------------- */
   Yomi.register({
-    id: '2-2', stage: 2, level: 3,
+    id: '2-2', stage: 2, genre: '論説文', level: 3,
     title: '筆者はどちらを重く見ているか',
     sub: '対比と譲歩から主張をつかむ',
     blocks: [
@@ -99,7 +99,7 @@
 
   /* ---------------- 2-3 ---------------- */
   Yomi.register({
-    id: '2-3', stage: 2, level: 2,
+    id: '2-3', stage: 2, genre: '説明文', level: 2,
     title: '練習：比べ表を作って書く',
     sub: '対比の整理と記述',
     blocks: [
@@ -132,7 +132,7 @@
 
   /* ---------------- 2-4 ---------------- */
   Yomi.register({
-    id: '2-4', stage: 2, level: 3,
+    id: '2-4', stage: 2, genre: '論説文', level: 3,
     title: '練習：対比と譲歩から主張を読む',
     sub: '説明的文章の対比（発展）',
     blocks: [

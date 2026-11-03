@@ -5,7 +5,7 @@
 
   /* ---------------- 6-1 ---------------- */
   Yomi.register({
-    id: '6-1', stage: 6, level: 2,
+    id: '6-1', stage: 6, genre: '物語', level: 2,
     title: '気持ちは証拠で読む',
     sub: '起きたこと → 気持ち → 表に出たもの',
     blocks: [
@@ -53,7 +53,7 @@
 
   /* ---------------- 6-2 ---------------- */
   Yomi.register({
-    id: '6-2', stage: 6, level: 2,
+    id: '6-2', stage: 6, genre: '物語', level: 2,
     title: '気持ちが変わる場面をつかむ',
     sub: '三つの箱に分けて整理する',
     blocks: [
@@ -97,7 +97,7 @@
 
   /* ---------------- 6-3 ---------------- */
   Yomi.register({
-    id: '6-3', stage: 6, level: 3,
+    id: '6-3', stage: 6, genre: '物語', level: 3,
     title: '人物像を証拠で決める',
     sub: 'したこと・言ったことを並べてまとめる',
     blocks: [
@@ -144,7 +144,7 @@
 
   /* ---------------- 6-4 ---------------- */
   Yomi.register({
-    id: '6-4', stage: 6, level: 2,
+    id: '6-4', stage: 6, genre: '物語', level: 2,
     title: '場面の切れ目と景色の役わり',
     sub: '時・所・人物と景色の書き方',
     blocks: [
@@ -190,7 +190,7 @@
 
   /* ---------------- 6-5 ---------------- */
   Yomi.register({
-    id: '6-5', stage: 6, level: 2,
+    id: '6-5', stage: 6, genre: '物語', level: 2,
     title: '会話の空欄をうめる',
     sub: 'せりふと様子の言葉を前後から決める',
     blocks: [
@@ -239,7 +239,7 @@
 
   /* ---------------- 6-6 ---------------- */
   Yomi.register({
-    id: '6-6', stage: 6, level: 3,
+    id: '6-6', stage: 6, genre: '随筆', level: 3,
     title: '随筆：出来事と思ったことを分ける',
     sub: '文末で体験と考えを見分ける',
     blocks: [
@@ -284,7 +284,7 @@
 
   /* ---------------- 6-7 ---------------- */
   Yomi.register({
-    id: '6-7', stage: 6, level: 2,
+    id: '6-7', stage: 6, genre: '物語', level: 2,
     title: '練習：言葉と心の中のずれ',
     sub: '心情（せりふ・行動）',
     blocks: [
@@ -321,7 +321,7 @@
 
   /* ---------------- 6-8 ---------------- */
   Yomi.register({
-    id: '6-8', stage: 6, level: 3,
+    id: '6-8', stage: 6, genre: '物語', level: 3,
     title: '表現の効果を説明する',
     sub: '比喩・擬人法・情景・くり返し',
     blocks: [
@@ -366,7 +366,7 @@
 
   /* ---------------- 6-9 ---------------- */
   Yomi.register({
-    id: '6-9', stage: 6, level: 3,
+    id: '6-9', stage: 6, genre: '物語', level: 3,
     title: '練習：心情の変化を記述する',
     sub: '心情の変化（記述）',
     blocks: [
@@ -393,7 +393,7 @@
 
   /* ---------------- 6-10 ---------------- */
   Yomi.register({
-    id: '6-10', stage: 6, level: 2,
+    id: '6-10', stage: 6, genre: '物語', level: 2,
     title: '表現技法の名前と書きぶり',
     sub: '直喩・隠喩・倒置法・体言止め・対句・文体',
     blocks: [
@@ -446,7 +446,7 @@
 
   /* ---------------- 6-11 ---------------- */
   Yomi.register({
-    id: '6-11', stage: 6, level: 3,
+    id: '6-11', stage: 6, genre: '物語', level: 3,
     title: '主題と象徴をとらえる',
     sub: 'くり返し出る物・変わった見方・言いかえ',
     blocks: [

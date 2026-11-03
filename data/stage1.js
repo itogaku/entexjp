@@ -5,7 +5,7 @@
 
   /* ---------------- 1-1 ---------------- */
   Yomi.register({
-    id: '1-1', stage: 1, level: 2,
+    id: '1-1', stage: 1, genre: '説明文', level: 2,
     title: '例の部分と考えの部分',
     sub: '文章の中で具体例と筆者の考えを見分ける',
     blocks: [
@@ -49,7 +49,7 @@
 
   /* ---------------- 1-2 ---------------- */
   Yomi.register({
-    id: '1-2', stage: 1, level: 2,
+    id: '1-2', stage: 1, genre: '説明文', level: 2,
     title: '練習：例の束をひと言でくくる',
     sub: '抽象化（文・文章）',
     blocks: [
@@ -88,7 +88,7 @@
 
   /* ---------------- 1-3 ---------------- */
   Yomi.register({
-    id: '1-3', stage: 1, level: 3,
+    id: '1-3', stage: 1, genre: '論説文', level: 3,
     title: '練習：その例は何のためにあるか',
     sub: '具体例の働き（記述）',
     blocks: [
