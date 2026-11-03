@@ -5,7 +5,7 @@
 
   /* ---------------- 0-1 ---------------- */
   Yomi.register({
-    id: '0-1', stage: 0, level: 1,
+    id: '0-1', stage: 0, genre: '混合', level: 1,
     title: '本文に書いてある？　書いていない？',
     sub: '読解の大原則（○・×・△の判定）',
     blocks: [
@@ -68,7 +68,7 @@
 
   /* ---------------- 0-2 ---------------- */
   Yomi.register({
-    id: '0-2', stage: 0, level: 2,
+    id: '0-2', stage: 0, genre: '論説文', level: 2,
     title: '選択肢を区切って確かめる',
     sub: '読解の大原則（選択肢の吟味）',
     blocks: [
@@ -117,7 +117,7 @@
 
   /* ---------------- 0-3 ---------------- */
   Yomi.register({
-    id: '0-3', stage: 0, level: 1,
+    id: '0-3', stage: 0, genre: '物語', level: 1,
     title: 'だれが？　主語をおさえる',
     sub: '主語・主体を正確につかむ',
     blocks: [
@@ -153,7 +153,7 @@
 
   /* ---------------- 0-4 ---------------- */
   Yomi.register({
-    id: '0-4', stage: 0, level: 2,
+    id: '0-4', stage: 0, genre: '混合', level: 2,
     title: '事実と推測を分ける',
     sub: '書いてあること・言えること・言えないこと',
     blocks: [
@@ -188,7 +188,7 @@
 
   /* ---------------- 0-5 ---------------- */
   Yomi.register({
-    id: '0-5', stage: 0, level: 2,
+    id: '0-5', stage: 0, genre: '物語', level: 2,
     title: '練習：物語文で○×△',
     sub: '読解の大原則（物語文）',
     blocks: [

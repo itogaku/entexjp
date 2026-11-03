@@ -4,7 +4,7 @@
 
   /* ---------------- 3-1 ---------------- */
   Yomi.register({
-    id: '3-1', stage: 3, level: 2,
+    id: '3-1', stage: 3, genre: '混合', level: 2,
     title: '材料をそろえて理由を書く',
     sub: '理由説明の答えの組み立て',
     blocks: [
@@ -56,7 +56,7 @@
 
   /* ---------------- 3-2 ---------------- */
   Yomi.register({
-    id: '3-2', stage: 3, level: 2,
+    id: '3-2', stage: 3, genre: '説明文', level: 2,
     title: '練習：説明文で理由をまとめる',
     sub: '因果関係（説明的文章）',
     blocks: [
@@ -90,7 +90,7 @@
 
   /* ---------------- 3-3 ---------------- */
   Yomi.register({
-    id: '3-3', stage: 3, level: 3,
+    id: '3-3', stage: 3, genre: '物語', level: 3,
     title: '練習：物語で行動のわけを書く',
     sub: '因果関係（文学的文章）',
     blocks: [

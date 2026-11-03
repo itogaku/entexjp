@@ -56,7 +56,7 @@
 
   /* ---------------- 7-2 ---------------- */
   Yomi.register({
-    id: '7-2', stage: 7, level: 3,
+    id: '7-2', stage: 7, genre: '物語', level: 3,
     title: 'まちがい選択肢の作られ方',
     sub: '後半・強さ・原因・人と時のずれ',
     blocks: [
@@ -103,7 +103,7 @@
 
   /* ---------------- 7-3 ---------------- */
   Yomi.register({
-    id: '7-3', stage: 7, level: 3,
+    id: '7-3', stage: 7, genre: '混合', level: 3,
     title: '減点される答案を直す',
     sub: '足りない部品を見つけて書き直す',
     blocks: [
@@ -143,8 +143,8 @@
 
   /* ---------------- 7-4 ---------------- */
   Yomi.register({
-    id: '7-4', stage: 7, level: 4, score: 100,
-    title: '入試演習①　説明文',
+    id: '7-4', stage: 7, genre: '論説文', level: 4, score: 100,
+    title: '入試演習①　論説文',
     sub: '便利さと手間（誘導なし）',
     blocks: [
       AIM('入試と同じ形式の問題です。誘導はありません。これまでのステージで練習した手順を、自分で思い出して使いましょう。（目安時間　二十分）'),
@@ -193,7 +193,7 @@
 
   /* ---------------- 7-5 ---------------- */
   Yomi.register({
-    id: '7-5', stage: 7, level: 4, score: 100,
+    id: '7-5', stage: 7, genre: '物語', level: 4, score: 100,
     title: '入試演習②　小説',
     sub: '演奏会前のトランペット（誘導なし）',
     blocks: [
@@ -255,7 +255,7 @@
 
   /* ---------------- 7-6 ---------------- */
   Yomi.register({
-    id: '7-6', stage: 7, level: 4, score: 100,
+    id: '7-6', stage: 7, genre: '随筆', level: 4, score: 100,
     title: '入試演習③　随筆',
     sub: '小さな文房具店（誘導なし）',
     blocks: [
@@ -298,7 +298,7 @@
 
   /* ---------------- 7-7 ---------------- */
   Yomi.register({
-    id: '7-7', stage: 7, level: 4, score: 100,
+    id: '7-7', stage: 7, genre: '説明文', level: 4, score: 100,
     title: '入試演習④　説明文',
     sub: '読み返すより思い出す（誘導なし）',
     blocks: [
@@ -383,7 +383,7 @@
 
   /* ---------------- 7-9 ---------------- */
   Yomi.register({
-    id: '7-9', stage: 7, level: 3,
+    id: '7-9', stage: 7, genre: '論説文', level: 3,
     title: '条件をすべて守って書く',
     sub: '指定語・書き出し・結び・字数',
     blocks: [

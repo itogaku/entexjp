@@ -218,3 +218,9 @@ body.ui-page {
 .plist li .drl { display: block; padding: 0 0 6px 4.2em; font-size: 12px; color: var(--muted, #666); }
 .plist li .drl a { display: inline-block; min-width: 1.8em; margin-left: 4px; padding: 0 4px; text-align: center; border: 1px solid #c8d3e6; border-radius: 4px; color: #2b5fb4; text-decoration: none; }
 .plist li .drl a:hover { background: #eef3fb; }
+
+/* 文章の種類（説明文・論説文）の印と、ステージ５の見出し */
+.gtag { display: inline-block; margin-right: 6px; padding: 0 5px; border-radius: 3px; font-size: 11px; line-height: 1.6; color: #fff; background: #888; }
+.gtag.g-set { background: #2f7d6d; }
+.gtag.g-ron { background: #9a4f2f; }
+.plist li.gsep { column-span: all; break-after: avoid; margin: 10px 0 2px; padding-bottom: 2px; border-bottom: 1px solid #dde3ec; font-weight: bold; font-size: 13px; color: #445; list-style: none; }

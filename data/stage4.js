@@ -5,7 +5,7 @@
 
   /* ---------------- 4-1 ---------------- */
   Yomi.register({
-    id: '4-1', stage: 4, level: 1,
+    id: '4-1', stage: 4, genre: '説明文', level: 1,
     title: '指示語の指す中身をつきとめる',
     sub: '指示語を読む四つの問い',
     blocks: [
@@ -60,7 +60,7 @@
 
   /* ---------------- 4-2 ---------------- */
   Yomi.register({
-    id: '4-2', stage: 4, level: 2,
+    id: '4-2', stage: 4, genre: '説明文', level: 2,
     title: '空欄のつなぎ目に記号を書く',
     sub: '文章中の接続語の空欄',
     blocks: [
@@ -102,7 +102,7 @@
 
   /* ---------------- 4-3 ---------------- */
   Yomi.register({
-    id: '4-3', stage: 4, level: 2,
+    id: '4-3', stage: 4, genre: '説明文', level: 2,
     title: '練習：文や段落を受ける指示語',
     sub: '指示語（説明的文章）',
     blocks: [
@@ -136,7 +136,7 @@
 
   /* ---------------- 4-4 ---------------- */
   Yomi.register({
-    id: '4-4', stage: 4, level: 3,
+    id: '4-4', stage: 4, genre: '説明文', level: 3,
     title: 'ぬけた一文の居場所を決める',
     sub: '一文の頭とおしりで位置をしぼる',
     blocks: [
@@ -176,7 +176,7 @@
 
   /* ---------------- 4-5 ---------------- */
   Yomi.register({
-    id: '4-5', stage: 4, level: 2,
+    id: '4-5', stage: 4, genre: '論説文', level: 2,
     title: '語句の意味は文脈で決める',
     sub: '「ここでの意味」を問う問題',
     blocks: [
