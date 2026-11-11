@@ -409,11 +409,15 @@
     setTimeout(syncFromRadio, 0);
   }
   $('do-print').addEventListener('click', () => window.print());
-  $('back-pick').addEventListener('click', () => {
-    document.body.classList.remove('previewing');
-    $('out-bar').hidden = true;
-    $('sheets').innerHTML = '';
+  // 問題を選ぶ画面は使わない：一覧（index.html）のリンクから、URL で決めたプリントをすぐ作る
+  $('back-pick').addEventListener('click', () => { location.href = 'index.html'; });
+  // 上のバーで、プリントの形と、問題・解答・解説を切りかえる
+  const ob = (id) => document.getElementById(id);
+  ob('obar-mode').addEventListener('change', () => {
+    document.querySelector(`input[name="mode"][value="${ob('obar-mode').value}"]`).checked = true;
+    make();
   });
+  [['obar-q', 'o-q'], ['obar-a', 'o-a'], ['obar-k', 'o-k']].forEach(([a, b]) => ob(a).addEventListener('change', () => { $(b).checked = ob(a).checked; make(); }));
 
   // URL：?kind=skill|kaizen|big&skill=指示語&level=12&mode=guided&auto=5&pick=b7,b8
   (function applyParams() {
@@ -432,12 +436,32 @@
     renderList(); updateCount();
     const picks = (q.get('pick') || '').split(',').filter(Boolean);
     picks.forEach((id) => { const k = keyOf(state.kind, id); if (all[state.kind].some((x) => x.key === k)) state.chosen.add(k); });
-    const n = Number(q.get('auto'));
-    if (n > 0) {
-      $('rand-n').value = String(n);
-      $('sel-rand').click();
+    let n = Number(q.get('auto'));
+    // ?stage=3：そのステージで練習する技能（入門の問題）から選ぶ
+    const stageNo = q.has('stage') ? Number(q.get('stage')) : NaN;
+    const pickRandom = () => {
+      if (!isNaN(stageNo)) {
+        const sk = new Set(Yomi.practice.skillsForStage(stageNo));
+        const v = all.skill.filter((x) => sk.has(x.p.skill));
+        for (let i = v.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [v[i], v[j]] = [v[j], v[i]]; }
+        v.slice(0, n || 5).forEach((x) => state.chosen.add(x.key));
+      } else {
+        $('rand-n').value = String(n);
+        $('sel-rand').click();
+      }
+    };
+    if (!isNaN(stageNo)) {
+      const st = Yomi.stages.find((x) => x.no === stageNo);
+      $('p-title').value = st ? `ステージ${st.label}　${st.name}の練習` : '練習';
+      if (!n) n = 5;
     }
-    if (picks.length || n > 0) { renderList(); updateCount(); make(); }
+    if (n > 0) pickRandom();
+    if (!(picks.length || n > 0)) { location.replace('index.html'); return; }
+    ob('obar-mode').value = document.querySelector('input[name="mode"]:checked').value;
+    // おまかせ（ランダム）のときは、別の問題に入れかえられる
+    ob('reroll').hidden = !(n > 0);
+    ob('reroll').addEventListener('click', () => { state.chosen.clear(); pickRandom(); make(); });
+    renderList(); updateCount(); make();
   })();
   Yomi.bankUI = { make, state, all };
 })();

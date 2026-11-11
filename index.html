@@ -104,9 +104,9 @@
     const mine = W.sets.filter((x) => x.band === band);
     if (!mine.length) return '';
     const u = (extra) => `bank.html?kind=write&band=${band}${extra}`;
-    return `<section class="grp wgrp"><h3><span class="k write">書</span>書く練習　<a class="more" href="${u('')}">選ぶ →</a></h3><ul>${W.skills.filter((s) => mine.some((x) => x.skill === s.name)).map((s) => `
-        <li><a href="${u('&skill=' + enc(s.name))}" title="${esc(s.desc)}"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></a><span class="cnt">${mine.filter((x) => x.skill === s.name).length}題</span>
-          <a class="mini" href="${u('&skill=' + enc(s.name) + '&mode=guided&auto=2')}">２題作る</a></li>`).join('')}</ul></section>`;
+    return `<section class="grp wgrp"><h3><span class="k write">書</span>書く練習</h3><ul>${W.skills.filter((s) => mine.some((x) => x.skill === s.name)).map((s) => `
+        <li><a href="${u('&skill=' + enc(s.name) + '&auto=2')}" title="${esc(s.desc)}"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></a><span class="cnt">${mine.filter((x) => x.skill === s.name).length}題</span>
+          <a class="mini" href="${u('&skill=' + enc(s.name) + '&mode=guided&auto=2')}">ヒントつき</a></li>`).join('')}</ul></section>`;
   }
   /** 技能別の練習（中学入門の小学生版） */
   function skillkCard(band) {
@@ -115,10 +115,10 @@
     const u = (extra) => `bank.html?kind=skillk&band=${band}${extra}`;
     const by = {};
     mine.forEach((x) => { by[x.skill] = (by[x.skill] || 0) + 1; });
-    return `<section class="grp"><h3><span class="k kid">技</span>技能別の練習（中学「入門」の小学生版）　<a class="more" href="${u('')}">選ぶ →</a></h3>
+    return `<section class="grp"><h3><span class="k kid">技</span>技能別の練習（中学「入門」の小学生版）</h3>
       <p class="small">主語・指示語・接続語・理由・気持ち・要約など、技能ごとの短い問題です（${mine.length}問）。</p>
       <div class="acts row"><a class="act" href="${u('&mode=guided&auto=5')}">おまかせ５問<small>誘導つき</small></a><a class="act sub" href="${u('&auto=5')}">おまかせ５問<small>自分で</small></a></div>
-      <p class="small">${Object.entries(by).map(([k, n]) => `<a href="${u('&skill=' + enc(k))}">${esc(k)}</a>（${n}）`).join('　')}</p></section>`;
+      <p class="small">${Object.entries(by).map(([k, n]) => `<a href="${u('&skill=' + enc(k) + '&auto=4')}">${esc(k)}</a>（${n}）`).join('　')}</p></section>`;
   }
 
   function kidsHTML(b) {
@@ -126,8 +126,8 @@
     const cnt = (sk) => mine.filter((x) => x.skill === sk).length;
     const u = (extra) => `bank.html?kind=kids&band=${b.key}${extra}`;
     const li = (s) => `
-        <li><a href="${u('&skill=' + enc(s.name))}" title="${esc(s.desc)}"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></a><span class="cnt">${cnt(s.name)}題</span>
-          <a class="mini" href="${u('&skill=' + enc(s.name) + '&mode=guided&auto=3')}">３題作る</a></li>`;
+        <li><a href="${u('&skill=' + enc(s.name) + '&auto=3')}" title="${esc(s.desc)}"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></a><span class="cnt">${cnt(s.name)}題</span>
+          <a class="mini" href="${u('&skill=' + enc(s.name) + '&mode=guided&auto=3')}">ヒントつき</a></li>`;
     const half = Math.ceil(b.skills.length / 2);
     const g = { '12': ['一年生', '一〜二年生', '二年生'], '34': ['三年生', '四年生', '四年生・長め'], '56': ['五年生', '六年生', '六年生・長め'] }[b.key];
     const desc = {
@@ -141,7 +141,6 @@
         <a class="act" href="${u('&level=1&mode=guided&auto=3')}">★を３題<small>${g[0]}・ヒントつき</small></a>
         <a class="act" href="${u('&level=2&mode=guided&auto=3')}">★★を３題<small>${g[1]}</small></a>
         <a class="act" href="${u('&level=3&auto=3')}">★★★を３題<small>${g[2]}</small></a>
-        <a class="act sub" href="${u('')}">問題を見て選ぶ<small>→</small></a>
       </div>
       <div class="groups">
         <section class="grp"><h3>${{ '12': 'お話を読む', '34': 'お話を読む', '56': '物語と理由' }[b.key]}</h3><ul>${b.skills.slice(0, half).map(li).join('')}</ul></section>
@@ -173,15 +172,14 @@
   function introHTML() {
     const groups = P.skillGroups().map((g) => `
       <section class="grp"><h3>${esc(g.name)}</h3><ul>${g.skills.map((s) => `
-        <li><a href="bank.html?skill=${enc(s.name)}" title="${esc(s.desc)}"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></a><span class="cnt">${s.count}問</span>
-          <a class="mini" href="bank.html?skill=${enc(s.name)}&mode=guided&auto=4" title="${esc(s.name)}を４問、誘導つきで作る">４問作る</a></li>`).join('')}</ul></section>`).join('');
+        <li><a href="bank.html?skill=${enc(s.name)}&auto=4" title="${esc(s.name)}を４問、自力で解くプリント"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></a><span class="cnt">${s.count}問</span>
+          <a class="mini" href="bank.html?skill=${enc(s.name)}&mode=guided&auto=4" title="${esc(s.name)}を４問、誘導つきで作る">誘導つき</a></li>`).join('')}</ul></section>`).join('');
     return head('入', 'intro', '入門　文章に慣れる',
-      '中学生向けの入門です。やさしく短い文章で、技能ごとに読むことに慣れる練習をします。本編（ステージ０〜７）に入る前の準備や、読むのが苦手な人のくり返し練習に使います。', 'intro') + `
+      '中学生向けの入門です。やさしく短い文章で、技能ごとに読むことに慣れる練習をします。「読解の解き方」に入る前の準備や、読むのが苦手な人のくり返し練習に使います。', 'intro') + `
       <div class="acts row">
         <a class="act" href="bank.html?level=12&mode=guided&auto=5">おまかせ５問<small>★１・２・誘導つき</small></a>
         <a class="act" href="bank.html?level=34&auto=5">おまかせ５問<small>★３・４・自力で</small></a>
-        <a class="act sub" href="bank.html?kind=kaizen">答案を直す練習<small>${D.kaizen.length}問</small></a>
-        <a class="act sub" href="bank.html">問題を見て選ぶ<small>→</small></a>
+        <a class="act sub" href="bank.html?kind=kaizen&auto=3">答案を直す練習<small>おまかせ３問</small></a>
       </div>
       <div class="groups">${groups}</div>
       <div class="groups more2">${writeCard('chu')}</div>`;
@@ -200,7 +198,7 @@
     const rows = groups ? groups.map(([name, f]) => { const ps = prints.filter(f); return ps.length ? `<li class="gsep">${name}</li>${ps.map(row).join('')}` : ''; }).join('') : prints.map(row).join('');
     const nd = Yomi.drillsOfStage(s.no).length;
     const sk = P.skillsForStage(s.no);
-    const warm = sk.length ? `<p class="warm"><span class="k intro">入</span>読むのに慣れていないときは、先に入門で：${sk.map((n) => `<a href="bank.html?skill=${enc(n)}">${esc(n)}</a>`).join('・')}</p>` : '';
+    const warm = sk.length ? `<p class="warm"><span class="k intro">入</span>読むのに慣れていないときは、先に入門で：${sk.map((n) => `<a href="bank.html?skill=${enc(n)}&auto=4">${esc(n)}</a>`).join('・')}</p>` : '';
     return head(s.label, '', `ステージ${s.label}　${s.name}`, s.desc, 'stage' + s.no) + `
       <div class="card">
         <div class="col-h"><span class="k ${s.no === 7 ? 'exam' : 'learn'}">${s.no === 7 ? '試' : '本'}</span>${s.no === 7 ? '答え方と入試演習のプリント' : '読解の解き方プリント'}<span class="cnt">${prints.length}枚</span>${nd ? `<a class="more" href="print.html?drill=stage:${s.no}">別の文章で練習（${nd}題）→</a>` : ''}<a class="more" href="print.html?stage=${s.no}">まとめて印刷 →</a></div>
@@ -220,7 +218,7 @@
     return head('試', 'exam', '入試演習　長文の大問',
       '入試と同じ形式の長文問題です。記述・記号選択・抜き出しをまぜた大問で、各問に配点（合計100点）と採点基準・解説がついています。ステージ０〜７で身につけた解き方を、誘導なしで使います。', 'exam') + `
       <div class="card">
-        <div class="col-h"><span class="k exam">試</span>大問を選んでプリントを作る<span class="cnt">${sets.length}題</span><a class="more" href="bank.html?kind=big">まとめて選ぶ →</a></div>
+        <div class="col-h"><span class="k exam">試</span>大問をえらぶとプリントができます<span class="cnt">${sets.length}題</span></div>
         <ul class="plist cols">${rows}</ul>
       </div>`;
   }
@@ -260,7 +258,7 @@
         <ul class="plist cols">${rows}</ul>
       </div>
       <div class="card">
-        <div class="col-h"><span class="k exam">試</span>古文・漢文の入試演習<span class="cnt">${big.length}題</span><a class="more" href="bank.html?kind=big">まとめて選ぶ →</a></div>
+        <div class="col-h"><span class="k exam">試</span>古文・漢文の入試演習<span class="cnt">${big.length}題</span></div>
         <ul class="plist cols">${brow}</ul>
       </div>`;
   }
