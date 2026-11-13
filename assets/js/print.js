@@ -19,7 +19,7 @@
     if (params.has('v')) list = list.filter((d) => String(d.v) === params.get('v'));
     prints = list.map(Yomi.drillPrint);
     const base = m ? null : Yomi.find(key);
-    title = !list.length ? '' : m ? `${m[1] === 'L' ? '言葉と文の基礎' : 'ステージ' + m[1]}　別の文章で練習（まとめて印刷）` : list.length === 1 ? `${key}　${base ? base.title : ''}　練習${Yomi.drillLetter(list[0].v)}` : `${key}　${base ? base.title : ''}　別の文章で練習（${list.length}題）`;
+    title = !list.length ? '' : m ? `${({ L: '言葉と文の基礎', K: '古典', G: '文法' })[m[1]] || 'ステージ' + m[1]}　別の問題で練習（まとめて印刷）` : list.length === 1 ? `${key}　${base ? base.title : ''}　練習${Yomi.drillLetter(list[0].v)}` : `${key}　${base ? base.title : ''}　別の文章で練習（${list.length}題）`;
   } else if (params.has('stage')) {
     // 数字はステージ、文字は古典（K）・作文（S）などのまとまり
     const raw = params.get('stage');

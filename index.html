@@ -61,6 +61,11 @@
 <script src="data/bunpo-2.js"></script>
 <script src="data/bunpo-3.js"></script>
 <script src="data/bunpo-4.js"></script>
+<script src="data/drill-k1.js"></script>
+<script src="data/drill-k2.js"></script>
+<script src="data/drill-g1.js"></script>
+<script src="data/drill-g2.js"></script>
+<script src="data/drill-g3.js"></script>
 <script src="data/bank.js"></script>
 <script src="data/bank-plus.js"></script>
 <script src="data/bank-plus2.js"></script>
@@ -246,7 +251,7 @@
         <span class="pid">${p.id}</span>
         <span><span class="pt">${p.title}</span><span class="ps">${p.sub || ''}</span></span>
         ${dots(p.level)}
-      </a></li>`).join('');
+      </a>${Yomi.drillsOf(p.id).length ? `<span class="drl">別の問題で練習：${Yomi.drillsOf(p.id).map((d) => `<a href="print.html?drill=${p.id}&v=${d.v}">${Yomi.drillLetter(d.v)}</a>`).join('')}</span>` : ''}</li>`).join('');
     const big = D.bigsets.filter((b) => b.genre === '古文' || b.genre === '漢文');
     const brow = big.map((b) => `
       <li><a href="bank.html?kind=big&pick=${b.id}"><span class="pid">${esc(b.genre)}</span>
@@ -254,7 +259,7 @@
     return head('古', 'koten', '古典　文法と読解',
       '歴史的仮名遣い・古語・係り結び・主語・会話文から、現代語訳との対応・主題、和歌と俳句、漢文の返り点と漢詩までを、解き方のプリントで学びます。仕上げは古文・漢文の入試演習です。', 'koten') + `
       <div class="card">
-        <div class="col-h"><span class="k koten">古</span>解き方を学ぶプリント<span class="cnt">${prints.length}枚</span><a class="more" href="print.html?stage=K">まとめて印刷 →</a></div>
+        <div class="col-h"><span class="k koten">古</span>解き方を学ぶプリント<span class="cnt">${prints.length}枚</span>${Yomi.drillsOfStage('K').length ? `<a class="more" href="print.html?drill=stage:K">別の問題で練習（${Yomi.drillsOfStage('K').length}題）→</a>` : ''}<a class="more" href="print.html?stage=K">まとめて印刷 →</a></div>
         <ul class="plist cols">${rows}</ul>
       </div>
       <div class="card">
@@ -286,11 +291,11 @@
         <span class="pid">${p.id}</span>
         <span><span class="pt">${p.title}</span><span class="ps">${p.sub || ''}</span></span>
         ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
-      </a></li>`).join('');
+      </a>${Yomi.drillsOf(p.id).length ? `<span class="drl">別の問題で練習：${Yomi.drillsOf(p.id).map((d) => `<a href="print.html?drill=${p.id}&v=${d.v}">${Yomi.drillLetter(d.v)}</a>`).join('')}</span>` : ''}</li>`).join('');
     return head('文', 'bunpo', '文法　口語文法',
       '言葉の単位・文節の関係から、品詞・活用・助詞と助動詞、まぎらわしい語の見分け方、敬語までを順に学びます。最後のプリントは入試形式のまとめテストです。', 'bunpo') + `
       <div class="card">
-        <div class="col-h"><span class="k bunpo">文</span>文法のプリント<span class="cnt">${prints.length}枚</span><a class="more" href="print.html?stage=G">まとめて印刷 →</a></div>
+        <div class="col-h"><span class="k bunpo">文</span>文法のプリント<span class="cnt">${prints.length}枚</span>${Yomi.drillsOfStage('G').length ? `<a class="more" href="print.html?drill=stage:G">別の問題で練習（${Yomi.drillsOfStage('G').length}題）→</a>` : ''}<a class="more" href="print.html?stage=G">まとめて印刷 →</a></div>
         <ul class="plist cols">${rows}</ul>
       </div>`;
   }
