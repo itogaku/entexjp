@@ -111,9 +111,11 @@
         } else {
           const a = Yomi.plain(q.answer).replace(/[\s　]/g, '');
           const lim = charLimit(Yomi.plain(q.q));
-          const n = lim || Math.min(40, Math.max(4, Array.from(a).length + 2));
           const per = set.band === '34' ? 12 : set.band === '12' ? 20 : 15;
-          area = G(n, a, Math.min(n, per));
+          if (lim) area = G(lim, a, Math.min(lim, per));
+          // 字数の決まりがないときは、手書きに合わせた欄にする（短い答えは（　）、長い答えは罫線）
+          else if (Array.from(a).length <= 10) area = `<p class="indent mt">${B(Array.from(a).length + 2, a)}</p>`;
+          else area = L(1, a, 0, set.band === '12' ? 11 : 9);
         }
         return `<div class="kq"><span class="kq-no">（${KNO[i]}）</span>${slot(R(q.q))}${guided && q.hint ? `<div class="khint">ヒント：${slot(R(q.hint))}</div>` : ''}${area}</div>`;
       }).join('');

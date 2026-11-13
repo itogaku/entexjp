@@ -219,7 +219,7 @@ body {
 /* （　　）型の書き込み欄 */
 .blank {
   display: inline-block; position: relative;
-  block-size: 1.9em;
+  block-size: 2.6em;
   border: 1px solid var(--rule);
   vertical-align: middle;
   margin-inline: .15em;
@@ -229,7 +229,7 @@ body {
 .blank > .a {
   position: absolute; inset: 0;
   padding-block-start: .25em;
-  font-size: .82em; line-height: 2.25em;
+  font-size: .82em; line-height: 3.1em;
   white-space: nowrap; overflow: visible;
 }
 .blank > .lbl {
@@ -381,7 +381,7 @@ body {
 table.tbl { border-collapse: collapse; font-size: 9.5pt; line-height: 1.6; text-indent: 0; }
 table.tbl th, table.tbl td { border: 1px solid var(--rule); padding: 1.5mm 1mm; vertical-align: top; }
 table.tbl th { background: var(--soft); font-family: "BIZ UDPGothic", sans-serif; font-weight: bold; }
-table.tbl td.tw { block-size: 2.8em; }
+table.tbl td.tw { block-size: 3.4em; }
 table.tbl td.tw { position: relative; }
 table.tbl td.tw .a { position: absolute; inset: 1mm; font-size: 9pt; line-height: 1.5; }
 
