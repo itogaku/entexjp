@@ -41,7 +41,9 @@
       AIM(`「${base.title}」で学んだ解き方を、別の文章で使います。手順どおりに解いてから、答え合わせをしましょう。`),
     ];
     if (d.point && d.point.length) blocks.push(POINT('解き方の手順', STEPS(d.point)));
-    blocks.push(PASS({ title: `【${d.genre || '文章'}】${d.title || ''}`, nums: !!d.nums, paras: d.passage.map(mark) }));
+    // 「＃」で始まる段落は漢文（送り仮名（　）・返り点［　］つきの訓読文）
+    const para = (t) => (/^＃/.test(t) ? `<span class="kanbun-line">${Yomi.kanbun(String(t).slice(1))}</span>` : mark(t));
+    blocks.push(PASS({ title: `【${d.genre || '文章'}】${d.title || ''}`, nums: !!d.nums, paras: d.passage.map(para) }));
     d.qs.forEach((q, i) => blocks.push(Q(kanji(i + 1), mark(q.q), area(q))));
     const kaisetsu = d.qs.map((q, i) => KAI(kanji(i + 1), String(q.answer), q.explain ? `<p>${q.explain}</p>` : ''));
     // 文章の組み立て（同じ練習の別の文章と、組み立てがちがうことを先生が確かめられるように）

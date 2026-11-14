@@ -46,11 +46,17 @@
   /** ふりがなの書き方をはずした文字列 */
   Yomi.plain = (text) => String(text).replace(/《[^》]*》/g, '').replace(/｜/g, '');
 
+  /** 答えの字数（ふりがな・タグをのぞく）：手書きの欄の大きさを決めるのに使う */
+  const handLen = (ans) => Array.from(String(ans || '').replace(/<rt>[\s\S]*?<\/rt>/g, '').replace(/<[^>]+>/g, '').replace(/《[^》]*》/g, '').replace(/[｜\s]/g, '')).length;
+  Yomi.handLen = handLen;
+
   /* ---------------- 部品 ---------------- */
   const h = (Yomi.h = {
     /** （　　）型の書き込み欄。len＝文字数の目安（em） */
     B(len, ans = '', lbl = '') {
-      return `<span class="blank" style="inline-size:${len}em">${lbl ? `<span class="lbl">${lbl}</span>` : ''}<span class="a">${esc(ans)}</span></span>`;
+      // 手書きは印刷の字より大きいので、欄は字数の目安の一・六倍（答えの長さにも合わせる）。列からはみ出さないよう四十em まで
+      const w = Math.min(40, Math.max(len * 1.6, handLen(ans) * 1.8 + 1, 3));
+      return `<span class="blank" style="inline-size:${w.toFixed(1)}em">${lbl ? `<span class="lbl">${lbl}</span>` : ''}<span class="a">${esc(ans)}</span></span>`;
     },
     /** 記号を書く□ */
     K(ans = '', wide = false) {
@@ -58,12 +64,16 @@
     },
     /** 本文中の空所（Ａ）など */
     S(label, ans = '') {
-      return `<span class="slot"><span class="slbl">${label}</span><span class="a">${esc(ans)}</span></span>`;
+      return `<span class="slot"><span class="slbl">${String(label).replace(/^([Ⅰ-Ⅻ])$/, '<span class="tcy">$1</span>')}</span><span class="a">${esc(ans)}</span></span>`;
     },
     /** 書き込み行：cols＝行数、len＝一行の長さ(mm) */
-    L(cols, ans = '', len = 0) {
+    L(cols, ans = '', len = 0, hand = 8) {
+      // 字数の決まりがない書き込み行：手書き（一字およそ hand mm）で答えが入る行数に、一行のゆとりを足す。行の間は十一mm
+      const lineLen = len || 160;
+      const need = Math.ceil((handLen(ans) * hand) / lineLen) + 1;
+      const n = Math.min(10, Math.max(cols, ans ? need : cols));
       const size = len ? `inline-size:${len}mm;` : '';
-      return `<span class="lines" style="--lh:9mm;block-size:${cols * 9}mm;line-height:9mm;${size}"><span class="a">${esc(ans)}</span></span>`;
+      return `<span class="lines" style="--lh:11mm;block-size:${n * 11}mm;line-height:11mm;${size}"><span class="a">${esc(ans)}</span></span>`;
     },
     /** 漢文の本文（一行＝一句）。lines：訓読の書き方の文字列の配列 */
     KAN(lines, title = '') {
@@ -135,8 +145,10 @@
     /** 本文。paras＝段落の配列。nums＝段落番号を付けるか */
     PASS({ title = '', paras = [], nums = false, src = '', frame = false, noind = false }) {
       const marks = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'];
+      // 枠（まとめの文・補足文など）の段落には段落番号をつけない
+      let k = 0;
       const body = paras
-        .map((p, i) => `<p${noind ? ' class="noind"' : ''}>${nums ? `<span class="pno">${marks[i]}</span>` : ''}${p}</p>`)
+        .map((p) => `<p${noind ? ' class="noind"' : ''}>${nums && !/^\s*<(span|div) class="frame/.test(p) ? `<span class="pno">${marks[k++]}</span>` : ''}${p}</p>`)
         .join('');
       return `<div class="passage${frame ? ' frame' : ''}">${title ? `<div class="ps-ttl">${title}</div>` : ''}${body}${src ? `<p class="src">${src}</p>` : ''}</div>`;
     },
@@ -172,7 +184,8 @@
     TBL(rows, cls = '') {
       const cell = (c) => {
         if (c && typeof c === 'object') {
-          return `<td class="tw" style="inline-size:${c.len || 10}em;min-inline-size:${c.len || 10}em"><span class="tw-sp">&nbsp;</span><span class="a">${c.ans || ''}</span></td>`;
+          const w = Math.max((c.len || 10) * 1.4, handLen(c.ans) * 1.6);
+          return `<td class="tw" style="inline-size:${w.toFixed(1)}em;min-inline-size:${w.toFixed(1)}em"><span class="tw-sp">&nbsp;</span><span class="a">${c.ans || ''}</span></td>`;
         }
         return String(c).startsWith('#') ? `<th>${String(c).slice(1)}</th>` : `<td>${c}</td>`;
       };

@@ -61,9 +61,26 @@
 <script src="data/bunpo-2.js"></script>
 <script src="data/bunpo-3.js"></script>
 <script src="data/bunpo-4.js"></script>
+<script src="data/kanji-1.js"></script>
+<script src="data/kanji-2.js"></script>
+<script src="data/drill-k1.js"></script>
+<script src="data/drill-k2.js"></script>
+<script src="data/drill-g1.js"></script>
+<script src="data/drill-g2.js"></script>
+<script src="data/drill-g3.js"></script>
+<script src="data/stage7b.js"></script>
+<script src="data/drill-s7b.js"></script>
+<script src="data/stage7c.js"></script>
+<script src="data/drill-s7c.js"></script>
+<script src="data/sakubun3.js"></script>
+<script src="data/koten-plus.js"></script>
+<script src="data/drill-k3.js"></script>
+<script src="data/bunpo-5.js"></script>
+<script src="data/drill-g4.js"></script>
 <script src="data/bank.js"></script>
 <script src="data/bank-plus.js"></script>
 <script src="data/bank-plus2.js"></script>
+<script src="data/bank-chiba.js"></script>
 <script src="data/kids.js"></script>
 <script src="data/bank-kids.js"></script>
 <script src="data/write.js"></script>
@@ -87,6 +104,7 @@
     { key: 'saku', n: '作', cls: 'saku', name: '作文', ct: `条件作文 ${Yomi.byStage('S').length}枚` },
     { key: 'koten', n: '古', cls: 'koten', name: '古典', ct: `文法と読解 ${Yomi.byStage('K').length}枚` },
     { key: 'bunpo', n: '文', cls: 'bunpo', name: '文法', ct: `口語文法 ${Yomi.byStage('G').length}枚` },
+    { key: 'kanji', n: '漢', cls: 'kanji', name: '漢字・語句', ct: `読み書き・語句 ${Yomi.byStage('J').length}枚` },
   ];
   document.getElementById('rail').innerHTML = panes.map((p, i) =>
     `${i === 0 ? '<li class="sep">はじめに</li>' : ''}${i === 1 ? '<li class="sep">小学生</li>' : ''}${p.key === 'intro' ? '<li class="sep">中学生　入門</li>' : ''}${p.key === 'kiso' ? '<li class="sep">言葉と文の基礎</li>' : ''}${p.key === 'stage0' ? '<li class="sep">読解の解き方</li>' : ''}${p.key === 'stage7' ? '<li class="sep">答え方と入試演習</li>' : ''}${p.key === 'exam' ? '<li class="sep">仕上げ</li>' : ''}` +
@@ -232,7 +250,7 @@
         ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
       </a></li>`).join('');
     return head('作', 'saku', '作文　入試の条件作文',
-      '原稿用紙の使い方と作文の型から始めて、条件作文・資料を読んで書く作文・推敲までを練習します。最後のプリントは入試形式の模擬で、採点基準がついています。', 'saku') + `
+      '原稿用紙の使い方と作文の型から始めて、条件作文・資料を読んで書く作文・推敲までを練習します。S-13 は入試形式の模擬、S-14〜S-18 は「二段落・十行以内」で書く形（たとえ話の結末・似た言葉・二人の会話・帯グラフ）の模擬で、採点基準がついています。', 'saku') + `
       <div class="card">
         <div class="col-h"><span class="k saku">作</span>作文のプリント<span class="cnt">${prints.length}枚</span></div>
         <ul class="plist cols">${rows}</ul>
@@ -246,7 +264,7 @@
         <span class="pid">${p.id}</span>
         <span><span class="pt">${p.title}</span><span class="ps">${p.sub || ''}</span></span>
         ${dots(p.level)}
-      </a></li>`).join('');
+      </a>${Yomi.drillsOf(p.id).length ? `<span class="drl">別の問題で練習：${Yomi.drillsOf(p.id).map((d) => `<a href="print.html?drill=${p.id}&v=${d.v}">${Yomi.drillLetter(d.v)}</a>`).join('')}</span>` : ''}</li>`).join('');
     const big = D.bigsets.filter((b) => b.genre === '古文' || b.genre === '漢文');
     const brow = big.map((b) => `
       <li><a href="bank.html?kind=big&pick=${b.id}"><span class="pid">${esc(b.genre)}</span>
@@ -254,7 +272,7 @@
     return head('古', 'koten', '古典　文法と読解',
       '歴史的仮名遣い・古語・係り結び・主語・会話文から、現代語訳との対応・主題、和歌と俳句、漢文の返り点と漢詩までを、解き方のプリントで学びます。仕上げは古文・漢文の入試演習です。', 'koten') + `
       <div class="card">
-        <div class="col-h"><span class="k koten">古</span>解き方を学ぶプリント<span class="cnt">${prints.length}枚</span><a class="more" href="print.html?stage=K">まとめて印刷 →</a></div>
+        <div class="col-h"><span class="k koten">古</span>解き方を学ぶプリント<span class="cnt">${prints.length}枚</span>${Yomi.drillsOfStage('K').length ? `<a class="more" href="print.html?drill=stage:K">別の問題で練習（${Yomi.drillsOfStage('K').length}題）→</a>` : ''}<a class="more" href="print.html?stage=K">まとめて印刷 →</a></div>
         <ul class="plist cols">${rows}</ul>
       </div>
       <div class="card">
@@ -286,18 +304,34 @@
         <span class="pid">${p.id}</span>
         <span><span class="pt">${p.title}</span><span class="ps">${p.sub || ''}</span></span>
         ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
-      </a></li>`).join('');
+      </a>${Yomi.drillsOf(p.id).length ? `<span class="drl">別の問題で練習：${Yomi.drillsOf(p.id).map((d) => `<a href="print.html?drill=${p.id}&v=${d.v}">${Yomi.drillLetter(d.v)}</a>`).join('')}</span>` : ''}</li>`).join('');
     return head('文', 'bunpo', '文法　口語文法',
-      '言葉の単位・文節の関係から、品詞・活用・助詞と助動詞、まぎらわしい語の見分け方、敬語までを順に学びます。最後のプリントは入試形式のまとめテストです。', 'bunpo') + `
+      '言葉の単位・文節の関係から、品詞・活用・助詞と助動詞、まぎらわしい語の見分け方、敬語までを順に学びます。G-13 は入試形式のまとめテスト、G-14 は補助動詞・補助形容詞、G-15 は入試の文法小問（品詞の仲間外れなど）です。', 'bunpo') + `
       <div class="card">
-        <div class="col-h"><span class="k bunpo">文</span>文法のプリント<span class="cnt">${prints.length}枚</span><a class="more" href="print.html?stage=G">まとめて印刷 →</a></div>
+        <div class="col-h"><span class="k bunpo">文</span>文法のプリント<span class="cnt">${prints.length}枚</span>${Yomi.drillsOfStage('G').length ? `<a class="more" href="print.html?drill=stage:G">別の問題で練習（${Yomi.drillsOfStage('G').length}題）→</a>` : ''}<a class="more" href="print.html?stage=G">まとめて印刷 →</a></div>
+        <ul class="plist cols">${rows}</ul>
+      </div>`;
+  }
+
+  function kanjiHTML() {
+    const prints = Yomi.byStage('J');
+    const rows = prints.map((p) => `
+      <li><a href="print.html?id=${p.id}" title="${esc(p.sub || '')}">
+        <span class="pid">${p.id}</span>
+        <span><span class="pt">${p.title}</span><span class="ps">${p.sub || ''}</span></span>
+        ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
+      </a>${Yomi.drillsOf(p.id).length ? `<span class="drl">別の問題で練習：${Yomi.drillsOf(p.id).map((d) => `<a href="print.html?drill=${p.id}&v=${d.v}">${Yomi.drillLetter(d.v)}</a>`).join('')}</span>` : ''}</li>`).join('');
+    return head('漢', 'kanji', '漢字・語句　読み書きと言葉の知識',
+      '入試の大問で毎年出る漢字の読み・書き（最後は四字熟語）を、本番と同じ形の小テストでくり返し練習します。同訓異字・送りがな・四字熟語・慣用句・故事成語のまとめもここにあります。', 'kanji') + `
+      <div class="card">
+        <div class="col-h"><span class="k kanji">漢</span>漢字・語句のプリント<span class="cnt">${prints.length}枚</span>${Yomi.drillsOfStage('J').length ? `<a class="more" href="print.html?drill=stage:J">別の問題で練習（${Yomi.drillsOfStage('J').length}題）→</a>` : ''}<a class="more" href="print.html?stage=J">まとめて印刷 →</a></div>
         <ul class="plist cols">${rows}</ul>
       </div>`;
   }
 
   function show(key, push) {
     const p = panes.find((x) => x.key === key) || panes[0];
-    document.getElementById('pane').innerHTML = p.key === 'diag' ? diagHTML() : p.b ? kidsHTML(p.b) : p.key === 'intro' ? introHTML() : p.key === 'exam' ? examHTML() : p.key === 'saku' ? sakuHTML() : p.key === 'koten' ? kotenHTML() : p.key === 'bunpo' ? bunpoHTML() : p.key === 'kiso' ? kisoHTML() : stageHTML(p.s);
+    document.getElementById('pane').innerHTML = p.key === 'diag' ? diagHTML() : p.b ? kidsHTML(p.b) : p.key === 'intro' ? introHTML() : p.key === 'exam' ? examHTML() : p.key === 'saku' ? sakuHTML() : p.key === 'koten' ? kotenHTML() : p.key === 'bunpo' ? bunpoHTML() : p.key === 'kanji' ? kanjiHTML() : p.key === 'kiso' ? kisoHTML() : stageHTML(p.s);
     document.querySelectorAll('#rail button').forEach((b) => b.setAttribute('aria-current', String(b.dataset.pane === p.key)));
     const cur = document.querySelector('#rail button[aria-current="true"]');
     if (cur && cur.scrollIntoView && window.innerWidth <= 760) cur.scrollIntoView({ inline: 'center', block: 'nearest' });
@@ -308,7 +342,7 @@
     const b = e.target.closest('button[data-pane]');
     if (b) { show(b.dataset.pane, true); window.scrollTo(0, 0); }
   });
-  const fromHash = /^#(diag|kids\d\d|kids|intro|exam|saku|koten|bunpo|kiso|stage\d)$/.exec(location.hash);
+  const fromHash = /^#(diag|kids\d\d|kids|intro|exam|saku|koten|bunpo|kanji|kiso|stage\d)$/.exec(location.hash);
   const want = fromHash ? fromHash[1] : store.get() || 'intro';
   show(want === 'kids' ? 'kids12' : want, false);
 </script>
