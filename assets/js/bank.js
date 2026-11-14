@@ -66,7 +66,7 @@
   function skillBlocks(p, no, guided) {
     const area = answerArea(p, p.answer);
     const blocks = [
-      Q(kanji(no), `${esc(p.skill)}　<span class="small">${STARS[p.level] || ''}</span>`,
+      Q(kanji(no), `${esc(p.skill)}　<span class="small">${STARS[p.level] || ''}${p.genre && !['設問文', '混合'].includes(p.genre) ? `　〔${esc(p.genre)}〕` : ''}</span>`,
         PASS({ frame: true, paras: paras(p.passage) }) + `<p class="mt"><b class="gothic">問</b>　${R(p.q)}</p>${area}`),
     ];
     if (guided) blocks.push(guidedPart(p.guide || [], p.retry, answerArea(p, p.answer)));
