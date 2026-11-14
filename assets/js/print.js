@@ -26,7 +26,7 @@
     const no = /^\d+$/.test(raw) ? Number(raw) : raw;
     prints = Yomi.byStage(no);
     const s = Yomi.stages.find((x) => x.no === no);
-    const NAMES = { L: '言葉と文の基礎', K: '古典　文法と読解', G: '文法　口語文法', S: '作文', D: '診断テスト' };
+    const NAMES = { L: '言葉と文の基礎', K: '古典　文法と読解', G: '文法　口語文法', J: '漢字・語句', S: '作文', D: '診断テスト' };
     title = s ? `ステージ${s.label}　${s.name}（まとめて印刷）` : NAMES[no] ? `${NAMES[no]}（まとめて印刷）` : '';
   }
 
