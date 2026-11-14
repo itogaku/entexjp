@@ -145,8 +145,10 @@
     /** 本文。paras＝段落の配列。nums＝段落番号を付けるか */
     PASS({ title = '', paras = [], nums = false, src = '', frame = false, noind = false }) {
       const marks = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'];
+      // 枠（まとめの文・補足文など）の段落には段落番号をつけない
+      let k = 0;
       const body = paras
-        .map((p, i) => `<p${noind ? ' class="noind"' : ''}>${nums ? `<span class="pno">${marks[i]}</span>` : ''}${p}</p>`)
+        .map((p) => `<p${noind ? ' class="noind"' : ''}>${nums && !/^\s*<(span|div) class="frame/.test(p) ? `<span class="pno">${marks[k++]}</span>` : ''}${p}</p>`)
         .join('');
       return `<div class="passage${frame ? ' frame' : ''}">${title ? `<div class="ps-ttl">${title}</div>` : ''}${body}${src ? `<p class="src">${src}</p>` : ''}</div>`;
     },
