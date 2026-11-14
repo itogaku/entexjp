@@ -306,7 +306,7 @@
         ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
       </a>${Yomi.drillsOf(p.id).length ? `<span class="drl">別の問題で練習：${Yomi.drillsOf(p.id).map((d) => `<a href="print.html?drill=${p.id}&v=${d.v}">${Yomi.drillLetter(d.v)}</a>`).join('')}</span>` : ''}</li>`).join('');
     return head('文', 'bunpo', '文法　口語文法',
-      '言葉の単位・文節の関係から、品詞・活用・助詞と助動詞、まぎらわしい語の見分け方、敬語までを順に学びます。最後のプリントは入試形式のまとめテストです。', 'bunpo') + `
+      '言葉の単位・文節の関係から、品詞・活用・助詞と助動詞、まぎらわしい語の見分け方、敬語までを順に学びます。G-13 は入試形式のまとめテスト、G-14 は補助動詞・補助形容詞、G-15 は入試の文法小問（品詞の仲間外れなど）です。', 'bunpo') + `
       <div class="card">
         <div class="col-h"><span class="k bunpo">文</span>文法のプリント<span class="cnt">${prints.length}枚</span>${Yomi.drillsOfStage('G').length ? `<a class="more" href="print.html?drill=stage:G">別の問題で練習（${Yomi.drillsOfStage('G').length}題）→</a>` : ''}<a class="more" href="print.html?stage=G">まとめて印刷 →</a></div>
         <ul class="plist cols">${rows}</ul>
