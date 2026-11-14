@@ -30,8 +30,10 @@
       .jk-sq > .a { position: absolute; inset: 0; font-family: "BIZ UDMincho", serif; font-size: 19pt; line-height: 12.5mm; }
       .jk-ok { font-size: 12.5pt; line-height: 1.4; padding-inline: .15em; }
       .jk-yomi .blank { block-size: 2.4em; margin-inline: 0; }
-      .jk-two { display: grid; grid-auto-flow: column; grid-template-columns: 1fr 1fr; column-gap: 10mm; }
+      .jk-two { display: grid; grid-auto-flow: column; grid-template-columns: 1fr 1fr; column-gap: 6mm; row-gap: 3mm; }
       .jk-two .jk-ans { min-inline-size: 0; }
+      .jk-two .jk-item { font-size: 10.5pt; gap: 2mm; }
+      .jk-two .jk-s { white-space: nowrap; }
       .jk-hint { margin: 0; padding-inline-start: 1.2em; text-indent: -1.2em; }
       .jk-hint b { font-family: "BIZ UDPGothic", sans-serif; }
     `;
@@ -224,7 +226,7 @@
     ] },
     { r: [
       ['新しい考えが社会に', '浸透', 'する。', 'しんとう', '考えなどが広くしみこむこと。さんずい。'],
-      ['恵みの雨が大地を', '潤す', '。', 'うるおす', '水分をあたえる。音は「ジュン」（潤沢）。'],
+      ['恵みの雨が大地を', '潤す', '。', 'うるおす', '水分をあたえる。音は「ジュン」（湿潤）。'],
       ['時間に', '余裕', 'をもって出かける。', 'よゆう', 'ゆとり。「裕」はころもへん。'],
       ['相手の話を', '遮る', 'のは失礼だ。', 'さえぎる', 'とちゅうでじゃまをして止める。しんにょう。'],
     ], w: [
@@ -418,8 +420,8 @@
   ];
 
   const BANDS = [
-    { name: '基本', level: 1, levelText: '★☆☆ 基本', sub: '中学で習う常用漢字・入試によく出る基本の語' },
-    { name: '標準', level: 2, levelText: '★★☆ 標準', sub: '入試によく出る中学三年レベルの語' },
+    { name: '基本', level: 1, levelText: '★☆☆ 基本', sub: '中学の常用漢字・入試の基本語' },
+    { name: '標準', level: 2, levelText: '★★☆ 標準', sub: '入試頻出の中学三年レベル' },
     { name: '発展', level: 3, levelText: '★★★ 発展', sub: '入試で差がつく難しめの語' },
   ];
 
@@ -433,7 +435,7 @@
     Yomi.register({
       id: `J-${no}`, stage: 'J', level: band.level, levelText: band.levelText, chip: '漢字',
       title: `漢字の読み書き　第${kansuji(no)}回`,
-      sub: `${band.name}（${band.sub}）　読み四問・書き五問（最後は四字熟語）`,
+      sub: `${band.name}　${band.sub}（読み四・書き五）`,
       blocks: [
         NOTE,
         Q('二', '次の⑴〜⑷の文の――線部の漢字の読みを、ひらがなで書きなさい。', yomi),
@@ -465,14 +467,14 @@
     ['姉は市役所に', [['ツト', '勤'], 'めて'], 'いる。'],
   ];
   const P31b = [
-    ['宇宙の研究に強い', [['カンシン', '関心']], 'を持つ。'],
-    ['弟の親切な行いに', [['カンシン', '感心']], 'した。'],
-    ['小学生を', [['タイショウ', '対象']], 'にした本。'],
+    ['宇宙に強い', [['カンシン', '関心']], 'を持つ。'],
+    ['弟の行いに', [['カンシン', '感心']], 'した。'],
+    ['小学生を', [['タイショウ', '対象']], 'とする本。'],
     ['二人の性格は', [['タイショウ', '対照']], '的だ。'],
-    ['記者が事故の責任を', [['ツイキュウ', '追及']], 'する。'],
-    ['科学者が宇宙の真理を', [['ツイキュウ', '追究']], 'する。'],
-    ['この時計の品質は', [['ホショウ', '保証']], 'する。'],
-    ['災害による損害を', [['ホショウ', '補償']], 'する。'],
+    ['事故の責任を', [['ツイキュウ', '追及']], 'する。'],
+    ['宇宙の真理を', [['ツイキュウ', '追究']], 'する。'],
+    ['時計の品質を', [['ホショウ', '保証']], 'する。'],
+    ['事故の損害を', [['ホショウ', '補償']], 'する。'],
   ];
   const k31 = (list) => `<div class="jk-two" style="grid-template-rows:repeat(${Math.ceil(list.length / 2)}, auto)">${list.map(([a, segs, b], k) => item(k, `${a}${BO(shown(segs))}${b}`, area(segs))).join('')}</div>`;
 
@@ -514,8 +516,8 @@
       Q('一', '次の⑴〜⑿の文の――線部のカタカナを漢字に直して、楷書で書きなさい。（送りがなは印刷してあります）', k31(P31a)),
       Q('二', '次の⑴〜⑻の文の――線部のカタカナを漢字に直して、楷書で書きなさい。', k31(P31b)),
       Q('三', '次の⑴・⑵のア〜エの――線部のカタカナを漢字に直したとき、ほかの三つと<b>ちがう漢字</b>になるものを、それぞれ一つずつ選び、記号で答えなさい。', `
-        <p class="hang mt2"><span class="jk-no">⑴</span>ア　税金を${BO('オサ')}める　イ　注文の品を${BO('オサ')}める　ウ　会費を${BO('オサ')}める　エ　好成績を${BO('オサ')}める　　${K('エ')}</p>
-        <p class="hang mt2"><span class="jk-no">⑵</span>ア　問題の解決に${BO('ツト')}める　イ　劇の主役を${BO('ツト')}める　ウ　会の議長を${BO('ツト')}める　エ　案内係を${BO('ツト')}める　　${K('ア')}</p>`),
+        <p class="hang mt2"><span class="jk-no">⑴</span>${K('エ')}　ア　税金を${BO('オサ')}める　イ　注文の品を${BO('オサ')}める　ウ　会費を${BO('オサ')}める　エ　好成績を${BO('オサ')}める</p>
+        <p class="hang mt2"><span class="jk-no">⑵</span>${K('ア')}　ア　問題の解決に${BO('ツト')}める　イ　劇の主役を${BO('ツト')}める　ウ　会の議長を${BO('ツト')}める　エ　案内係を${BO('ツト')}める</p>`),
     ],
     kaisetsu: [
       KAI('見分け方', '熟語に置きかえる', '<p>同訓異字は「その字を使った熟語」を思いうかべると決まります。タイム→時計（計る）、深さ→測量（測る）、重さ→重量（量る）、解決をめざす→意図（図る）、会議に意見を求める→諮問（諮る）。同音異義語は、意味の中心になる一字（関わる・感じる／象・照・称／求・究・及）を見ます。</p>'),

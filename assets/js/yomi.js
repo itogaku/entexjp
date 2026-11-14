@@ -64,7 +64,7 @@
     },
     /** 本文中の空所（Ａ）など */
     S(label, ans = '') {
-      return `<span class="slot"><span class="slbl">${label}</span><span class="a">${esc(ans)}</span></span>`;
+      return `<span class="slot"><span class="slbl">${String(label).replace(/^([Ⅰ-Ⅻ])$/, '<span class="tcy">$1</span>')}</span><span class="a">${esc(ans)}</span></span>`;
     },
     /** 書き込み行：cols＝行数、len＝一行の長さ(mm) */
     L(cols, ans = '', len = 0, hand = 8) {
