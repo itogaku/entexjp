@@ -46,6 +46,17 @@ body {
   background: #2f81f7; color: #fff; cursor: pointer;
 }
 .toolbar .warn { color: #ffb4b4; font-weight: bold; width: 100%; }
+.toolbar .tb-pair { padding: 4px 10px; border-radius: 6px; background: #33383e; }
+.toolbar .tb-pair:has(input:checked) { background: #4a5058; }
+.round-h { font-family: "BIZ UDPGothic", sans-serif; font-weight: bold; font-size: 11pt; padding: .5mm 1.5mm; margin-inline-end: 2mm; background: #8a5a2b; color: #fff; border-radius: 1mm; }
+div.round-h { display: inline-block; margin-block: 1mm; }
+/* 二回分を一枚に：行の間を少しつめる */
+.pair-on .jk-item { margin-block-start: .6mm; font-size: 10.5pt; line-height: 1.8; }
+.pair-on .jk-note { padding-block: 1mm; font-size: 8.5pt; line-height: 1.5; }
+.pair-on .sheet-body > * { margin-block-end: 2mm; }
+.pair-on .jk-sq { inline-size: 11.5mm; block-size: 11.5mm; }
+.pair-on .jk-sq > .a { line-height: 11.5mm; font-size: 17pt; }
+.pair-on .jk-yomi .blank { block-size: 2.2em; }
 .toolbar .tb-del { padding: 4px 10px; border-radius: 6px; background: #33383e; }
 .toolbar .tb-del:has(input:checked) { background: #b42318; }
 .toolbar button.tb-undo { padding: 4px 12px; background: #4a5058; font-size: 13px; }
