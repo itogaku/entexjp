@@ -46,6 +46,20 @@ body {
   background: #2f81f7; color: #fff; cursor: pointer;
 }
 .toolbar .warn { color: #ffb4b4; font-weight: bold; width: 100%; }
+.toolbar .tb-del { padding: 4px 10px; border-radius: 6px; background: #33383e; }
+.toolbar .tb-del:has(input:checked) { background: #b42318; }
+.toolbar button.tb-undo { padding: 4px 12px; background: #4a5058; font-size: 13px; }
+/* 問題を消すモード：まとまりごとに × ボタン */
+.del-on .sheet-body [data-bi] { position: relative; outline: 1px dashed transparent; }
+.del-on .sheet-body [data-bi]:hover { outline-color: #d92d20; background: rgba(217, 45, 32, .05); }
+.del-x {
+  position: absolute; inset-block-start: -2mm; inset-inline-start: -2mm; z-index: 5;
+  writing-mode: horizontal-tb; inline-size: 7mm; block-size: 7mm; padding: 0;
+  border: 0; border-radius: 50%; background: #d92d20; color: #fff;
+  font: bold 14px/7mm "BIZ UDPGothic", sans-serif; text-align: center; cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+}
+@media print { .del-x { display: none !important; } }
 .toolbar .note { color: #aeb7c0; font-size: 12px; }
 .toolbar :focus-visible { outline: 2px solid #a9cbff; outline-offset: 2px; }
 

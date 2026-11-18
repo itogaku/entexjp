@@ -38,17 +38,97 @@
   }
   document.title = title ? `${title}｜読解プリント` : '読解プリント';
 
+  /* ---------- 問題を消す ----------
+     消したまとまりは URL の ?hide=ID:1.4.k2;ID2:3 に残す（数字は blocks の番号、k つきは解説の番号）。
+     問題（一・二…）を消すと、その番号の解答・解説も消し、残りの番号をつけ直す。 */
+  const delBox = document.getElementById('opt-del');
+  const undoBtn = document.getElementById('btn-undo');
+  const hidden = new Map();
+  (params.get('hide') || '').split(';').filter(Boolean).forEach((part) => {
+    const i = part.lastIndexOf(':');
+    if (i > 0) hidden.set(part.slice(0, i), new Set(part.slice(i + 1).split('.').filter(Boolean)));
+  });
+  const hiddenOf = (id) => hidden.get(id) || new Set();
+  function saveHidden() {
+    const q = new URLSearchParams(location.search);
+    const v = [...hidden].filter(([, set]) => set.size).map(([id, set]) => `${id}:${[...set].join('.')}`).join(';');
+    if (v) q.set('hide', v); else q.delete('hide');
+    history.replaceState(null, '', `${location.pathname}?${q}`);
+    undoBtn.hidden = !v;
+  }
+  const NUMS = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十'];
+  const tag = (html, key) => {
+    const t = document.createElement('div');
+    t.innerHTML = String(html).trim();
+    Array.from(t.children).forEach((c) => c.setAttribute('data-bi', key));
+    return t.innerHTML;
+  };
+  const qNo = (html) => { const m = /<span class="q-no">([^<]*)<\/span>/.exec(html); return m ? m[1] : null; };
+  const kNo = (html) => { const m = /^\s*<div class="kai"><span class="k-ttl">([^<]*)<\/span>/.exec(html); return m ? m[1] : null; };
+  /** 消したまとまりを除き、番号をつけ直したプリント */
+  function edited(p) {
+    const hide = hiddenOf(p.id);
+    const blocks = p.blocks.map((b, i) => ({ html: b, key: String(i) }));
+    const kai = (p.kaisetsu || []).map((b, i) => ({ html: b, key: 'k' + i }));
+    const goneNos = new Set(blocks.filter((b) => hide.has(b.key)).map((b) => qNo(b.html)).filter(Boolean));
+    const keepB = blocks.filter((b) => !hide.has(b.key));
+    const keepK = kai.filter((b) => !hide.has(b.key) && !goneNos.has(kNo(b.html)));
+    // 番号が一・二・三…と並んでいるときだけ、つけ直す
+    const nos = blocks.map((b) => qNo(b.html)).filter(Boolean);
+    const seq = nos.length && nos.every((n, i) => n === NUMS[i]);
+    const map = new Map();
+    if (seq && goneNos.size) keepB.map((b) => qNo(b.html)).filter(Boolean).forEach((n, i) => map.set(n, NUMS[i]));
+    const renum = (html) => !map.size ? html : html
+      .replace(/(<span class="q-no">)([^<]*)(<\/span>)/, (m, a, n, c) => a + (map.get(n) || n) + c)
+      .replace(/^(\s*<div class="kai"><span class="k-ttl">)([^<]*)(<\/span>)/, (m, a, n, c) => a + (map.get(n) || n) + c);
+    return Object.assign({}, p, {
+      blocks: keepB.map((b) => tag(renum(b.html), b.key)),
+      kaisetsu: keepK.map((b) => tag(renum(b.html), b.key)),
+    });
+  }
+  function addButtons() {
+    root.classList.toggle('del-on', delBox.checked);
+    if (!delBox.checked) return;
+    root.querySelectorAll('.sheet').forEach((sheet) => {
+      const id = sheet.dataset.pid;
+      const seen = new Set();
+      sheet.querySelectorAll('.sheet-body > [data-bi]').forEach((el) => {
+        const key = el.getAttribute('data-bi');
+        if (seen.has(key)) return; // 用紙をまたいで分かれたまとまりは、最初の部分にだけ
+        seen.add(key);
+        const x = document.createElement('button');
+        x.type = 'button';
+        x.className = 'del-x';
+        x.textContent = '×';
+        x.title = 'このまとまりを消す';
+        x.addEventListener('click', () => {
+          if (!hidden.has(id)) hidden.set(id, new Set());
+          hidden.get(id).add(key);
+          saveHidden();
+          render();
+        });
+        el.appendChild(x);
+      });
+    });
+  }
+
   function render() {
     root.innerHTML = '';
     const opt = { q: opts.q.checked, a: opts.a.checked, k: opts.k.checked, noGuide: opts.ng.checked };
     let bad = [];
-    prints.forEach((p) => {
+    prints.forEach((p0) => {
+      const p = edited(p0);
       const sheets = Yomi.renderPrint(root, p, opt);
+      sheets.forEach((s) => { s.dataset.pid = p0.id; });
       if (sheets.some((s) => s.classList.contains('overflow'))) bad.push(p.id);
     });
     warn.hidden = bad.length === 0;
     warn.textContent = bad.length ? `用紙からはみ出している部分があります（赤枠）：${bad.join('、')}` : '';
+    addButtons();
   }
+  delBox.addEventListener('change', render);
+  undoBtn.addEventListener('click', () => { hidden.clear(); saveHidden(); render(); });
+  undoBtn.hidden = !params.get('hide');
 
   Object.values(opts).forEach((el) => el.addEventListener('change', render));
   document.getElementById('btn-print').addEventListener('click', () => window.print());
