@@ -61,8 +61,8 @@ div.round-h { display: inline-block; margin-block: 1mm; }
 .toolbar .tb-del:has(input:checked) { background: #b42318; }
 .toolbar button.tb-undo { padding: 4px 12px; background: #4a5058; font-size: 13px; }
 /* 問題を消すモード：まとまりごとに × ボタン */
-.del-on .sheet-body [data-bi] { position: relative; outline: 1px dashed transparent; }
-.del-on .sheet-body [data-bi]:hover { outline-color: #d92d20; background: rgba(217, 45, 32, .05); }
+.del-on .sheet-body [data-bi], .del-on .sheet-body [data-del] { position: relative; outline: 1px dashed transparent; }
+.del-on .sheet-body [data-bi]:hover, .del-on .sheet-body [data-del]:hover { outline-color: #d92d20; background: rgba(217, 45, 32, .05); }
 .del-x {
   position: absolute; inset-block-start: -2mm; inset-inline-start: -2mm; z-index: 5;
   writing-mode: horizontal-tb; inline-size: 7mm; block-size: 7mm; padding: 0;
