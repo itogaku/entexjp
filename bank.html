@@ -98,6 +98,8 @@
   /* 問題を選ぶ画面は使わない（一覧のリンクからプリントをすぐ作る） */
   .ui-shell, #mbar { display: none !important; }
   #out-bar .ob { font-size: 13px; color: #fff; white-space: nowrap; }
+  #out-bar .ob-del { padding: 3px 8px; border-radius: 6px; background: #33383e; }
+  #out-bar .ob-del:has(input:checked) { background: #b42318; }
   #out-bar select { font-size: 13px; }
   #out-bar #back-pick { background: #fff; color: var(--ink); border-color: #fff; }
   @media print {
@@ -171,6 +173,8 @@
   <label class="ob"><input type="checkbox" id="obar-a" checked> 解答</label>
   <label class="ob"><input type="checkbox" id="obar-k" checked> 解説</label>
   <button type="button" class="btn" id="reroll" hidden>別の問題にする</button>
+  <label class="ob ob-del" title="オンにすると、問題ごとに × が出ます。× で消すと、番号をつけ直します"><input type="checkbox" id="obar-del"> 問題を消す</label>
+  <button type="button" class="btn" id="obar-undo" hidden style="background:#4a5058;border-color:#4a5058">消した問題を元にもどす</button>
   <button type="button" class="btn" id="do-print">印刷する</button>
   <span class="small">A4・横向き／余白なし／倍率100％／背景のグラフィックをオン</span>
   <span class="warn" id="out-warn"></span>

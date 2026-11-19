@@ -26,7 +26,7 @@
     const no = /^\d+$/.test(raw) ? Number(raw) : raw;
     prints = Yomi.byStage(no);
     const s = Yomi.stages.find((x) => x.no === no);
-    const NAMES = { L: '言葉と文の基礎', K: '古典　文法と読解', G: '文法　口語文法', J: '漢字・語句', S: '作文', D: '診断テスト' };
+    const NAMES = { L: '言葉と文の基礎', K: '古典　文法と読解', G: '文法　口語文法', J: '漢字・語句', M: '模擬テスト', T1: '定期テスト対策（中１）', S: '作文', D: '診断テスト' };
     title = s ? `ステージ${s.label}　${s.name}（まとめて印刷）` : NAMES[no] ? `${NAMES[no]}（まとめて印刷）` : '';
   }
 
@@ -112,11 +112,46 @@
     });
   }
 
+  /* ---------- 漢字の小テストを一枚に二回分 ----------
+     J-1〜J-30（読み四・書き五）は半分の幅に収まるので、二回ずつ一つにまとめて印刷できる。
+     一回だけを開いたときは、次の回と組にする。 */
+  const pairBox = document.getElementById('opt-pair');
+  const isTest = (p) => p && p.chip === '漢字' && /^J-(\d+)$/.test(p.id) && Number(p.id.slice(2)) <= 30;
+  if (prints.length === 1 && isTest(prints[0])) {
+    const n = Number(prints[0].id.slice(2));
+    const mate = Yomi.find(`J-${n % 2 ? n + 1 : n - 1}`);
+    if (isTest(mate)) prints.__mate = mate;
+  }
+  document.getElementById('tb-pair').hidden = !(prints.filter(isTest).length >= 2 || prints.__mate);
+  const roundT = (p) => p.title.replace(/^漢字の読み書き\s*/, '');
+  const roundH = (p) => `<div class="round-h">${roundT(p)}</div>`;
+  // 回の名前は、その回の最初の問題の見出しの頭に入れる（列を一つ使わないように）
+  const withRound = (p, html) => html.replace('<div class="q-ttl">', `<div class="q-ttl"><span class="round-h">${roundT(p)}</span>`);
+  function paired(list) {
+    if (!pairBox.checked) return list;
+    if (list.length === 1 && list.__mate) list = [list[0], list.__mate].sort((a, b) => Yomi.cmpId(a, b));
+    const out = [];
+    for (let i = 0; i < list.length; i++) {
+      const a = list[i], b = list[i + 1];
+      if (isTest(a) && isTest(b)) {
+        out.push(Object.assign({}, a, {
+          id: `${a.id}・${b.id}`,
+          title: `${a.title.replace(/回$/, '')}・${roundT(b).replace(/^第/, '')}`,
+          blocks: [a.blocks[0], withRound(a, a.blocks[1]), ...a.blocks.slice(2), withRound(b, b.blocks[1]), ...b.blocks.slice(2)],
+          kaisetsu: [roundH(a), ...(a.kaisetsu || []), roundH(b), ...(b.kaisetsu || [])],
+        }));
+        i++;
+      } else out.push(a);
+    }
+    return out;
+  }
+
   function render() {
     root.innerHTML = '';
+    root.classList.toggle('pair-on', pairBox.checked && !document.getElementById('tb-pair').hidden);
     const opt = { q: opts.q.checked, a: opts.a.checked, k: opts.k.checked, noGuide: opts.ng.checked };
     let bad = [];
-    prints.forEach((p0) => {
+    paired(prints).forEach((p0) => {
       const p = edited(p0);
       const sheets = Yomi.renderPrint(root, p, opt);
       sheets.forEach((s) => { s.dataset.pid = p0.id; });
@@ -127,6 +162,7 @@
     addButtons();
   }
   delBox.addEventListener('change', render);
+  pairBox.addEventListener('change', render);
   undoBtn.addEventListener('click', () => { hidden.clear(); saveHidden(); render(); });
   undoBtn.hidden = !params.get('hide');
 

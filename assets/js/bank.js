@@ -99,6 +99,16 @@
     return KAI(kanji(no), esc(x.answer), `<p>足りない点：${esc(x.cause)}</p>`, `${esc(x.title.replace(/^問\d+\s*/, ''))}`);
   }
 
+  /* ---------- 問題を消す ----------
+     消した問題は URL に残す：入門などは pick（残った問題）、入試演習の問いは hideq=b36#2.b37#0 */
+  const hideQ = new Set((new URLSearchParams(location.search).get('hideq') || '').split('.').filter(Boolean));
+  function tagDel(html, key) {
+    const t = document.createElement('div');
+    t.innerHTML = String(html).trim();
+    Array.from(t.children).forEach((c) => c.setAttribute('data-del', key));
+    return t.innerHTML;
+  }
+
   /* ---------- 小学生 ---------- */
   const KNO = ['１', '２', '３', '４', '５'];
   function kidsBlocks(set, no, guided) {
@@ -128,7 +138,10 @@
     return KAI(kanji(no), ans, body, `${esc(set.skill)}`);
   }
 
-  function bigPrint(set, guided, title) {
+  function bigPrint(set0, guided, title) {
+    // 「問題を消す」で消した問いを除く（番号はつけ直す）。keys[i]＝もとの問いの番号
+    const keys = set0.questions.map((q, i) => `${set0.id}#${i}`).filter((k) => !hideQ.has(k));
+    const set = Object.assign({}, set0, { questions: set0.questions.filter((q, i) => !hideQ.has(`${set0.id}#${i}`)) });
     let text = esc(set.passage);
     // 設問で「　」として引用された部分に傍線を引く
     set.questions.forEach((q, i) => {
@@ -160,8 +173,8 @@
     set.questions.forEach((q, i) => {
       const ans = q.choices && q.choices.length ? q.answer : esc(q.answer);
       const area = answerArea(q, ans);
-      blocks.push(Q(`問${kanji(i + 1)}`, esc(q.q) + (q.score ? `<span class="small">（${kanji(q.score)}点）</span>` : ''), area));
-      if (guided && q.guide) blocks.push(guidedPart(q.guide, '同じ問いに、もう一度答えなさい。', answerArea(q, ans)));
+      blocks.push(tagDel(Q(`問${kanji(i + 1)}`, esc(q.q) + (q.score ? `<span class="small">（${kanji(q.score)}点）</span>` : ''), area), keys[i]));
+      if (guided && q.guide) blocks.push(tagDel(guidedPart(q.guide, '同じ問いに、もう一度答えなさい。', answerArea(q, ans)), keys[i]));
     });
     const kai = set.questions.map((q, i) => KAI(`問${kanji(i + 1)}`, esc(q.answer),
       (q.points && q.points.length ? `<p><b class="gothic">採点基準</b>　${q.points.map(esc).join('　／　')}</p>` : '') +
@@ -311,19 +324,69 @@
   });
 
   /* ---------- プリントを作る ---------- */
+  function addDelButtons() {
+    const on = document.getElementById('obar-del').checked;
+    const root = $('sheets');
+    root.classList.toggle('del-on', on);
+    if (!on) return;
+    root.querySelectorAll('.sheet').forEach((sheet) => {
+      const seen = new Set();
+      sheet.querySelectorAll('.sheet-body > [data-del]').forEach((el) => {
+        const key = el.getAttribute('data-del');
+        if (seen.has(key)) return;
+        seen.add(key);
+        const x = document.createElement('button');
+        x.type = 'button';
+        x.className = 'del-x';
+        x.textContent = '×';
+        x.title = 'この問題を消す';
+        x.addEventListener('click', () => delProblem(key));
+        el.appendChild(x);
+      });
+    });
+  }
+  const deleted = [];
+  function delProblem(key) {
+    if (state.chosen.has(key)) { state.chosen.delete(key); deleted.push(key); } else hideQ.add(key);
+    setDelURL();
+    document.getElementById('reroll').hidden = true;
+    document.getElementById('obar-undo').hidden = false;
+    if (!state.chosen.size) { $('sheets').innerHTML = '<p style="color:#fff;text-align:center;padding:40px">問題がなくなりました。「消した問題を元にもどす」で、元にもどせます。</p>'; return; }
+    make();
+  }
+  function setDelURL() {
+    // URL を、残った問題（pick）と消した問い（hideq）に書きかえる（おまかせの選び直しはしない）
+    const q = new URLSearchParams(location.search);
+    q.delete('auto'); q.delete('stage');
+    q.set('kind', state.kind);
+    q.set('pick', [...state.chosen].map((k) => k.slice(k.indexOf(':') + 1)).join(','));
+    if (hideQ.size) q.set('hideq', [...hideQ].join('.')); else q.delete('hideq');
+    history.replaceState(null, '', `${location.pathname}?${q}`);
+  }
+  document.getElementById('obar-del').addEventListener('change', () => make());
+  document.getElementById('obar-undo').addEventListener('click', () => {
+    deleted.splice(0).forEach((k) => state.chosen.add(k));
+    hideQ.clear();
+    setDelURL();
+    document.getElementById('obar-undo').hidden = true;
+    make();
+  });
+  if (hideQ.size) setTimeout(() => { document.getElementById('obar-undo').hidden = false; }, 0);
+
   function make() {
     const root = $('sheets');
     root.innerHTML = '';
     const guided = document.querySelector('input[name="mode"]:checked').value === 'guided';
     const opt = { q: $('o-q').checked, a: $('o-a').checked, k: $('o-k').checked };
     const title = esc($('p-title').value.trim() || '読解練習');
-    const pick = (kind) => all[kind].filter((x) => state.chosen.has(x.key)).map((x) => x.p);
+    const pickX = (kind) => all[kind].filter((x) => state.chosen.has(x.key));
+    const pick = (kind) => pickX(kind).map((x) => x.p);
     const prints = [];
 
     const blocks = [], kai = [];
     let no = 0;
-    pick('skill').forEach((p) => { no++; blocks.push(...skillBlocks(p, no, guided)); kai.push(skillKai(p, no)); });
-    pick('kaizen').forEach((x) => { no++; blocks.push(...kaizenBlocks(x, no, guided)); kai.push(kaizenKai(x, no)); });
+    pickX('skill').forEach(({ p, key }) => { no++; blocks.push(...skillBlocks(p, no, guided).map((h) => tagDel(h, key))); kai.push(tagDel(skillKai(p, no), key)); });
+    pickX('kaizen').forEach(({ p: x, key }) => { no++; blocks.push(...kaizenBlocks(x, no, guided).map((h) => tagDel(h, key))); kai.push(tagDel(kaizenKai(x, no), key)); });
     // 入門のプリントには、選んだ技能の「読み方」を最初に載せる
     const skillsUsed = [...new Set(pick('skill').map((p) => p.skill))];
     const desc = new Map(D.skills.map((x) => [x.name, x.desc]));
@@ -338,25 +401,25 @@
     // 低学年は大きな文字の別プリントにする
     // 小学生版・書く練習も、学年のまとまりごとに別のプリント
     ['chu', '56', '34'].forEach((bk) => {
-      const ws = pick('write').filter((x) => x.band === bk);
+      const ws = pickX('write').filter((x) => x.p.band === bk);
       if (ws.length) {
         const kb = [], kk = [];
-        ws.forEach((set, i) => { kb.push(...kidsBlocks(set, i + 1, guided)); kk.push(kidsKai(set, i + 1)); });
+        ws.forEach(({ p: set, key }, i) => { kb.push(...kidsBlocks(set, i + 1, guided).map((h) => tagDel(h, key))); kk.push(tagDel(kidsKai(set, i + 1), key)); });
         prints.unshift({ id: 'write' + bk, kid: bk, chip: `書く練習　${BANDS[bk]}`, title, sub: guided ? 'ヒントつき' : '短く書いてみよう', levelText: `${ws.length}題`, blocks: kb, kaisetsu: kk });
       }
-      const ks = pick('skillk').filter((x) => x.band === bk);
+      const ks = pickX('skillk').filter((x) => x.p.band === bk);
       if (ks.length) {
         const kb = [], kk = [];
-        ks.forEach((p, i) => { kb.push(...skillBlocks(p, i + 1, guided)); kk.push(skillKai(p, i + 1)); });
+        ks.forEach(({ p, key }, i) => { kb.push(...skillBlocks(p, i + 1, guided).map((h) => tagDel(h, key))); kk.push(tagDel(skillKai(p, i + 1), key)); });
         prints.unshift({ id: 'skillk' + bk, kid: bk, chip: `技能別　${BANDS[bk]}`, title, sub: guided ? 'まず自分で解く → 読み方を確かめる → もう一度解く' : 'まず自分で解こう', levelText: `${ks.length}問`, blocks: kb, kaisetsu: kk });
       }
     });
     // 学年のまとまりごとに別のプリント（文字の大きさがちがう）
     [...Yomi.kids.bands].reverse().forEach((b) => {
-      const sets = pick('kids').filter((x) => x.band === b.key);
+      const sets = pickX('kids').filter((x) => x.p.band === b.key);
       if (!sets.length) return;
       const kb = [], kk = [];
-      sets.forEach((set, i) => { kb.push(...kidsBlocks(set, i + 1, guided)); kk.push(kidsKai(set, i + 1)); });
+      sets.forEach(({ p: set, key }, i) => { kb.push(...kidsBlocks(set, i + 1, guided).map((h) => tagDel(h, key))); kk.push(tagDel(kidsKai(set, i + 1), key)); });
       const low = b.key === '12';
       prints.unshift({ id: 'kids' + b.key, kid: b.key, chip: b.short, title: title === '読みとり' ? esc(b.title) : title, sub: guided ? (low ? 'ヒントつき' : 'ヒントつき・よく読んで答えよう') : (low ? 'よく よんで こたえよう' : 'よく読んで答えよう'), levelText: `${kb.length}${low ? 'だい' : '題'}`, blocks: kb, kaisetsu: kk });
     });
@@ -377,6 +440,7 @@
       });
       $('out-info').textContent = `${sheets}枚のプリントを作りました。`;
       $('out-warn').textContent = bad.length ? `用紙からはみ出している部分があります（赤枠）` : '';
+      addDelButtons();
       window.dispatchEvent(new Event('resize'));
     };
     $('out-bar').hidden = false;
