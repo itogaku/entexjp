@@ -21,8 +21,10 @@
     bunS: s.replace(/\+/g, '').replace(/\//g, '／'),
     tanS: s.replace(/[/+]/g, '／'),
   });
-  const GAPST = 'display:inline-block;inline-size:.9em;text-align:center;font-size:.85em;line-height:1';
-  const gap = (a) => `<span style="${GAPST}">${a ? `<span class="a">${a}</span>` : ''}</span>`;
+  const GAPST = 'display:inline-block;position:relative;inline-size:.7em;block-size:1em;vertical-align:middle';
+  // 「／」は線で描く（縦書きの「／」の字形は位置がずれるため）。句点は字で出す
+  const SLASH = 'position:absolute;left:50%;top:50%;width:1.1em;height:0;border-top:1.5px solid currentColor;transform:translate(-50%,-50%) rotate(-30deg)';
+  const gap = (a) => `<span style="${GAPST}">${a === '／' ? `<span class="a" style="${SLASH}"></span>` : a ? `<span class="a" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;line-height:1">${a}</span>` : ''}</span>`;
   /** 区切りを書きこむ文：字と字の間を同じだけあけ、解答版だけ赤い「／」が出る。which：'b'＝文節、'w'＝単語 */
   const CUT = (s, which) => {
     let out = '', flag = '';
