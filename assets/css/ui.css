@@ -53,7 +53,7 @@ body.ui-page {
   padding: 7px 8px; margin: 0 -8px; border-radius: 6px; color: var(--ink); text-decoration: none;
 }
 .plist a:hover { background: var(--accent-soft); }
-.plist .pid { font-weight: 700; color: var(--learn); font-variant-numeric: tabular-nums; }
+.plist .pid { font-weight: 700; color: var(--learn); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .plist .pt { font-weight: 700; font-size: 14px; }
 .plist .ps { display: block; font-size: 12px; color: var(--sub); font-weight: 400; }
 .lv { display: inline-flex; gap: 1px; }
