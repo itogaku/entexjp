@@ -58,11 +58,11 @@
     const blocks = [
       AIM(P.aim),
       POINT('テストに出るポイント', P.point),
-      HEAD('本文') + LEAD('次の文章を読んで、あとの問いに答えなさい。'),
+      `<div>${HEAD('本文')}${LEAD('次の文章を読んで、あとの問いに答えなさい。')}</div>`,
       ...story,
-      HEAD('確認問題（基本）') + kj.block,
+      `<div>${HEAD('確認問題（基本）')}${kj.block}</div>`,
       ...P.kakunin.map((c) => Q(c.no, c.q, c.html)),
-      HEAD(`演習問題（テスト形式）　${kan(total)}点`) + LEAD(`本文について、次の問いに答えなさい。${P.exNote || ''}`),
+      `<div>${HEAD(`演習問題（テスト形式）　${kan(total)}点`)}${LEAD(`本文について、次の問いに答えなさい。${P.exNote || ''}`)}</div>`,
       ...P.ex.map((q, i) => Q(SUB[i], `${mark(q.q)}<span class="small">（${kan(q.score)}点）</span>`, area(q))),
     ];
     if (P.hint) blocks.push(HINT(P.hint, '★テストで点をとるコツ★'));
