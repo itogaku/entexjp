@@ -28,7 +28,7 @@
   /** 設問文から「○字以内」「○字」の字数を読み取る */
   function charLimit(q) {
     // 「最初の五字を書きなさい」なら、解答欄はその字数
-    const head = String(q).match(/(?:最初|初め)の([一二三四五六七八九十]+)字/);
+    const head = String(q).match(/(?:最初|初め|はじめ)の([一二三四五六七八九十]+)字/);
     if (head) return parseKanjiNum(head[1]);
     // 「四十字以上五十字以内」なら、上限（以内）の字数
     const m = String(q).match(/([0-9０-９]+|[一二三四五六七八九十百]+)字以内/) || String(q).match(/([0-9０-９]+|[一二三四五六七八九十百]+)字(以内|程度|で)?/);
@@ -46,7 +46,20 @@
   /* ---------- 解答欄 ---------- */
   function answerArea(q, ans) {
     if (q.choices && q.choices.length) return CH(q.choices.map((c) => R(String(c).replace(/^[ア-オ][　 ]+/, ''))), ans) + `<p class="indent">答え　${K(esc(ans))}</p>`;
-    const n = charLimit(Yomi.plain(q.q));
+    const qt = Yomi.plain(q.q);
+    // 「最初と最後（終わり）の五字」：五マスを二つ、「〜」でつなぐ
+    const fl = qt.match(/(?:最初|初め|はじめ)と(?:終わり|最後|おわり)の([一二三四五六七八九十]+)字/);
+    if (fl) {
+      const k = parseKanjiNum(fl[1]);
+      const [a = '', b = ''] = Yomi.plain(ans).split(/[〜～]/);
+      return `<div class="fl-pair" style="display:flex;align-items:center;gap:2mm">${G(k, a, k)}<span>〜</span>${G(k, b, k)}</div>`;
+    }
+    // 「二つ書け」など、解答欄を分けるとき：q.parts＝[字数, 字数]、答えは「／」で区切る
+    if (Array.isArray(q.parts) && q.parts.length) {
+      const as = Yomi.plain(ans).split('／');
+      return q.parts.map((k, i) => `<p class="mt"><b class="gothic">${'①②③④'[i]}</b></p>${G(k, as[i] || '', k <= 40 ? Math.min(20, k) : 20)}`).join('');
+    }
+    const n = charLimit(qt);
     if (n && n <= 120) return G(n, Yomi.plain(ans), n <= 40 ? Math.min(20, n) : 20);
     return L(rowsFor(Yomi.plain(ans), 2), R(ans), 0);
   }
