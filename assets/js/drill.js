@@ -25,6 +25,13 @@
     const ans = String(q.answer);
     if (q.type === 'choice') return CH(q.choices, ans);
     if (q.type === 'mark') return `<p class="indent mt">答え　${Array.from(ans).length > 2 ? B(Array.from(ans).length + 2, ans) : K(ans)}</p>`;
+    // 「はじめと終わりの三字」など：小さなマスを二つ、「〜」でつなぐ（答えは「ＡＡＡ〜ＢＢＢ」）
+    const fl = Yomi.plain(String(q.q)).match(/(?:最初|初め|はじめ)と(?:終わり|最後|おわり)の([一二三四五六七八九十]+)字/);
+    if (fl && /[〜～]/.test(ans)) {
+      const k = Array.from(ans.split(/[〜～]/)[0]).length;
+      const [a = '', b = ''] = ans.split(/[〜～]/);
+      return `<div class="fl-pair" style="display:flex;align-items:center;gap:2mm">${G(k, a, k)}<span>〜</span>${G(k, b, k)}</div>`;
+    }
     if (q.type === 'write' || q.type === 'extract') {
       const n = q.n || Array.from(ans).length;
       return G(n, ans, n <= 40 ? Math.min(20, n) : 20);
