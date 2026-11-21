@@ -130,6 +130,7 @@ body.ui-page {
 .rail li.bunpo .n { background: #3d6a9e; color: #fff; }
 .rail li.kanji .n { background: #8a5a2b; color: #fff; }
 .rail li.mogi .n { background: #7a1f3d; color: #fff; }
+.rail li.naosu .n { background: #5b4b8a; color: #fff; }
 .rail li.teiki .n { background: #2d6a4f; color: #fff; }
 .rail li.kiso .n { background: #4f7a3a; color: #fff; }
 .rail .sep { font-size: 11px; color: var(--sub); padding: 6px 8px 0; font-weight: 700; }
@@ -161,6 +162,8 @@ body.ui-page {
 .k.kanji { background: #8a5a2b; color: #fff; }
 .badge.mogi { background: #7a1f3d; }
 .k.mogi { background: #7a1f3d; color: #fff; }
+.badge.naosu { background: #5b4b8a; }
+.k.naosu { background: #5b4b8a; color: #fff; }
 .badge.teiki { background: #2d6a4f; }
 .k.teiki { background: #2d6a4f; color: #fff; }
 .badge.kiso { background: #4f7a3a; }
