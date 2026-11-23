@@ -87,6 +87,13 @@
 <script src="data/teiki2-setsumei.js"></script>
 <script src="data/teiki2-shosetsu.js"></script>
 <script src="data/teiki2-shi.js"></script>
+<script src="data/teiki3-bunpo.js"></script>
+<script src="data/teiki3-kotoba.js"></script>
+<script src="data/teiki3-koten.js"></script>
+<script src="data/teiki3-koten2.js"></script>
+<script src="data/teiki3-setsumei.js"></script>
+<script src="data/teiki3-shosetsu.js"></script>
+<script src="data/teiki3-shi.js"></script>
 <script src="data/drill-k1.js"></script>
 <script src="data/drill-k2.js"></script>
 <script src="data/drill-g1.js"></script>
@@ -131,6 +138,7 @@
     { key: 'exam', n: '試', cls: 'exam', name: '入試演習', ct: `長文 ${D.bigsets.length}題` },
     { key: 'teiki1', n: '定', cls: 'teiki', name: '定期テスト対策（中１）', ct: `文法・言葉・読解 ${Yomi.byStage('T1').length}枚` },
     { key: 'teiki2', n: '定', cls: 'teiki', name: '定期テスト対策（中２）', ct: `文法・古典・読解 ${Yomi.byStage('T2').length}枚` },
+    { key: 'teiki3', n: '定', cls: 'teiki', name: '定期テスト対策（中３）', ct: `文法・古典・読解 ${Yomi.byStage('T3').length}枚` },
     { key: 'mogi', n: '模', cls: 'mogi', name: '模擬テスト', ct: `千葉県型 ${Yomi.byStage('M').length}回` },
     { key: 'naosu', n: '整', cls: 'naosu', name: '文を整える', ct: `書き直し ${Yomi.byStage('N').length}枚` },
     { key: 'saku', n: '作', cls: 'saku', name: '作文', ct: `条件作文 ${Yomi.byStage('S').length}枚` },
@@ -356,7 +364,7 @@
         ${p.score ? '<span class="cnt">配点つき</span>' : dots(p.level)}
       </a>${Yomi.drillsOf(p.id).length ? `<span class="drl">別の問題で練習：${Yomi.drillsOf(p.id).map((d) => `<a href="print.html?drill=${p.id}&v=${d.v}">${Yomi.drillLetter(d.v)}</a>`).join('')}</span>` : ''}</li>`;
     return head('定', 'teiki', `定期テスト対策（${grade}）`,
-      `${grade}の定期テストでよく出る形の問題です。教科書の本文は使わず、文法・言葉・漢字は新しい例文で、読解は教科書の文章と同じ組み立ての自作の文章で練習します。どの教科書の生徒にも使えます。${stage === 'T2' ? '古典は、教科書によく出る作品の原文（著作権の切れたもの）で練習します。' : ''}`, key) +
+      `${grade}の定期テストでよく出る形の問題です。教科書の本文は使わず、文法・言葉・漢字は新しい例文で、読解は教科書の文章と同じ組み立ての自作の文章で練習します。どの教科書の生徒にも使えます。${stage !== 'T1' ? '古典は、教科書によく出る作品の原文（著作権の切れたもの）で練習します。' : ''}`, key) +
       groups.map((g) => `
       <div class="card">
         <div class="col-h"><span class="k teiki">定</span>${esc(g)}<span class="cnt">${prints.filter((p) => (p.group || 'その他') === g).length}枚</span></div>
@@ -414,7 +422,7 @@
 
   function show(key, push) {
     const p = panes.find((x) => x.key === key) || panes[0];
-    document.getElementById('pane').innerHTML = p.key === 'diag' ? diagHTML() : p.b ? kidsHTML(p.b) : p.key === 'intro' ? introHTML() : p.key === 'exam' ? examHTML() : p.key === 'saku' ? sakuHTML() : p.key === 'koten' ? kotenHTML() : p.key === 'bunpo' ? bunpoHTML() : p.key === 'kanji' ? kanjiHTML() : p.key === 'naosu' ? naosuHTML() : p.key === 'mogi' ? mogiHTML() : p.key === 'teiki1' ? teikiHTML('T1', '中１', 'teiki1') : p.key === 'teiki2' ? teikiHTML('T2', '中２', 'teiki2') : p.key === 'kiso' ? kisoHTML() : stageHTML(p.s);
+    document.getElementById('pane').innerHTML = p.key === 'diag' ? diagHTML() : p.b ? kidsHTML(p.b) : p.key === 'intro' ? introHTML() : p.key === 'exam' ? examHTML() : p.key === 'saku' ? sakuHTML() : p.key === 'koten' ? kotenHTML() : p.key === 'bunpo' ? bunpoHTML() : p.key === 'kanji' ? kanjiHTML() : p.key === 'naosu' ? naosuHTML() : p.key === 'mogi' ? mogiHTML() : p.key === 'teiki1' ? teikiHTML('T1', '中１', 'teiki1') : p.key === 'teiki2' ? teikiHTML('T2', '中２', 'teiki2') : p.key === 'teiki3' ? teikiHTML('T3', '中３', 'teiki3') : p.key === 'kiso' ? kisoHTML() : stageHTML(p.s);
     document.querySelectorAll('#rail button').forEach((b) => b.setAttribute('aria-current', String(b.dataset.pane === p.key)));
     const cur = document.querySelector('#rail button[aria-current="true"]');
     if (cur && cur.scrollIntoView && window.innerWidth <= 760) cur.scrollIntoView({ inline: 'center', block: 'nearest' });
@@ -425,7 +433,7 @@
     const b = e.target.closest('button[data-pane]');
     if (b) { show(b.dataset.pane, true); window.scrollTo(0, 0); }
   });
-  const fromHash = /^#(diag|kids\d\d|kids|intro|exam|saku|koten|bunpo|kanji|naosu|mogi|teiki1|teiki2|kiso|stage\d)$/.exec(location.hash);
+  const fromHash = /^#(diag|kids\d\d|kids|intro|exam|saku|koten|bunpo|kanji|naosu|mogi|teiki1|teiki2|teiki3|kiso|stage\d)$/.exec(location.hash);
   const want = fromHash ? fromHash[1] : store.get() || 'intro';
   show(want === 'kids' ? 'kids12' : want, false);
 </script>
