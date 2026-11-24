@@ -25,6 +25,11 @@
     const ans = String(q.answer);
     if (q.type === 'choice') return CH(q.choices, ans);
     if (q.type === 'mark') return `<p class="indent mt">答え　${Array.from(ans).length > 2 ? B(Array.from(ans).length + 2, ans) : K(ans)}</p>`;
+    // 空欄ごとに欄を分ける：parts＝[字数, …]、labels＝['Ｘ','Ｙ',…]（なければ①②…）、答えは「／」で区切る
+    if (Array.isArray(q.parts) && q.parts.length) {
+      const as = ans.split('／');
+      return q.parts.map((k, i) => `<p class="mt"><b class="gothic">${(q.labels || [])[i] || '①②③④⑤'[i]}</b></p>${G(k, as[i] || '', k <= 40 ? Math.min(20, k) : 20)}`).join('');
+    }
     // 「はじめと終わりの三字」など：小さなマスを二つ、「〜」でつなぐ（答えは「ＡＡＡ〜ＢＢＢ」）
     const fl = Yomi.plain(String(q.q)).match(/(?:最初|初め|はじめ)と(?:終わり|最後|おわり)の([一二三四五六七八九十]+)字/);
     if (fl && /[〜～]/.test(ans)) {

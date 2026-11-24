@@ -26,7 +26,7 @@
     const no = /^\d+$/.test(raw) ? Number(raw) : raw;
     prints = Yomi.byStage(no);
     const s = Yomi.stages.find((x) => x.no === no);
-    const NAMES = { L: '言葉と文の基礎', K: '古典　文法と読解', G: '文法　口語文法', J: '漢字・語句', M: '模擬テスト', N: '文を整える', T1: '定期テスト対策（中１）', S: '作文', D: '診断テスト' };
+    const NAMES = { L: '言葉と文の基礎', K: '古典　文法と読解', G: '文法　口語文法', J: '漢字・語句', M: '模擬テスト', N: '文を整える', T1: '定期テスト対策（中１）', T2: '定期テスト対策（中２）', T3: '定期テスト対策（中３）', S: '作文', D: '診断テスト' };
     title = s ? `ステージ${s.label}　${s.name}（まとめて印刷）` : NAMES[no] ? `${NAMES[no]}（まとめて印刷）` : '';
   }
 
@@ -116,14 +116,17 @@
      J-1〜J-30（読み四・書き五）は半分の幅に収まるので、二回ずつ一つにまとめて印刷できる。
      一回だけを開いたときは、次の回と組にする。 */
   const pairBox = document.getElementById('opt-pair');
-  const isTest = (p) => p && p.chip === '漢字' && /^J-(\d+)$/.test(p.id) && Number(p.id.slice(2)) <= 30;
+  // pairable: true のプリント（新出漢字テストなど）も同じく二回分を一枚にできる。round＝「第三回」などの回の名前
+  const isTest = (p) => p && (p.pairable === true || (p.chip === '漢字' && /^J-(\d+)$/.test(p.id) && Number(p.id.slice(2)) <= 30));
   if (prints.length === 1 && isTest(prints[0])) {
-    const n = Number(prints[0].id.slice(2));
-    const mate = Yomi.find(`J-${n % 2 ? n + 1 : n - 1}`);
+    // 同じまとまりの中で、一回目と二回目、三回目と四回目…を組にする
+    const same = Yomi.byStage(prints[0].stage).filter(isTest).sort((a, b) => Yomi.cmpId(a, b));
+    const i = same.indexOf(prints[0]);
+    const mate = i >= 0 ? same[i % 2 ? i - 1 : i + 1] : null;
     if (isTest(mate)) prints.__mate = mate;
   }
   document.getElementById('tb-pair').hidden = !(prints.filter(isTest).length >= 2 || prints.__mate);
-  const roundT = (p) => p.title.replace(/^漢字の読み書き\s*/, '');
+  const roundT = (p) => p.round || p.title.replace(/^漢字の読み書き\s*/, '');
   const roundH = (p) => `<div class="round-h">${roundT(p)}</div>`;
   // 回の名前は、その回の最初の問題の見出しの頭に入れる（列を一つ使わないように）
   const withRound = (p, html) => html.replace('<div class="q-ttl">', `<div class="q-ttl"><span class="round-h">${roundT(p)}</span>`);
